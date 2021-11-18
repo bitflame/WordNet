@@ -1,16 +1,13 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.DirectedCycle;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SAP {
-    int[] edgeTo;
-    boolean[] marked;
     boolean hasCycle;
-
+    Digraph digraph;
+    int [] edgeTo;
+    boolean[] marked;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -19,10 +16,7 @@ public class SAP {
             hasCycle = true;
             return;
         }
-        edgeTo = new int[digraph.V()];
-        for (int v = 0; v < digraph.V(); v++) {
-            bfs(digraph, v);
-        }
+        this.digraph = digraph;
     }
 
     // length of shortest ancestral path between v and w; -1 if no such path
@@ -52,31 +46,27 @@ public class SAP {
         return -1; // for now
     }
 
-    public void bfs(Digraph digraph, int v) {
-        marked[v] = true;
-        Queue<Integer> queue = new Queue<>();
-        queue.enqueue(v);
-        while (!queue.isEmpty()) {
-            v = queue.dequeue();
-            for (int w : digraph.adj(v)) {
-                edgeTo[w] = v;
-                marked[w] = true;
-                queue.enqueue(w);
-            }
-        }
-    }
+
 
     private List<Integer> getPath(int from, int to) {
         List<Integer> shortestPath = new ArrayList<>();
-        for (int i = edgeTo[from]; i < edgeTo[to]; i = edgeTo[i]) {
-            shortestPath.add(i);
+        BreadthFirstDirectedPaths breadthFirstDirectedPaths = new BreadthFirstDirectedPaths(digraph, from);
+        if (breadthFirstDirectedPaths.hasPathTo(to)){
+            for (int i:breadthFirstDirectedPaths.pathTo(to)) {
+                shortestPath.add(i);
+            }
         }
-        shortestPath.add(to);
         return shortestPath;
     }
 
     public static void main(String[] args) {
         Digraph digraph = new Digraph(new In(args[0]));
         SAP sap = new SAP(digraph);
+        StdOut.println("Shortest path from 1 to 2 is expected to be 0, and it is: " + sap.getPath(1, 2));
+        StdOut.println("Shortest path from 3 to 4 is expected to be 1, and it is: " + sap.getPath(3, 4));
+        StdOut.println("Shortest path from 4 to 3 is expected to be 1, and it is: " + sap.getPath(4, 3));
+        StdOut.println("Shortest path from 5 to 6 is expected to be 2, and it is: " + sap.getPath(5, 6));
+        StdOut.println("Shortest path from 10 to 6 is expected to be [ 5 2 ], and it is: " + sap.getPath(10, 6));
+        StdOut.println("Shortest path from 17 to 6 is expected to be [ 10 5 2 ], and it is: " + sap.getPath(17, 6));
     }
 }
