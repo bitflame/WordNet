@@ -1,4 +1,7 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +9,7 @@ import java.util.List;
 public class SAP {
     boolean hasCycle;
     Digraph digraph;
-    int [] edgeTo;
+    int[] edgeTo;
     boolean[] marked;
 
     // constructor takes a digraph ( not necessarily a DAG )
@@ -47,12 +50,11 @@ public class SAP {
     }
 
 
-
     private List<Integer> getPath(int from, int to) {
         List<Integer> shortestPath = new ArrayList<>();
-        BreadthFirstDirectedPaths breadthFirstDirectedPaths = new BreadthFirstDirectedPaths(digraph, from);
-        if (breadthFirstDirectedPaths.hasPathTo(to)){
-            for (int i:breadthFirstDirectedPaths.pathTo(to)) {
+        DeluxBFS deluxBFS = new DeluxBFS(digraph, to);
+        if (deluxBFS.hasPathTo(from)) {
+            for (int i : deluxBFS.pathTo(from)) {
                 shortestPath.add(i);
             }
         }
