@@ -1,15 +1,20 @@
 import edu.princeton.cs.algs4.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DeluxBFS {
     private static final int INFINITY = Integer.MAX_VALUE;
     private boolean[] marked;
     private int[] edgeTo;
     private int[] distTo;
+    private List<Integer> path;
 
     public DeluxBFS(Digraph G, int s) {
         marked = new boolean[G.V()];
         distTo = new int[G.V()];
         edgeTo = new int[G.V()];
+        path = new ArrayList<>();
         for (int v = 0; v < G.V(); v++)
             distTo[v] = INFINITY;
         validateVertex(s);
@@ -20,6 +25,7 @@ public class DeluxBFS {
         marked = new boolean[G.V()];
         distTo = new int[G.V()];
         edgeTo = new int[G.V()];
+        path = new ArrayList<>();
         for (int v = 0; v < G.V(); v++)
             distTo[v] = INFINITY;
         validateVertices(sources);
@@ -64,6 +70,8 @@ public class DeluxBFS {
                     distTo[w] = distTo[v] + 1;
                     marked[w] = true;
                     q.enqueue(w);
+                } else if (marked[w]) {
+                    path.add(w);
                 }
             }
         }
@@ -82,6 +90,10 @@ public class DeluxBFS {
         for (x = v; distTo[x] != 0; x = edgeTo[x])
             path.push(x);
         path.push(x);
+        return path;
+    }
+
+    public List<Integer> pathBetween() {
         return path;
     }
 

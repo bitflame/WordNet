@@ -1,9 +1,9 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SAP {
@@ -51,24 +51,52 @@ public class SAP {
 
 
     private List<Integer> getPath(int from, int to) {
-        List<Integer> shortestPath = new ArrayList<>();
-        DeluxBFS deluxBFS = new DeluxBFS(digraph, to);
-        if (deluxBFS.hasPathTo(from)) {
-            for (int i : deluxBFS.pathTo(from)) {
-                shortestPath.add(i);
-            }
-        }
-        return shortestPath;
+        //List<Integer> shortestPath = new ArrayList<>();
+        List<Integer> sources = new ArrayList<Integer>(Arrays.asList(from, to));
+        DeluxBFS deluxBFS = new DeluxBFS(digraph, sources);
+        return deluxBFS.pathBetween();
+        //return shortestPath;
     }
 
     public static void main(String[] args) {
         Digraph digraph = new Digraph(new In(args[0]));
         SAP sap = new SAP(digraph);
-        StdOut.println("Shortest path from 1 to 2 is expected to be 0, and it is: " + sap.getPath(1, 2));
-        StdOut.println("Shortest path from 3 to 4 is expected to be 1, and it is: " + sap.getPath(3, 4));
-        StdOut.println("Shortest path from 4 to 3 is expected to be 1, and it is: " + sap.getPath(4, 3));
-        StdOut.println("Shortest path from 5 to 6 is expected to be 2, and it is: " + sap.getPath(5, 6));
-        StdOut.println("Shortest path from 10 to 6 is expected to be [ 5 2 ], and it is: " + sap.getPath(10, 6));
-        StdOut.println("Shortest path from 17 to 6 is expected to be [ 10 5 2 ], and it is: " + sap.getPath(17, 6));
+
+
+        System.out.print("Expecting [0] ");
+        for (int i : sap.getPath(1, 2)) {
+            System.out.println("[" + i + "]");
+        }
+
+        System.out.print("Expecting [1] ");
+        for (int i : sap.getPath(3, 4)) {
+            System.out.println("[" + i + "]");
+        }
+        System.out.print("Expecting [1] ");
+        for (int i : sap.getPath(4, 3)) {
+            System.out.println("[" + i + "]");
+        }
+
+        System.out.print("Expecting [2] ");
+        for (int i : sap.getPath(5, 6)) {
+            System.out.println("[" + i + "]");
+        }
+        System.out.print("Expecting [2] ");
+        for (int i : sap.getPath(6, 5)) {
+            System.out.println("[" + i + "]");
+        }
+        System.out.print("Expecting [ 0 1 2 ] ");
+        System.out.print("[");
+        for (int i : sap.getPath(4, 6)) {
+            System.out.print(" " + i + " ");
+        }
+        System.out.println("]");
+//        while (!StdIn.isEmpty()) {
+//            int v = StdIn.readInt();
+//            int w = StdIn.readInt();
+//            int length = sap.length(v, w);
+//            //int ancestor = sap.ancestor((v,w));
+//            StdOut.printf("length = %d\n", length);
+//        }
     }
 }
