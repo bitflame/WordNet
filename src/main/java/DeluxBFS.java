@@ -1,20 +1,17 @@
 import edu.princeton.cs.algs4.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DeluxBFS {
     private static final int INFINITY = Integer.MAX_VALUE;
     private boolean[] marked;
     private int[] edgeTo;
     private int[] distTo;
-    private List<Integer> path;
+
 
     public DeluxBFS(Digraph G, int s) {
         marked = new boolean[G.V()];
         distTo = new int[G.V()];
         edgeTo = new int[G.V()];
-        path = new ArrayList<>();
+
         for (int v = 0; v < G.V(); v++)
             distTo[v] = INFINITY;
         validateVertex(s);
@@ -25,16 +22,11 @@ public class DeluxBFS {
         marked = new boolean[G.V()];
         distTo = new int[G.V()];
         edgeTo = new int[G.V()];
-        path = new ArrayList<>();
+
         for (int v = 0; v < G.V(); v++)
             distTo[v] = INFINITY;
         validateVertices(sources);
         bfs(G, sources);
-    }
-
-    public int distTo(int v) {
-        validateVertex(v);
-        return distTo[v];
     }
 
     private void bfs(Digraph G, int s) {
@@ -70,16 +62,31 @@ public class DeluxBFS {
                     distTo[w] = distTo[v] + 1;
                     marked[w] = true;
                     q.enqueue(w);
-                } if ((marked[w] || edgeTo[w]==v) && (!path.contains(w))) {
-                    path.add(w);
                 }
             }
+        }
+        System.out.println("\nHere is the what is in edgeTo: ");
+        for (int i : edgeTo) {
+            System.out.print(i + " ");
+        }
+        System.out.println("\nHere is the what is in distTo: ");
+        for (int i : distTo) {
+            System.out.print(" " + i);
+        }
+        System.out.println("\nHere is what is marked i.e. has a path ");
+        for (boolean i : marked) {
+            System.out.print(" " + i);
         }
     }
 
     public boolean hasPathTo(int v) {
         validateVertex(v);
         return marked[v];
+    }
+
+    public int distTo(int v) {
+        validateVertex(v);
+        return distTo[v];
     }
 
     public Iterable<Integer> pathTo(int v) {
@@ -93,9 +100,6 @@ public class DeluxBFS {
         return path;
     }
 
-    public List<Integer> pathBetween() {
-        return path;
-    }
 
     private void validateVertex(int v) {
         int V = marked.length;

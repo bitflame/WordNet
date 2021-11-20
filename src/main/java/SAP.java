@@ -52,16 +52,24 @@ public class SAP {
 
     private List<Integer> getPath(int from, int to) {
         List<Integer> shortestPath = new ArrayList<>();
-        List<Integer> sources = new ArrayList<Integer>(Arrays.asList(from, to));
+        List<Integer> sources = new ArrayList<>(Arrays.asList(from, to));
+        // get the path from each point to other points in the graph starting from zero, and collect only the
+        // nodes common in both paths, and the least distance
+        // If there are two of them add both, if there is only one add it and return shortest path
         DeluxBFS deluxBFS = new DeluxBFS(digraph, sources);
-        for (int i : deluxBFS.pathTo(from)) {
-            shortestPath.add(i);
+        for (int v = 0; v < digraph.V(); v++) {
+            if (deluxBFS.hasPathTo(v)) {
+                shortestPath.add(v);
+            }
         }
-        for (int j : deluxBFS.pathTo(to)) {
-            if (!shortestPath.contains(j)) shortestPath.add(j);
+        System.out.println("\n************************************************Now printing what is in the reverse of digraph***************************************************************** ");
+        deluxBFS = new DeluxBFS(digraph.reverse(), sources);
+        for (int v = 0; v < digraph.V(); v++) {
+            if (deluxBFS.hasPathTo(v)) {
+                shortestPath.add(v);
+            }
         }
         return shortestPath;
-        //return shortestPath;
     }
 
     public static void main(String[] args) {
@@ -70,33 +78,47 @@ public class SAP {
 
 
         System.out.print("The path between 1 and 2 should be [0 1 2] ");
+        System.out.print("[");
         for (int i : sap.getPath(1, 2)) {
-            System.out.println("[" + i + "]");
+            System.out.print(" " + i + " ");
         }
-
+        System.out.println("]");
+        System.out.println();
         System.out.print("The path between 3 and 4 should be [1 3 4] ");
+        System.out.print("[");
         for (int i : sap.getPath(3, 4)) {
-            System.out.println("[" + i + "]");
+            System.out.print(" " + i + " ");
         }
+        System.out.println("]");
+        System.out.println();
         System.out.print("The path between 4 and 3 should be [1 3 4] ");
+        System.out.print("[");
         for (int i : sap.getPath(4, 3)) {
-            System.out.println("[" + i + "]");
+            System.out.print(" " + i + " ");
         }
-
+        System.out.println("]");
+        System.out.println();
         System.out.print("The path between 5 and 6 should be [5 2 6] ");
+        System.out.print("[");
         for (int i : sap.getPath(5, 6)) {
-            System.out.println("[" + i + "]");
+            System.out.print(" " + i + " ");
         }
+        System.out.println("]");
+        System.out.println();
         System.out.print("The path between 6 and 5 should be [ 5 2 6] ");
+        System.out.print("[");
         for (int i : sap.getPath(6, 5)) {
-            System.out.println("[" + i + "]");
+            System.out.print(" " + i + " ");
         }
+        System.out.println("]");
+        System.out.println();
         System.out.print("The path between 4 and 6 should be: [ 4 0 1 2 6 ] ");
         System.out.print("[");
         for (int i : sap.getPath(4, 6)) {
             System.out.print(" " + i + " ");
         }
         System.out.println("]");
+        System.out.println();
 //        while (!StdIn.isEmpty()) {
 //            int v = StdIn.readInt();
 //            int w = StdIn.readInt();
