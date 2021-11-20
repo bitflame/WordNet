@@ -70,7 +70,7 @@ public class DeluxBFS {
                     distTo[w] = distTo[v] + 1;
                     marked[w] = true;
                     q.enqueue(w);
-                } else if (marked[w]) {
+                } if ((marked[w] || edgeTo[w]==v) && (!path.contains(w))) {
                     path.add(w);
                 }
             }

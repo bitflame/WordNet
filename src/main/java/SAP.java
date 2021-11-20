@@ -51,10 +51,16 @@ public class SAP {
 
 
     private List<Integer> getPath(int from, int to) {
-        //List<Integer> shortestPath = new ArrayList<>();
+        List<Integer> shortestPath = new ArrayList<>();
         List<Integer> sources = new ArrayList<Integer>(Arrays.asList(from, to));
         DeluxBFS deluxBFS = new DeluxBFS(digraph, sources);
-        return deluxBFS.pathBetween();
+        for (int i : deluxBFS.pathTo(from)) {
+            shortestPath.add(i);
+        }
+        for (int j : deluxBFS.pathTo(to)) {
+            if (!shortestPath.contains(j)) shortestPath.add(j);
+        }
+        return shortestPath;
         //return shortestPath;
     }
 
@@ -63,29 +69,29 @@ public class SAP {
         SAP sap = new SAP(digraph);
 
 
-        System.out.print("Expecting [0] ");
+        System.out.print("The path between 1 and 2 should be [0 1 2] ");
         for (int i : sap.getPath(1, 2)) {
             System.out.println("[" + i + "]");
         }
 
-        System.out.print("Expecting [1] ");
+        System.out.print("The path between 3 and 4 should be [1 3 4] ");
         for (int i : sap.getPath(3, 4)) {
             System.out.println("[" + i + "]");
         }
-        System.out.print("Expecting [1] ");
+        System.out.print("The path between 4 and 3 should be [1 3 4] ");
         for (int i : sap.getPath(4, 3)) {
             System.out.println("[" + i + "]");
         }
 
-        System.out.print("Expecting [2] ");
+        System.out.print("The path between 5 and 6 should be [5 2 6] ");
         for (int i : sap.getPath(5, 6)) {
             System.out.println("[" + i + "]");
         }
-        System.out.print("Expecting [2] ");
+        System.out.print("The path between 6 and 5 should be [ 5 2 6] ");
         for (int i : sap.getPath(6, 5)) {
             System.out.println("[" + i + "]");
         }
-        System.out.print("Expecting [ 0 1 2 ] ");
+        System.out.print("The path between 4 and 6 should be: [ 4 0 1 2 6 ] ");
         System.out.print("[");
         for (int i : sap.getPath(4, 6)) {
             System.out.print(" " + i + " ");
