@@ -59,18 +59,26 @@ public class SAP {
         DeluxBFS pathToFrom = new DeluxBFS(digraph, from);
         // print what is in these two; up and down the line and see if you can filter out unwanted nodes from the sources
         // path
-        DeluxBFS pathToTo = new DeluxBFS(digraph, to);
-
-        DeluxBFS pathsToSources = new DeluxBFS(digraph, sources);
-        for (int s : sources) {
-            for (int v = 0; v < digraph.V(); v++) {
-                if (pathsToSources.hasPathTo(v)) {
-                    for (int x : pathsToSources.pathTo(v)) {
-                        if (!shortestPath.contains(x))
-                            shortestPath.add(x);
-
-                    }
+  /*      System.out.println("\nHere is everything in pathToFrom: ");
+        for (int v = 0; v < digraph.V() ; v++) {
+            if (pathToFrom.hasPathTo(v)) {
+                for (int i:pathToFrom.pathTo(v)) {
+                    System.out.print(i);
                 }
+            }
+        }
+Go through From and To paths in one loop, if the values are different push to stack, and go on, if they are the same,
+ push to stack and return*/
+        DeluxBFS pathToTo = new DeluxBFS(digraph, to);
+        //System.out.println("Here is everything in pathToTo");
+        for (int v = digraph.V()-1; v >= 0; v--) {
+            if (pathToTo.hasPathTo(v) && !pathToFrom.hasPathTo(v)) {
+                shortestPath.add(v);
+            }  if (!pathToTo.hasPathTo(v) && pathToFrom.hasPathTo(v)) {
+                shortestPath.add(v);
+            }  if (pathToFrom.hasPathTo(v) && pathToTo.hasPathTo(v)) {
+                shortestPath.add(v);
+                return shortestPath;
             }
         }
         return shortestPath;
