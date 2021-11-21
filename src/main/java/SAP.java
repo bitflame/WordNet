@@ -8,9 +8,8 @@ import java.util.List;
 
 public class SAP {
     boolean hasCycle;
-    Digraph digraph;
-    int[] edgeTo;
-    boolean[] marked;
+    private Digraph digraph;
+
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -58,12 +57,19 @@ public class SAP {
         // If there are two of them add both, if there is only one add it and return shortest path
         // List of node, and distance
         DeluxBFS pathToFrom = new DeluxBFS(digraph, from);
+        // print what is in these two; up and down the line and see if you can filter out unwanted nodes from the sources
+        // path
         DeluxBFS pathToTo = new DeluxBFS(digraph, to);
-        for (int i = 0; i < digraph.V(); i++) {
-            for (int j = 0; j < digraph.V(); j++) {
-                if (pathToFrom.hasPathTo(i) && pathToTo.hasPathTo(j) && pathToFrom.distTo(i) == pathToTo.distTo(j)) {
-                    if (!shortestPath.contains(i)) shortestPath.add(i);
-                    if (!shortestPath.contains(j)) shortestPath.add(j);
+
+        DeluxBFS pathsToSources = new DeluxBFS(digraph, sources);
+        for (int s : sources) {
+            for (int v = 0; v < digraph.V(); v++) {
+                if (pathsToSources.hasPathTo(v)) {
+                    for (int x : pathsToSources.pathTo(v)) {
+                        if (!shortestPath.contains(x))
+                            shortestPath.add(x);
+
+                    }
                 }
             }
         }
@@ -110,19 +116,26 @@ public class SAP {
         }
         System.out.println("]");
         System.out.println();
-        System.out.print("The path between 4 and 6 should be: [ 4 0 1 2 6 ] ");
+        System.out.print("The path between 4 and 6 should be: [  0 1 2 4 6 ] ");
         System.out.print("[");
         for (int i : sap.getPath(4, 6)) {
             System.out.print(" " + i + " ");
         }
         System.out.println("]");
         System.out.println();
-//        while (!StdIn.isEmpty()) {
-//            int v = StdIn.readInt();
-//            int w = StdIn.readInt();
-//            int length = sap.length(v, w);
-//            //int ancestor = sap.ancestor((v,w));
-//            StdOut.printf("length = %d\n", length);
-//        }
+        System.out.print("The path between 1 and 6 should be: [  0 1 2 6 ] ");
+        System.out.print("[");
+        for (int i : sap.getPath(1, 6)) {
+            System.out.print(" " + i + " ");
+        }
+        System.out.println("]");
+        System.out.println();
+        System.out.print("The path between 17 and 24 should be: [  5 10 12 17 20 24 ] ");
+        System.out.print("[");
+        for (int i : sap.getPath(17, 24)) {
+            System.out.print(" " + i + " ");
+        }
+        System.out.println("]");
+        System.out.println();
     }
 }

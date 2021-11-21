@@ -1,5 +1,5 @@
 import edu.princeton.cs.algs4.*;
-
+/* Copy of BreadthFirstDirectedPaths.java */
 public class DeluxBFS {
     private static final int INFINITY = Integer.MAX_VALUE;
     private boolean[] marked;
@@ -65,7 +65,7 @@ public class DeluxBFS {
                 }
             }
         }
-        System.out.println("\nHere is the what is in edgeTo: ");
+        /*System.out.println("\nHere is the what is in edgeTo: ");
         for (int i : edgeTo) {
             System.out.print(i + " ");
         }
@@ -76,7 +76,7 @@ public class DeluxBFS {
         System.out.println("\nHere is what is marked i.e. has a path ");
         for (boolean i : marked) {
             System.out.print(" " + i);
-        }
+        }*/
     }
 
     public boolean hasPathTo(int v) {
