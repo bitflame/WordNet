@@ -56,17 +56,15 @@ public class SAP {
         // get the path from each point to other points in the graph starting from zero, and collect only the
         // nodes common in both paths, and the least distance
         // If there are two of them add both, if there is only one add it and return shortest path
-        DeluxBFS deluxBFS = new DeluxBFS(digraph, sources);
-        for (int v = 0; v < digraph.V(); v++) {
-            if (deluxBFS.hasPathTo(v)) {
-                shortestPath.add(v);
-            }
-        }
-        System.out.println("\n************************************************Now printing what is in the reverse of digraph***************************************************************** ");
-        deluxBFS = new DeluxBFS(digraph.reverse(), sources);
-        for (int v = 0; v < digraph.V(); v++) {
-            if (deluxBFS.hasPathTo(v)) {
-                shortestPath.add(v);
+        // List of node, and distance
+        DeluxBFS pathToFrom = new DeluxBFS(digraph, from);
+        DeluxBFS pathToTo = new DeluxBFS(digraph, to);
+        for (int i = 0; i < digraph.V(); i++) {
+            for (int j = 0; j < digraph.V(); j++) {
+                if (pathToFrom.hasPathTo(i) && pathToTo.hasPathTo(j) && pathToFrom.distTo(i) == pathToTo.distTo(j)) {
+                    if (!shortestPath.contains(i)) shortestPath.add(i);
+                    if (!shortestPath.contains(j)) shortestPath.add(j);
+                }
             }
         }
         return shortestPath;
