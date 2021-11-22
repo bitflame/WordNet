@@ -3,16 +3,17 @@ import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SAP {
     boolean hasCycle;
     private Digraph digraph;
-
+    private int commonAncestor;
+    List<Integer> shortestPath;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
+        shortestPath = new ArrayList<Integer>();
         DirectedCycle cycleFinder = new DirectedCycle(digraph);
         if (cycleFinder.hasCycle()) {
             hasCycle = true;
@@ -45,21 +46,26 @@ public class SAP {
 
     // a common ancestor that participates in the shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
-        return -1; // for now
+        // Note - this won't work if the first match is not the shortest path but not other info is in Iterable
+        for (int i : v) {
+            for (int j : w) {
+                if (i == j) return j;
+            }
+        }
+        return -1;
     }
 
 
-    private List<Integer> getPath(int from, int to) {
-        List<Integer> shortestPath = new ArrayList<>();
-        List<Integer> sources = new ArrayList<>(Arrays.asList(from, to));
+    public List<Integer> getPath(int from, int to) {
+
         // get the path from each point to other points in the graph starting from zero, and collect only the
         // nodes common in both paths, and the least distance
         // If there are two of them add both, if there is only one add it and return shortest path
         // List of node, and distance
         DeluxBFS pathToFrom = new DeluxBFS(digraph, from);
-        // print what is in these two; up and down the line and see if you can filter out unwanted nodes from the sources
-        // path
-  /*      System.out.println("\nHere is everything in pathToFrom: ");
+   /*   print what is in these two; up and down the line and see if you can filter out unwanted nodes from the sources
+        path
+        System.out.println("\nHere is everything in pathToFrom: ");
         for (int v = 0; v < digraph.V() ; v++) {
             if (pathToFrom.hasPathTo(v)) {
                 for (int i:pathToFrom.pathTo(v)) {
@@ -71,12 +77,14 @@ Go through From and To paths in one loop, if the values are different push to st
  push to stack and return*/
         DeluxBFS pathToTo = new DeluxBFS(digraph, to);
         //System.out.println("Here is everything in pathToTo");
-        for (int v = digraph.V()-1; v >= 0; v--) {
+        for (int v = digraph.V() - 1; v >= 0; v--) {
             if (pathToTo.hasPathTo(v) && !pathToFrom.hasPathTo(v)) {
                 shortestPath.add(v);
-            }  if (!pathToTo.hasPathTo(v) && pathToFrom.hasPathTo(v)) {
+            }
+            if (!pathToTo.hasPathTo(v) && pathToFrom.hasPathTo(v)) {
                 shortestPath.add(v);
-            }  if (pathToFrom.hasPathTo(v) && pathToTo.hasPathTo(v)) {
+            }
+            if (pathToFrom.hasPathTo(v) && pathToTo.hasPathTo(v)) {
                 shortestPath.add(v);
                 return shortestPath;
             }
@@ -87,8 +95,6 @@ Go through From and To paths in one loop, if the values are different push to st
     public static void main(String[] args) {
         Digraph digraph = new Digraph(new In(args[0]));
         SAP sap = new SAP(digraph);
-
-
         System.out.print("The path between 1 and 2 should be [0 1 2] ");
         System.out.print("[");
         for (int i : sap.getPath(1, 2)) {
