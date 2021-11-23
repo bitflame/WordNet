@@ -3,17 +3,16 @@ import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SAP {
     boolean hasCycle;
     private Digraph digraph;
-    private int commonAncestor;
-    List<Integer> shortestPath;
+
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
-        shortestPath = new ArrayList<Integer>();
         DirectedCycle cycleFinder = new DirectedCycle(digraph);
         if (cycleFinder.hasCycle()) {
             hasCycle = true;
@@ -57,7 +56,8 @@ public class SAP {
 
 
     public List<Integer> getPath(int from, int to) {
-
+        List<Integer> shortestPath = new ArrayList<>();
+        List<Integer> sources = new ArrayList<Integer>(Arrays.asList(from, to));
         // get the path from each point to other points in the graph starting from zero, and collect only the
         // nodes common in both paths, and the least distance
         // If there are two of them add both, if there is only one add it and return shortest path
