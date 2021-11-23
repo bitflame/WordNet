@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.io.File;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 
@@ -19,18 +20,23 @@ class SAPTest {
     static SAP sap;
 
     static class DigraphProvider implements ArgumentsProvider {
-
-
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
             int from = 0;
             int to = 0;
             for (File fileEntry : inputFolder.listFiles()) {
-                int[] inputs = new int[2];// add from/to to this array or an array list and send it to the test
+                int[] endPoints = new int[30];
                 String fileName = fileEntry.getName();
+                Scanner scanner = new Scanner(fileEntry);
+                String s = "";
+                int i = 0;
                 In in = new In(fileName);
-                from = in.readInt();
-                to = in.readInt();
+                while (in.hasNextChar() && (!(s = in.readString()).equals("|"))) {
+                    endPoints[i] = Integer.parseInt(s);
+                    i++;
+                    endPoints[i] = in.readInt();
+                    i++;
+                }
                 digraph = new Digraph(in);
             }
             return Stream.of(Arguments.of(digraph, from, to));
@@ -41,11 +47,11 @@ class SAPTest {
     @ArgumentsSource(DigraphProvider.class)
     void getPathShouldCalculateMinPath(Digraph digraph, int from, int to) {
         sap = new SAP(digraph);
-        int[] expected = {0,1,2};
-        int [] actual = new int[3];
-        for (int i:sap.getPath(from,to)) {
-            actual[i]=i;
+        int[] expected = {0, 1, 2};
+        int[] actual = new int[3];
+        for (int i : sap.getPath(from, to)) {
+            actual[i] = i;
         }
-        Assertions.assertArrayEquals(actual,expected);
+        Assertions.assertArrayEquals(actual, expected);
     }
 }

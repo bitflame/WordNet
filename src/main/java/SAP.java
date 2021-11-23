@@ -151,5 +151,50 @@ Go through From and To paths in one loop, if the values are different push to st
         }
         System.out.println("]");
         System.out.println();
+
+        System.out.println("]");
+        System.out.println();
+        System.out.print("The path between 23 and 24 should be: [ 20 ] ");
+        System.out.print("[");
+        for (int i : sap.getPath(23, 24)) {
+            System.out.print(" " + i + " ");
+        }
+        System.out.println("]");
+        System.out.println();
+
+        System.out.println("]");
+        System.out.println();
+        System.out.print("The path between 11 and 4 should be: [  0 1 2 5] ");
+        System.out.print("[");
+        for (int i : sap.getPath(11, 4)) {
+            System.out.print(" " + i + " ");
+        }
+        System.out.println("]");
+        System.out.println();
+
+        System.out.println("]");
+        System.out.println();
+        System.out.print("The path between 17 and 19 should be: [ 5 10 12] ");
+        System.out.print("[");
+        for (int i : sap.getPath(17, 19)) {
+            System.out.print(" " + i + " ");
+        }
+        System.out.println("]");
+        System.out.println();
+
+        System.out.println("]");
+        System.out.println();
+        System.out.print("The path between 27 and 0 should be: Exception ");
+        System.out.print("[");
+        try {
+            for (int i : sap.getPath(27, 0)) {
+                System.out.print(" " + i + " ");
+            }
+            System.out.println("]");
+            System.out.println();
+        } catch (IllegalArgumentException e){
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
     }
 }
