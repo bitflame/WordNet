@@ -1,10 +1,17 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
+import edu.princeton.cs.algs4.In;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class WordNet {
-    RedBlackBST<Integer, String> st;
-    Queue<String> nouns;
+    // this is a hashmap of nouns and ids
+    HashMap<String, Integer> db = new HashMap<>();
+    String[] synsets;
     int size = 0;  // number of synsets
-    int nounCounter = 0;
+
     boolean hasCycle = false;
     boolean rooted = true;
     Digraph digraph;
@@ -19,17 +26,14 @@ public class WordNet {
     private void createDb(String synsets) {
         In in = new In(synsets);
         int val;
-        st = new RedBlackBST<>();
-        nouns = new Queue<>();
         while (in.hasNextLine()) {
             String[] a = in.readLine().split(",");
             val = Integer.parseInt(a[0]);
             String[] syns = a[1].split(" ");
-            st.put(val, a[1]);
+
             for (String noun : syns) {
 
-                nouns.enqueue(noun);
-                nounCounter++; // this is alot more than 119,188 b/c of redundant nouns
+
             }
             size++;
         }
@@ -37,6 +41,8 @@ public class WordNet {
 
     private void createGraph(String hypernyms) {
         In in = new In(hypernyms);
+        synsets = new String[db.size()];
+        synsets = db.keySet().toArray(new String[0]);// Intellij suggested everything after equals! So glad I am using it
         digraph = new Digraph(size);
         int index = 0;
         while (in.hasNextLine()) {
@@ -59,51 +65,17 @@ public class WordNet {
 
     // returns all WordNet nouns
     public Iterable<String> nouns() {
-        return nouns;
+        return db.keySet();
     }
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
-        for (int i : st.keys()) {
-            if (st.get(i).equals(word)) return true;
-            for (String s : st.get(i).split(" ")) {
-                if (s.equals(word)) return true;
-            }
-        }
-        return false;
+        return db.get(word) != null;
     }
 
     // distance between nounA and nounB (defined below )
     public int distance(String nounA, String nounB) {
-        int idOfA = -1;
-        int idOfB = -1;
-        /*
-        while (idOfA != idOfB && st.keys().iterator().hasNext()){
-            String s = st.get(st.keys().iterator().next());
-            if (s.equals(nounA)) idOfA=
-        }
-        I need to find the id that matches worm with bird
-        */
-        for (int i : st.keys()) {
-            if (st.get(i).equals(nounA)) {
-                idOfA = i;
-            } else {
-                for (String s : st.get(i).split(" ")) {
-                    if (s.equals(nounA)) idOfA = i;
-                }
-            }
-            if (st.get(i).equals(nounB)) idOfB = i;
-            else {
-                for (String s : st.get(i).split(" ")) {
-                    if (s.equals(nounB)) idOfB = i;
-                }
-            }
-            if (idOfA == idOfB) break;
-        }
-        if (idOfA >= 0 && idOfB >= 0) {
-            SAP sap = new SAP(digraph);
-            return sap.length(idOfA, idOfB);
-        }
+        List<Integer> nounAIds = new ArrayList<>();
         return -1;// if the nouns are not in the db
     }
 
@@ -113,22 +85,9 @@ public class WordNet {
         StringBuilder sb = new StringBuilder();
         int idOfA = -1;
         int idOfB = -1;
-        for (int i : st.keys()) {
-            if (st.get(i).equals(nounA)) idOfA = i;
-            else {
-                for (String s : st.get(i).split(" ")) {
-                    if (s.equals(nounA)) idOfA = i;
-                }
-            }
-            if (st.get(i).equals(nounB)) idOfB = i;
-            else {
-                for (String s : st.get(i).split(" ")) {
-                    if (s.equals(nounB)) idOfB = i;
-                }
-            }
-        }
-       SAP sap = new SAP(digraph);
-        return st.get(sap.ancestor(idOfA,idOfB));
+        // a word can have a number of keys. see if this was discussed in the forum and if not, ask what to do
+        SAP sap = new SAP(digraph);
+        return synsets[sap.ancestor(db.get(nounA), db.get(nounB))];
     }
 
     // do unit testing here
@@ -136,7 +95,7 @@ public class WordNet {
         System.out.println("using " + args[0] + " and " + args[1] + "files for this round.");
         WordNet wordNet = new WordNet(args[0], args[1]);
         System.out.println(wordNet.isNoun("entity"));
-        System.out.println("The common ancestor "+wordNet.sap("worm", "bird"));
-        System.out.println("The distance expected between worm and bird is 5, the result: "+wordNet.distance("worm", "bird"));
+        System.out.println("The common ancestor " + wordNet.sap("worm", "bird"));
+        System.out.println("The distance expected between worm and bird is 5, the result: " + wordNet.distance("worm", "bird"));
     }
 }
