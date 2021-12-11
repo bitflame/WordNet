@@ -74,6 +74,7 @@ public class SAP {
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
+        if (v==w) return v;
         if ((v == from || v == to) && (w == from || w == to)) return ancestor;
         if (getPath(v, w) != null) getPath(v, w);
         return ancestor;
@@ -101,7 +102,7 @@ public class SAP {
         return previousAncestor;
     }
 
-    private List<Integer> getPath(int from, int to) {
+    public List<Integer> getPath(int from, int to) {
         if (to < 0 || to >= digraph.V())
             throw new IllegalArgumentException("vertex " + to + " is not between 0 and " + (digraph.V() - 1));
         if (from < 0 || from >= digraph.V())

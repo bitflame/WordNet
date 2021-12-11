@@ -30,10 +30,8 @@ public class WordNet {
             String[] a = in.readLine().split(",");
             val = Integer.parseInt(a[0]);
             String[] syns = a[1].split(" ");
-
             for (String noun : syns) {
-
-
+                db.put(noun, val);
             }
             size++;
         }
