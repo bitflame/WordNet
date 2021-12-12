@@ -231,6 +231,26 @@ public class SAP {
         return shortPath;
     }
 
+    public List<Integer> getPathII(int from, int to) {
+        DeluxBFS deluxBFS_Source = new DeluxBFS(digraph, from);
+        DeluxBFS deluxBFS_Destination = new DeluxBFS(digraph, to);
+        int[] path = new int[digraph.V()];
+        // if it has route to and distTo s is 1, 2, 3,...
+        int depth = 0;
+        while (depth < digraph.V()) {
+            for (int i = 0; i < digraph.V(); i++) {
+                if (deluxBFS_Source.hasPathTo(i) && deluxBFS_Source.distTo(i) == depth) path[i] = depth;
+                if (deluxBFS_Destination.hasPathTo(i) && deluxBFS_Destination.distTo(i) == depth) path[i] = depth;
+            }
+            /* check to see if there is a path at this debt by checking to see if the nodes labled have an edge to each other
+             * also the ancestor would be the only node that has a path in both bfs results i.e. deluxBFS_Destination, and
+             * deluxBFS_Source
+             * */
+            depth++;
+        }
+        List<Integer> results = new ArrayList<>();
+        return results;
+    }
 
     private List<Integer> extractPath(Node minF, Node minT, int match) {
         List<Integer> path = new ArrayList<>();

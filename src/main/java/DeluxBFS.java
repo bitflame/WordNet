@@ -1,11 +1,13 @@
 import edu.princeton.cs.algs4.*;
+
 /* Copy of BreadthFirstDirectedPaths.java */
 public class DeluxBFS {
     private static final int INFINITY = Integer.MAX_VALUE;
     private boolean[] marked;
     private int[] edgeTo;
     private int[] distTo;
-
+    private int[] depth;
+    boolean lockStep = false;
 
     public DeluxBFS(Digraph G, int s) {
         marked = new boolean[G.V()];
@@ -28,6 +30,7 @@ public class DeluxBFS {
         validateVertices(sources);
         bfs(G, sources);
     }
+
 
     private void bfs(Digraph G, int s) {
         Queue<Integer> q = new Queue<Integer>();
