@@ -85,7 +85,9 @@ public class WordNet {
         int idOfB = -1;
         // a word can have a number of keys. see if this was discussed in the forum and if not, ask what to do
         SAP sap = new SAP(digraph);
-        return synsets[sap.ancestor(db.get(nounA), db.get(nounB))];
+        int i = sap.ancestor(db.get(nounA), db.get(nounB));
+        if (i==-1) return "";
+        else return synsets[sap.ancestor(db.get(nounA), db.get(nounB))];
     }
 
     // do unit testing here
@@ -94,6 +96,8 @@ public class WordNet {
         WordNet wordNet = new WordNet(args[0], args[1]);
         System.out.println(wordNet.isNoun("entity"));
         System.out.println("The common ancestor " + wordNet.sap("worm", "bird"));
-        System.out.println("The distance expected between worm and bird is 5, the result: " + wordNet.distance("worm", "bird"));
+        System.out.println("The distance expected between worm and bird is 5, the result: " +
+                wordNet.distance("worm", "bird"));
+
     }
 }

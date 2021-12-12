@@ -22,8 +22,8 @@ class SAPTest {
     static class DigraphProvider implements ArgumentsProvider {
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
-            int from = 0;
-            int to = 0;
+            int from = 1;
+            int to = 2;
             for (File fileEntry : inputFolder.listFiles()) {
                 int[] endPoints = new int[30];
                 String fileName = fileEntry.getName();
