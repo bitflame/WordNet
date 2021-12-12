@@ -74,7 +74,7 @@ public class SAP {
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
-        if (v==w) return v;
+        if (v == w) return v;
         if ((v == from || v == to) && (w == from || w == to)) return ancestor;
         if (getPath(v, w) != null) getPath(v, w);
         return ancestor;
@@ -216,7 +216,8 @@ public class SAP {
             if (!toQueue.isEmpty()) {
                 minTNode = toQueue.delMin();
                 if (onStack[minTNode.id]) {
-                    while (minTNode.id != minFNode.id) minFNode = minFNode.prevNode;
+                    while (minFNode != null && minTNode != null && minTNode.id != minFNode.id)
+                        minFNode = minFNode.prevNode;
                     stop = true;
                     shortPath = extractPath(minFNode, minTNode, minTNode.id);
                     Collections.sort(shortPath);
@@ -229,7 +230,6 @@ public class SAP {
         }
         return shortPath;
     }
-
 
 
     private List<Integer> extractPath(Node minF, Node minT, int match) {
