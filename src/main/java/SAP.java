@@ -232,19 +232,21 @@ public class SAP {
     }
 
     public List<Integer> getPathII(int from, int to) {
-        DeluxBFS deluxBFS_Source = new DeluxBFS(digraph, from);
-        DeluxBFS deluxBFS_Destination = new DeluxBFS(digraph, to);
+        int depth = 1;
         int[] path = new int[digraph.V()];
         // if it has route to and distTo s is 1, 2, 3,...
-        int depth = 0;
         while (depth < digraph.V()) {
-            for (int i = 0; i < digraph.V(); i++) {
-                if (deluxBFS_Source.hasPathTo(i) && deluxBFS_Source.distTo(i) == depth) path[i] = depth;
-                if (deluxBFS_Destination.hasPathTo(i) && deluxBFS_Destination.distTo(i) == depth) path[i] = depth;
+            for (int v = 0; v < digraph.V(); v++) {
+                DeluxBFS deluxBFS = new DeluxBFS(digraph, v);
+                for (int i = 0; i < digraph.V(); i++) {
+                    /* put the next step in the cell that has a route to it*/
+                    if (deluxBFS.distTo(i) == depth) path[i] = v;
+                }
             }
             /* check to see if there is a path at this debt by checking to see if the nodes labled have an edge to each other
-             * also the ancestor would be the only node that has a path in both bfs results i.e. deluxBFS_Destination, and
-             * deluxBFS_Source
+             * also the ancestor would be the only node that has a path at this level. The path[] cell 7 shows that it is
+             * connected to 6 with one step but it is over written by 8 a few minutes later. Somehow I need to capture
+             * that before it is over written and seems like there is a gap
              * */
             depth++;
         }
@@ -278,9 +280,7 @@ public class SAP {
         System.out.println(sap.ancestor(0, 2));
         System.out.println(sap.ancestor(0, 1));
         System.out.println(sap.ancestor(0, 10));
-Digraph digraph = new Digraph(new In(new File("src/main/resources/digraph-ambiguous-ancestor.txt")));
-        SAP sap = new SAP(digraph);
-        sap.getPathTwo(9, 5);
+
         sap.ancestor(1, 2);
         sap.ancestor(0, 24);
         [13, 23, 24] | [6, 16, 17] | [3]
@@ -290,9 +290,11 @@ Digraph digraph = new Digraph(new In(new File("src/main/resources/digraph-ambigu
         sap = new SAP(digraph);
         System.out.println("Here is result of 1 and 6: " + sap.ancestor(1, 6));*/
         /* Reading in digraph25.txt here */
-
-        Digraph digraph = new Digraph(new In(args[0]));
+        Digraph digraph = new Digraph(new In(new File("src/main/resources/digraph-ambiguous-ancestor.txt")));
         SAP sap = new SAP(digraph);
+        sap.getPathII(9, 5);
+        digraph = new Digraph(new In(args[0]));
+        sap = new SAP(digraph);
         System.out.print("The path between 2 and 0 should be: [ 0 2 ] ");
         System.out.print("[");
         for (int i : sap.getPath(2, 0)) {
