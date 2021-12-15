@@ -245,7 +245,7 @@ public class SAP {
         while (counter < distances.length) {
             if (distances[counter] != -1 && distances[counter] < minDistance) {
                 minDistance = distances[counter];
-                ancestor=counter;
+                ancestor = counter;
             }
             counter++;
         }
@@ -310,11 +310,24 @@ public class SAP {
         System.out.println("ancestor between 6 and 7 in digraph9 should be 6: " + sap.getAncestorII(6, 7));
         System.out.println("The minimum distance between 6 and 7 should be 1: " + sap.minDistance);
         StdOut.println("The minimum distance between 7 and 6 should be 1: " + sap.minDistance);
+        System.out.println();
         sap = new SAP(digraph);
         System.out.println("ancestor between 7 and 3 in digraph9 should be 3: " + sap.getAncestorII(7, 3));
         System.out.println("ancestor between 3 and 7 in digraph9 should be 3: " + sap.getAncestorII(3, 7));
         System.out.println("The minimum distance between 6 and 7 should be 2: " + sap.minDistance);
         StdOut.println("The minimum distance between 7 and 6 should be 2: " + sap.minDistance);
+        System.out.println();
+        sap = new SAP(digraph);
+        System.out.println("ancestor between 7 and 2 in digraph9 should be 2: " + sap.getAncestorII(7, 2));
+        System.out.println("ancestor between 2 and 7 in digraph9 should be 2: " + sap.getAncestorII(2, 7));
+        System.out.println("The minimum distance between 2 and 7 should be 3: " + sap.minDistance);
+        StdOut.println("The minimum distance between 7 and 2 should be 3: " + sap.minDistance);
+        System.out.println();
+        sap = new SAP(digraph);
+        System.out.println("ancestor between 7 and 0 in digraph9 should be 6: " + sap.getAncestorII(7, 0));
+        System.out.println("ancestor between 0 and 7 in digraph9 should be 6: " + sap.getAncestorII(0, 7));
+        System.out.println("The minimum distance between 0 and 7 should be 2: " + sap.minDistance);
+        StdOut.println("The minimum distance between 7 and 0 should be 2: " + sap.minDistance);
 
         /********************************* Reading in digraph25.txt here ******************/
         digraph = new Digraph(new In("digraph25.txt"));
