@@ -1,7 +1,4 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.DirectedCycle;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.*;
 
 import java.io.File;
 import java.util.*;
@@ -18,7 +15,7 @@ public class SAP {
     //int[] edgeTo;
     //int[] distTo;
     boolean stop = false;
-
+    private int minDistance = Integer.MAX_VALUE;
 
     private class Node {
         private final int id;
@@ -244,34 +241,32 @@ public class SAP {
             }
         }
         int counter = 0;
-        int minDistance = digraph.V();
+
         while (counter < distances.length) {
-            if (distances[counter] != -1 && distances[counter] < minDistance) minDistance = distances[counter];
+            if (distances[counter] != -1 && distances[counter] < minDistance) {
+                minDistance = distances[counter];
+                ancestor=counter;
+            }
+            counter++;
         }
-        minDistance = minDistance - 2;
-        return minDistance;
+        // minDistance = minDistance - 2;
+        return ancestor;
     }
 
     public int getAncestorImproved(int from, int to) {
         int distance = 1;
-        DeluxBFS fromBFS = new DeluxBFS(digraph, from);
-        DeluxBFS toBFS = new DeluxBFS(digraph, to);
-        int counter=1;
-        for (int i = 0; i < digraph.V(); i++) {
-            if(fromBFS.hasPathTo(i) && fromBFS.distTo(i)==counter);
+        DeluxBFS deluxBFS = new DeluxBFS(digraph, new ArrayList<>(Arrays.asList(from, to)));
+        while (distance < digraph.V()) {
+            for (int i = 0; i < digraph.V(); i++) {
+                if (deluxBFS.hasPathTo(i) && deluxBFS.distTo(i) == distance) {
+                    break;
+                }
+            }
+            distance++;
         }
-        return -1;
+        return distance;
     }
 
-    public int getAncestorImproved(DeluxBFS fD, DeluxBFS tD, int f, int t, int distance) {
-        if (fD.hasPathTo(f)&& tD.hasPathTo(f)) return f;
-        if (fD.hasPathTo(t)&& tD.hasPathTo(t)) return t;
-        // get the nodes with distance 2 and call the method
-        for (int i = 0; i < distance ; i++) {
-
-        }
-        return -1;
-    }
 
     private List<Integer> extractPath(Node minF, Node minT, int match) {
         List<Integer> path = new ArrayList<>();
@@ -304,12 +299,25 @@ public class SAP {
         [13, 23, 24] | [6, 16, 17] | [3]
         digraph = new Digraph(new In(new File("src/main/resources/digraph1.txt")));
         sap = new SAP(digraph);
-        System.out.println("Here is result of 1 and 6: " + sap.ancestor(1, 6));*/
-        /* Reading in digraph25.txt here */
+        System.out.println("Here is result of 1 and 6: " + sap.ancestor(1, 6));
         Digraph digraph = new Digraph(new In(new File("src/main/resources/digraph-ambiguous-ancestor.txt")));
         SAP sap = new SAP(digraph);
+        */
+        /* Reading in digraph9.txt here */
+        Digraph digraph = new Digraph(new In(args[0]));
+        SAP sap = new SAP(digraph);
+        System.out.println("ancestor between 7 and 6 in digraph9 should be 6: " + sap.getAncestorII(7, 6));
+        System.out.println("ancestor between 6 and 7 in digraph9 should be 6: " + sap.getAncestorII(6, 7));
+        System.out.println("The minimum distance between 6 and 7 should be 1: " + sap.minDistance);
+        StdOut.println("The minimum distance between 7 and 6 should be 1: " + sap.minDistance);
+        sap = new SAP(digraph);
+        System.out.println("ancestor between 7 and 3 in digraph9 should be 3: " + sap.getAncestorII(7, 3));
+        System.out.println("ancestor between 3 and 7 in digraph9 should be 3: " + sap.getAncestorII(3, 7));
+        System.out.println("The minimum distance between 6 and 7 should be 2: " + sap.minDistance);
+        StdOut.println("The minimum distance between 7 and 6 should be 2: " + sap.minDistance);
 
-        digraph = new Digraph(new In(args[0]));
+        /********************************* Reading in digraph25.txt here ******************/
+        digraph = new Digraph(new In("digraph25.txt"));
         sap = new SAP(digraph);
         System.out.print("The path between 2 and 0 should be: [ 0 2 ] ");
         System.out.print("[");
