@@ -14,7 +14,7 @@ public class SAP {
     int to;
     List<Integer> shortPath;
     boolean[] onStack;
-    //boolean[] marked;
+    boolean[] marked;
     //int[] edgeTo;
     //int[] distTo;
     boolean stop = false;
@@ -39,12 +39,11 @@ public class SAP {
         if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
         DirectedCycle cycleFinder = new DirectedCycle(digraph);
         onStack = new boolean[digraph.V()];
-        //marked = new boolean[digraph.V()];
+        marked = new boolean[digraph.V()];
         //edgeTo = new int[digraph.V()];
         //distTo = new int[digraph.V()];
         if (cycleFinder.hasCycle()) {
             hasCycle = true;
-            return;
         }
         this.digraph = digraph;
     }
@@ -231,27 +230,47 @@ public class SAP {
         return shortPath;
     }
 
-    public List<Integer> getPathII(int from, int to) {
-        int depth = 1;
-        int[] path = new int[digraph.V()];
-        // if it has route to and distTo s is 1, 2, 3,...
-        while (depth < digraph.V()) {
-            for (int v = 0; v < digraph.V(); v++) {
-                DeluxBFS deluxBFS = new DeluxBFS(digraph, v);
-                for (int i = 0; i < digraph.V(); i++) {
-                    /* put the next step in the cell that has a route to it*/
-                    if (deluxBFS.distTo(i) == depth) path[i] = v;
-                }
-            }
-            /* check to see if there is a path at this debt by checking to see if the nodes labled have an edge to each other
-             * also the ancestor would be the only node that has a path at this level. The path[] cell 7 shows that it is
-             * connected to 6 with one step but it is over written by 8 a few minutes later. Somehow I need to capture
-             * that before it is over written and seems like there is a gap
-             * */
-            depth++;
+    public int getAncestorII(int from, int to) {
+        // create two breath first searches
+        DeluxBFS fromBFS = new DeluxBFS(digraph, from);
+        DeluxBFS toBFS = new DeluxBFS(digraph, to);
+        int[] distances = new int[digraph.V()];
+        for (int i = 0; i < distances.length; i++) {
+            distances[i] = -1;
         }
-        List<Integer> results = new ArrayList<>();
-        return results;
+        for (int i = 0; i < digraph.V(); i++) {
+            if (fromBFS.hasPathTo(i) && toBFS.hasPathTo(i)) {
+                distances[i] = fromBFS.distTo(i) + toBFS.distTo(i);
+            }
+        }
+        int counter = 0;
+        int minDistance = digraph.V();
+        while (counter < distances.length) {
+            if (distances[counter] != -1 && distances[counter] < minDistance) minDistance = distances[counter];
+        }
+        minDistance = minDistance - 2;
+        return minDistance;
+    }
+
+    public int getAncestorImproved(int from, int to) {
+        int distance = 1;
+        DeluxBFS fromBFS = new DeluxBFS(digraph, from);
+        DeluxBFS toBFS = new DeluxBFS(digraph, to);
+        int counter=1;
+        for (int i = 0; i < digraph.V(); i++) {
+            if(fromBFS.hasPathTo(i) && fromBFS.distTo(i)==counter);
+        }
+        return -1;
+    }
+
+    public int getAncestorImproved(DeluxBFS fD, DeluxBFS tD, int f, int t, int distance) {
+        if (fD.hasPathTo(f)&& tD.hasPathTo(f)) return f;
+        if (fD.hasPathTo(t)&& tD.hasPathTo(t)) return t;
+        // get the nodes with distance 2 and call the method
+        for (int i = 0; i < distance ; i++) {
+
+        }
+        return -1;
     }
 
     private List<Integer> extractPath(Node minF, Node minT, int match) {
@@ -280,19 +299,16 @@ public class SAP {
         System.out.println(sap.ancestor(0, 2));
         System.out.println(sap.ancestor(0, 1));
         System.out.println(sap.ancestor(0, 10));
-
         sap.ancestor(1, 2);
         sap.ancestor(0, 24);
         [13, 23, 24] | [6, 16, 17] | [3]
-
-
         digraph = new Digraph(new In(new File("src/main/resources/digraph1.txt")));
         sap = new SAP(digraph);
         System.out.println("Here is result of 1 and 6: " + sap.ancestor(1, 6));*/
         /* Reading in digraph25.txt here */
         Digraph digraph = new Digraph(new In(new File("src/main/resources/digraph-ambiguous-ancestor.txt")));
         SAP sap = new SAP(digraph);
-        sap.getPathII(9, 5);
+
         digraph = new Digraph(new In(args[0]));
         sap = new SAP(digraph);
         System.out.print("The path between 2 and 0 should be: [ 0 2 ] ");
