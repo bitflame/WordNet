@@ -259,14 +259,22 @@ public class SAP {
         DeluxBFS toBFS = new DeluxBFS(digraph, to);
         while (distance < digraph.V()) {
             for (int i = 0; i < digraph.V(); i++) {
-                if (fromBFS.distTo(i) == distance && toBFS.hasPathTo(i)) {
-                    minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                    ancestor = i;
-                    return ancestor;
-                }  if (toBFS.distTo(i) == distance && fromBFS.hasPathTo(i)) {
-                    minDistance = toBFS.distTo(i) + fromBFS.distTo(i);
-                    ancestor = i;
-                    return ancestor;
+                if (fromBFS.distTo(i) == distance ) {
+                    if (marked[i]) {
+                        // if it is marked already, it must've been by the node on the other end
+                        minDistance=fromBFS.distTo(i) + toBFS.distTo(i);
+                        ancestor = i;
+                        return ancestor;
+                    }
+                    marked[i]=true;
+                }  if (toBFS.distTo(i) == distance ) {
+                    if (marked[i]) {
+                        // if it is marked already, it must've been by the node on the other end
+                        minDistance=fromBFS.distTo(i) + toBFS.distTo(i);
+                        ancestor = i;
+                        return ancestor;
+                    }
+                    marked[i]=true;
                 }
             }
             distance++;
@@ -353,11 +361,11 @@ public class SAP {
 
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 4 in digraph9 should be 4: " + sap.getAncestorII(7, 4));
-        StdOut.println("The minimum distance between 7 and 4 should be 3: " + sap.minDistance);
+        System.out.println("ancestor between 7 and 4 in digraph9 should be 3: " + sap.getAncestorII(7, 4));
+        StdOut.println("The minimum distance between 7 and 4 should be 4: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 4 and 7 in digraph9 should be 4: " + sap.getAncestorII(4, 7));
-        System.out.println("The minimum distance between 4 and 7 should be 3: " + sap.minDistance);
+        System.out.println("ancestor between 4 and 7 in digraph9 should be 3: " + sap.getAncestorII(4, 7));
+        System.out.println("The minimum distance between 4 and 7 should be 4: " + sap.minDistance);
 
         System.out.println();
 
