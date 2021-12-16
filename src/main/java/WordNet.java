@@ -8,18 +8,18 @@ import java.util.List;
 
 public class WordNet {
     // this is a hashmap of nouns and ids
-    HashMap<Integer, String> db = new HashMap<>();
-    String[] synsets;
-    int size = 0;  // number of synsets
-    SAP sap;
-    boolean hasCycle = false;
-    boolean rooted = true;
-    Digraph digraph;
+    private HashMap<Integer, String> db = new HashMap<>();
+    private String[] synsets;
+    private int size = 0;  // number of synsets
+    private SAP sap;
+    private boolean hasCycle = false;
+    private boolean rooted = true;
+    private final Digraph digraphDFCopy;
 
     // constructor takes the name of two input files
     public WordNet(String synsets, String hypernyms) {
         createDb(synsets);
-        createGraph(hypernyms);
+        digraphDFCopy= createGraph(hypernyms);
     }
 
     private void createDb(String synsets) {
@@ -36,10 +36,10 @@ public class WordNet {
         }
     }
 
-    private void createGraph(String hypernyms) {
+    private Digraph createGraph(String hypernyms) {
         In in = new In(hypernyms);
         synsets = new String[size];
-        digraph = new Digraph(db.size());
+        Digraph digraph = new Digraph(db.size());
         int index = 0;
         while (in.hasNextLine()) {
             index++;
@@ -58,6 +58,7 @@ public class WordNet {
             rooted = false;
             throw new IllegalArgumentException("The input to the constructor does not correspond to a rooted DAG - Graph Not rooted");
         }
+        return digraph;
     }
 
     // returns all WordNet nouns
@@ -97,7 +98,7 @@ public class WordNet {
                 if (s.equals(nounB)) nounBIds.add(i);
             }
         }
-        sap = new SAP(digraph);
+        sap = new SAP(digraphDFCopy);
         int i = sap.ancestor(nounAIds, nounBIds);
         if (i == -1) return "";
             //else return synsets[i];
@@ -105,7 +106,7 @@ public class WordNet {
     }
 
     /* todo -- cache nounAIds and nounBIds in case these methods are called back to back */
-    public String getSapPath(String nounA, String nounB) {
+    private String getSapPath(String nounA, String nounB) {
         StringBuilder sb = new StringBuilder();
         int nounAId = -1;
         int nounBId = -1;
@@ -115,11 +116,10 @@ public class WordNet {
                 if (nounB.equals(db.get(i))) nounBId = i;
             }
         }
-        SAP s = new SAP(digraph);
-        for (int id : s.getPath(nounAId, nounBId)) {
-            ///sb.append(db.get(id) + " ");
-            sb.append(synsets[id] + " "); // this should be even faster
-        }
+        SAP s = new SAP(digraphDFCopy);
+        /*for (int id : s.getPath(nounAId, nounBId)) {
+            sb.append(synsets[id] + " ");
+        }*/
         return sb.toString();
     }
 
@@ -131,6 +131,6 @@ public class WordNet {
         System.out.println("The common ancestor " + wordNet.sap("worm", "bird"));
         System.out.println("The distance expected between worm and bird is 5, the result: " +
                 wordNet.distance("worm", "bird"));
-        //System.out.println("The shortest path between worm and bird is: " + wordNet.getSapPath("worm", "bird"));
+        System.out.println("The shortest path between worm and bird is: " + wordNet.getSapPath("worm", "bird"));
     }
 }
