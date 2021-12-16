@@ -93,21 +93,30 @@ public class SAP {
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
+        System.out.println("Here are ids being passed to sap ancestor: ");
+        for (int i:v) {
+            System.out.println(" "+i);
+        }
+        for (int i:w) {
+            System.out.println(" "+i);
+        }
+        //System.out.println("Here is minDistance before any call: "+minDistance);
         int  currentDistance = Integer.MAX_VALUE;
         int currentAncestor = ancestor;
-        System.out.println("the first values of distance: "+currentDistance);
-        System.out.println("the first values of ancestor: "+currentAncestor);
+        //System.out.println("the first values of distance: "+currentDistance);
+        //System.out.println("the first values of ancestor: "+currentAncestor);
         int temp = -1;
         for (int i : v) {
             for (int j : w) {
                 ancestor(i, j);
+                //System.out.println("Here is i: "+i+"Here is j:"+j);
                 currentAncestor = ancestor;
                 currentDistance = minDistance;
                 if (currentDistance > minDistance) {
                     currentAncestor = temp;
-                    System.out.println("ancestor just changed to: "+currentAncestor);
+                    //System.out.println("ancestor just changed to: "+currentAncestor);
                     currentDistance = minDistance;
-                    System.out.println("currentDistance just chagned to: "+ currentDistance);
+                    //System.out.println("currentDistance just chagned to: "+ currentDistance);
                 }
             }
         }

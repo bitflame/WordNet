@@ -29,17 +29,17 @@ public class WordNet {
             String[] a = in.readLine().split(",");
             val = Integer.parseInt(a[0]);
             String[] syns = a[1].split(" ");
+            db.put(val, a[1]);
             for (String noun : syns) {
-                db.put(val, noun);
+                size++;
             }
-            size++;
         }
     }
 
     private void createGraph(String hypernyms) {
         In in = new In(hypernyms);
-        synsets = new String[db.size()];
-        digraph = new Digraph(size);
+        synsets = new String[size];
+        digraph = new Digraph(db.size());
         int index = 0;
         while (in.hasNextLine()) {
             index++;
@@ -54,7 +54,7 @@ public class WordNet {
             hasCycle = true;
             throw new IllegalArgumentException("The input to the constructor does not correspond to a rooted DAG - cycle detected");
         }
-        if (Math.abs(index - size) > 1) {
+        if (Math.abs(index - db.size()) > 1) {
             rooted = false;
             throw new IllegalArgumentException("The input to the constructor does not correspond to a rooted DAG - Graph Not rooted");
         }
@@ -76,6 +76,7 @@ public class WordNet {
         List<Integer> nounBIds = new ArrayList<>();
         for (int i : db.keySet()) {
             for (String s : db.get(i).split(" ")) {
+
                 if (nounA.equals(s)) nounAIds.add(i);
                 if (nounB.equals(db.get(i))) nounBIds.add(i);
             }
@@ -92,14 +93,14 @@ public class WordNet {
         List<Integer> nounBIds = new ArrayList<>();
         for (int i : db.keySet()) {
             for (String s : db.get(i).split(" ")) {
-                if (nounA.equals(s)) nounAIds.add(i);
-                if (nounB.equals(db.get(i))) nounBIds.add(i);
+                if (s.equals(nounA)) nounAIds.add(i);
+                if (s.equals(nounB)) nounBIds.add(i);
             }
         }
         sap = new SAP(digraph);
         int i = sap.ancestor(nounAIds, nounBIds);
         if (i == -1) return "";
-        //else return synsets[i];
+            //else return synsets[i];
         else return db.get(i);
     }
 
