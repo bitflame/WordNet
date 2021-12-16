@@ -47,32 +47,45 @@ public class SAP {
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
-        if (getPath(v, w) != null) return getPath(v, w).size();
-        else return -1;
+        return minDistance;
     }
 
     // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
-        List<List<Integer>> paths = new ArrayList<>();
-        List<Integer> singlePath = new ArrayList<>();
-        for (Integer i : v) {
-            if (i == null) throw new IllegalArgumentException("None of the values in subsets to length() can be null.");
-            for (Integer j : w) {
-                if (j == null)
-                    throw new IllegalArgumentException("None of the values in subsets to length() can be null.");
-                if (getPath(i, j) != null) return getPath(i, j).size();
-            }
-        }
-        return -1;
+        return minDistance;
     }
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         if (v == w) return v;
-        if ((v == from || v == to) && (w == from || w == to)) return ancestor;
-        if (getPath(v, w) != null) getPath(v, w);
+        int distance = 0;
+        DeluxBFS fromBFS = new DeluxBFS(digraph, from);
+        DeluxBFS toBFS = new DeluxBFS(digraph, to);
+        while (distance < digraph.V()) {
+            for (int i = 0; i < digraph.V(); i++) {
+                if (fromBFS.distTo(i) == distance) {
+                    if (marked[i]) {
+                        // if it is marked already, it must've been by the node on the other end
+                        minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
+                        ancestor = i;
+                        return ancestor;
+                    }
+                    marked[i] = true;
+                }
+                if (toBFS.distTo(i) == distance) {
+                    if (marked[i]) {
+                        // if it is marked already, it must've been by the node on the other end
+                        minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
+                        ancestor = i;
+                        return ancestor;
+                    }
+                    marked[i] = true;
+                }
+            }
+            distance++;
+        }
         return ancestor;
     }
 
@@ -80,22 +93,27 @@ public class SAP {
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
-        int currentAncestor = ancestor, previousAncestor = ancestor;
-        List<Integer> prevShortPath = getPath(v.iterator().next(), w.iterator().next());
-        previousAncestor = ancestor;
-        List<Integer> currShortPath = null;
+        int  currentDistance = Integer.MAX_VALUE;
+        int currentAncestor = ancestor;
+        System.out.println("the first values of distance: "+currentDistance);
+        System.out.println("the first values of ancestor: "+currentAncestor);
+        int temp = -1;
         for (int i : v) {
             for (int j : w) {
-                SAP s = new SAP(digraph);
-                currShortPath = s.getPath(i, j);
-                currentAncestor = s.ancestor;
-                if (prevShortPath.size() > currShortPath.size()) {
-                    previousAncestor = currentAncestor;
-                    prevShortPath = currShortPath;
+                ancestor(i, j);
+                currentAncestor = ancestor;
+                currentDistance = minDistance;
+                if (currentDistance > minDistance) {
+                    currentAncestor = temp;
+                    System.out.println("ancestor just changed to: "+currentAncestor);
+                    currentDistance = minDistance;
+                    System.out.println("currentDistance just chagned to: "+ currentDistance);
                 }
             }
         }
-        return previousAncestor;
+        minDistance = currentDistance;
+        ancestor = currentAncestor;
+        return currentAncestor;
     }
 
     public List<Integer> getPath(int from, int to) {
@@ -259,22 +277,23 @@ public class SAP {
         DeluxBFS toBFS = new DeluxBFS(digraph, to);
         while (distance < digraph.V()) {
             for (int i = 0; i < digraph.V(); i++) {
-                if (fromBFS.distTo(i) == distance ) {
+                if (fromBFS.distTo(i) == distance) {
                     if (marked[i]) {
                         // if it is marked already, it must've been by the node on the other end
-                        minDistance=fromBFS.distTo(i) + toBFS.distTo(i);
+                        minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
                         ancestor = i;
                         return ancestor;
                     }
-                    marked[i]=true;
-                }  if (toBFS.distTo(i) == distance ) {
+                    marked[i] = true;
+                }
+                if (toBFS.distTo(i) == distance) {
                     if (marked[i]) {
                         // if it is marked already, it must've been by the node on the other end
-                        minDistance=fromBFS.distTo(i) + toBFS.distTo(i);
+                        minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
                         ancestor = i;
                         return ancestor;
                     }
-                    marked[i]=true;
+                    marked[i] = true;
                 }
             }
             distance++;
@@ -388,7 +407,7 @@ public class SAP {
 
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 7 in digraph9 should be 7: " + sap.getAncestorII(7,7 ));
+        System.out.println("ancestor between 7 and 7 in digraph9 should be 7: " + sap.getAncestorII(7, 7));
         StdOut.println("The minimum distance between 7 and 7 should be 0: " + sap.minDistance);
         sap = new SAP(digraph);
         System.out.println("ancestor between 8 and 8 in digraph9 should be 8: " + sap.getAncestorII(8, 8));

@@ -99,7 +99,8 @@ public class WordNet {
         sap = new SAP(digraph);
         int i = sap.ancestor(nounAIds, nounBIds);
         if (i == -1) return "";
-        else return synsets[i];
+        //else return synsets[i];
+        else return db.get(i);
     }
 
     /* todo -- cache nounAIds and nounBIds in case these methods are called back to back */
@@ -129,6 +130,6 @@ public class WordNet {
         System.out.println("The common ancestor " + wordNet.sap("worm", "bird"));
         System.out.println("The distance expected between worm and bird is 5, the result: " +
                 wordNet.distance("worm", "bird"));
-        System.out.println("The shortest path between worm and bird is: " + wordNet.getSapPath("worm", "bird"));
+        //System.out.println("The shortest path between worm and bird is: " + wordNet.getSapPath("worm", "bird"));
     }
 }
