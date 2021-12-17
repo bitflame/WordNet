@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class WordNet {
-    // this is a hashmap of nouns and ids
+    // this is a hashmap of nouns and ids -todo: Try two arrays of String and Integer
     private HashMap<Integer, String> db = new HashMap<>();
     private String[] synsets;
     private int size = 0;  // number of synsets

@@ -183,34 +183,31 @@ public class SAP {
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         if (v == w) return v;
-        marked = new boolean[digraphDFCopy.V()];
-        marked[v] = true;
-        marked[w] = true;
-        int distance = 1;
-        DeluxBFS fromBFS = new DeluxBFS(digraphDFCopy, from);
-        DeluxBFS toBFS = new DeluxBFS(digraphDFCopy, to);
-        while (distance < digraphDFCopy.V()) {
-            for (int i = 0; i < digraphDFCopy.V(); i++) {
-                if (fromBFS.distTo(i) == distance) {
-                    if (marked[i]) {
-                        // if it is marked already, it must've been by the node on the other end
-                        minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                        ancestor = i;
-                        return ancestor;
-                    }
-                    marked[i] = true;
-                }
-                if (toBFS.distTo(i) == distance) {
-                    if (marked[i]) {
-                        // if it is marked already, it must've been by the node on the other end
-                        minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                        ancestor = i;
-                        return ancestor;
-                    }
-                    marked[i] = true;
-                }
+        DeluxBFS fromBFS = new DeluxBFS(digraphDFCopy, v);
+        DeluxBFS toBFS = new DeluxBFS(digraphDFCopy, w);
+        List<Integer> fromList = new ArrayList<>();
+        List<Integer> toList = new ArrayList<>();
+        for (int i = 0; i < digraphDFCopy.V(); i++) {
+            if (fromBFS.hasPathTo(i)) fromList.add(i);
+            if (toBFS.hasPathTo(i)) toList.add(i);
+        }
+        int distance;
+        List<Integer> path;
+        for (int i:fromList) {
+            for (int j:toList) {
+                distance = fromBFS.distTo(fromList.get(0))+toBFS.distTo(toList.get(0));
+                  if (distance< minDistance){
+                      minDistance=distance;
+                      path = new ArrayList<>();
+                      for (int k:fromBFS.pathTo(i)) {
+                          path.add(k);
+                      }
+                      for (int k:toBFS.pathTo(j)) {
+                          if (path.contains(k)) ancestor=k;
+                          else path.add(k);
+                      }
+                  }
             }
-            distance++;
         }
         return ancestor;
     }
@@ -227,25 +224,24 @@ public class SAP {
             System.out.println(" "+i);
         }
         System.out.println("Here is minDistance before any call: "+minDistance);*/
-        int currentDistance = Integer.MAX_VALUE;
-        int currentAncestor = ancestor;
         //System.out.println("the first values of distance: "+currentDistance);
         //System.out.println("the first values of ancestor: "+currentAncestor);
-        int temp = -1;
+        List<Integer> distances = new ArrayList<>();
+        HashMap<Integer, Integer> ancestorIds = new HashMap<>();
+        //List<Integer> distances = new ArrayList<>();
+        //List<Integer> ancestorIds = new ArrayList<>();
         for (int i : v) {
             for (int j : w) {
-                ancestor(i, j);
-                System.out.println("Here is i: " + i + "Here is j:" + j);
-                //System.out.printf("Here are currentAncestor and minDistance changing %d %d\n",currentAncestor,minDistance);
-                if (currentDistance > minDistance) {
-                    currentAncestor = ancestor;
-                    System.out.println("ancestor just changed to: " + currentAncestor);
-                    currentDistance = minDistance;
-                    System.out.println("currentDistance just chagned to: " + currentDistance);
-                }
+                //ancestorIds.add(ancestor(i, j));
+                //System.out.println("Here is i: " + i + "Here is j:" + j);
+                //distances.add(minDistance);
+                distances.add(minDistance);
+                ancestorIds.put(minDistance, ancestor(i, j));
+
             }
         }
-        return ancestor;
+        Collections.sort(distances);
+        return ancestorIds.get(distances.get(0));
     }
 
     private List<Integer> getPath(int from, int to) {
@@ -406,21 +402,89 @@ public class SAP {
 
     // improved lock-step bfs attempt
     private int getAncestorImproved(int from, int to) {
-        int distance = 1;
+        /* Topological topological = new Topological(digraphDFCopy);
+        assert topological.hasOrder() : "The graph is not a DAG. ";
+        for (int v : topological.order()) {
+            if (fromBFS.hasPathTo(v) && marked[v]) {
+                if (marked[v]) {
+                    minDistance = fromBFS.distTo(v) + toBFS.distTo(v);
+                    ancestor = v;
+                    return ancestor;
+                }
+                marked[v] = true;
+            }
+            if (toBFS.hasPathTo(v) && marked[v]) {
+                // if it is marked already, it must've been by the node on the other end
+                minDistance = fromBFS.distTo(v) + toBFS.distTo(v);
+                ancestor = v;
+                return ancestor;
+            }
+            marked[v] = true;
+        } */
         marked[from] = true;
         marked[to] = true;
         DeluxBFS fromBFS = new DeluxBFS(digraphDFCopy, from);
         DeluxBFS toBFS = new DeluxBFS(digraphDFCopy, to);
+        MinPQ<Integer> fromQueue = new MinPQ<Integer>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                // number of moves the parent has made plus 1 plus the number moves I have to take from where I am
+                if (fromBFS.distTo(o1) > fromBFS.distTo(o2))
+                    return 1;
+                else if (fromBFS.distTo(o2) > fromBFS.distTo(o1))
+                    return -1;
+                return 0;
+            }
+        });
+        MinPQ<Integer> toQueue = new MinPQ<Integer>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                if (toBFS.distTo(o1) > toBFS.distTo(o2))
+                    return 1;
+                else if (toBFS.distTo(o2) > toBFS.distTo(o1))
+                    return -1;
+                return 0;
+            }
+        });
+        for (int i = 0; i < digraphDFCopy.V(); i++) {
+            fromQueue.insert(i);
+            toQueue.insert(i);
+        }
+        int f = fromQueue.delMin();
+        int t = toQueue.delMin();
+        int counter = 0;
+        while (f != t && counter < digraphDFCopy.V()) {
+            if (!fromQueue.isEmpty()) f = fromQueue.delMin();
+            if (!toQueue.isEmpty()) t = toQueue.delMin();
+            counter++;
+        }
+        if (f == t) {
+            ancestor = f;
+            minDistance = fromBFS.distTo(f) + toBFS.distTo(t);// may have to subtract two
+        }
+        return ancestor;
+        /*
+        int distance = 1;
+        int i=0;
+        while(!fromQueue.isEmpty()){
+            i = fromQueue.delMin();
+            if (toBFS.hasPathTo(i)){
+                minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
+                ancestor = i;
+                return ancestor;
+            }
+            marked[i]=true;
+        }*/
+        /*
         while (distance < digraphDFCopy.V()) {
             for (int i = 0; i < digraphDFCopy.V(); i++) {
                 if (fromBFS.hasPathTo(i) && marked[i]) {
-                    // if it is marked already, it must've been by the node on the other end
                     minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
                     ancestor = i;
                     return ancestor;
                 }
                 if (fromBFS.distTo(i) == distance) {
-                    if (marked[i]){
+                    if (marked[i]) {
                         minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
                         ancestor = i;
                         return ancestor;
@@ -431,13 +495,12 @@ public class SAP {
             }
             for (int i = 0; i < digraphDFCopy.V(); i++) {
                 if (toBFS.hasPathTo(i) && marked[i]) {
-                    // if it is marked already, it must've been by the node on the other end
                     minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
                     ancestor = i;
                     return ancestor;
                 }
                 if (toBFS.distTo(i) == distance) {
-                    if (marked[i]){
+                    if (marked[i]) {
                         minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
                         ancestor = i;
                         return ancestor;
@@ -446,8 +509,8 @@ public class SAP {
                 }
             }
             distance++;
-        }
-        return ancestor;
+        } */
+
     }
 
 
