@@ -182,7 +182,8 @@ public class SAP {
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
-        if (v == w) return v;
+        //StdOut.printf("from: %d to: %d v: %d w: %d at the beginning of call to ancestor. ", from, to, v, w);
+        if ((v == from || v == to) && (w == from || w == to)) return ancestor;
         DeluxBFS fromBFS = new DeluxBFS(digraphDFCopy, v);
         DeluxBFS toBFS = new DeluxBFS(digraphDFCopy, w);
         List<Integer> fromList = new ArrayList<>();
@@ -191,23 +192,27 @@ public class SAP {
             if (fromBFS.hasPathTo(i)) fromList.add(i);
             if (toBFS.hasPathTo(i)) toList.add(i);
         }
-        int distance;
         List<Integer> path;
-        for (int i:fromList) {
-            for (int j:toList) {
-                distance = fromBFS.distTo(fromList.get(0))+toBFS.distTo(toList.get(0));
-                  if (distance< minDistance){
-                      minDistance=distance;
-                      path = new ArrayList<>();
-                      for (int k:fromBFS.pathTo(i)) {
-                          path.add(k);
-                      }
-                      for (int k:toBFS.pathTo(j)) {
-                          if (path.contains(k)) ancestor=k;
-                          else path.add(k);
-                      }
-                  }
+        int i = 0, j = 0, counter = 0;
+        while (counter < fromList.size() && counter < toList.size()) {
+            i = fromList.get(counter);
+            j = toList.get(counter);
+            //StdOut.printf("checking %d and %d :", i, j);
+            if (i == j) {
+                minDistance = fromBFS.distTo(i) + toBFS.distTo(j);
+                ancestor = i;
+                path = new ArrayList<>();
+                for (int k : fromBFS.pathTo(i)) {
+                    path.add(k);
+                }
+                for (int k : toBFS.pathTo(j)) {
+                    if (path.contains(k)) ancestor = k;
+                    else path.add(k);
+                }
+                //StdOut.printf("Updated minDistance, and ancestor. The value of i is: %d The value of minDistance is: %d\n", i, minDistance);
+                return ancestor;
             }
+            counter++;
         }
         return ancestor;
     }
@@ -216,32 +221,20 @@ public class SAP {
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
-        /*System.out.println("Here are ids being passed to sap ancestor: ");
-        for (int i:v) {
-            System.out.println(" "+i);
-        }
-        for (int i:w) {
-            System.out.println(" "+i);
-        }
-        System.out.println("Here is minDistance before any call: "+minDistance);*/
-        //System.out.println("the first values of distance: "+currentDistance);
-        //System.out.println("the first values of ancestor: "+currentAncestor);
-        List<Integer> distances = new ArrayList<>();
-        HashMap<Integer, Integer> ancestorIds = new HashMap<>();
-        //List<Integer> distances = new ArrayList<>();
-        //List<Integer> ancestorIds = new ArrayList<>();
+        int distance = minDistance;
+        int currentAncestor = ancestor;
         for (int i : v) {
             for (int j : w) {
-                //ancestorIds.add(ancestor(i, j));
-                //System.out.println("Here is i: " + i + "Here is j:" + j);
-                //distances.add(minDistance);
-                distances.add(minDistance);
-                ancestorIds.put(minDistance, ancestor(i, j));
-
+                //StdOut.printf("Calling ancestor(%d, %d) ", i, j);
+                ancestor(i, j);
+                if (distance > minDistance) {
+                    distance = minDistance;
+                    currentAncestor = ancestor;
+                }
             }
         }
-        Collections.sort(distances);
-        return ancestorIds.get(distances.get(0));
+        minDistance = distance;
+        return currentAncestor;
     }
 
     private List<Integer> getPath(int from, int to) {

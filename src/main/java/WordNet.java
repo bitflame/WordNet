@@ -89,7 +89,6 @@ public class WordNet {
     /* a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB in a shortest ancestral
      * path (defined below) */
     public String sap(String nounA, String nounB) {
-        StringBuilder sb = new StringBuilder();
         List<Integer> nounAIds = new ArrayList<>();
         List<Integer> nounBIds = new ArrayList<>();
         for (int i : db.keySet()) {
@@ -127,7 +126,7 @@ public class WordNet {
     public static void main(String[] args) {
         System.out.println("using " + args[0] + " and " + args[1] + "files for this round.");
         WordNet wordNet = new WordNet(args[0], args[1]);
-        System.out.println(wordNet.isNoun("entity"));
+        //System.out.println(wordNet.isNoun("entity"));
         System.out.println("The common ancestor between worm and animal: " + wordNet.sap("worm", "bird"));
         System.out.println("The distance expected between worm and bird is 5, the result: " +
                 wordNet.distance("worm", "bird"));
