@@ -1,6 +1,7 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,10 +17,12 @@ public class WordNet {
     private boolean rooted = true;
     private final Digraph digraphDFCopy;
 
+
     // constructor takes the name of two input files
     public WordNet(String synsets, String hypernyms) {
         createDb(synsets);
         digraphDFCopy= createGraph(hypernyms);
+        sap = new SAP(digraphDFCopy);
     }
 
     private void createDb(String synsets) {
@@ -68,7 +71,12 @@ public class WordNet {
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
-        return db.get(word) != null;
+        for (int i : db.keySet()) {
+            for (String s : db.get(i).split(" ")) {
+                if (s.equals(word)) return true;
+            }
+        }
+        return false;
     }
 
     // distance between nounA and nounB (defined below )
@@ -97,6 +105,14 @@ public class WordNet {
                 if (s.equals(nounB)) nounBIds.add(i);
             }
         }
+        /*StdOut.printf("Here are the ids for first term: \n");
+        for (int i : nounAIds) {
+            System.out.println(" " + i);
+        }
+        StdOut.printf("Here are the ids for the secnd term: \n");
+        for (int i : nounBIds) {
+            System.out.println(" " + i);
+        }*/
         sap = new SAP(digraphDFCopy);
         int i = sap.ancestor(nounAIds, nounBIds);
         if (i == -1) return "";
@@ -126,10 +142,14 @@ public class WordNet {
     public static void main(String[] args) {
         System.out.println("using " + args[0] + " and " + args[1] + "files for this round.");
         WordNet wordNet = new WordNet(args[0], args[1]);
-        //System.out.println(wordNet.isNoun("entity"));
+        System.out.println(wordNet.isNoun("entity"));
         System.out.println("The common ancestor between worm and animal: " + wordNet.sap("worm", "bird"));
         System.out.println("The distance expected between worm and bird is 5, the result: " +
                 wordNet.distance("worm", "bird"));
         System.out.println("The shortest path between worm and bird is: " + wordNet.getSapPath("worm", "bird"));
+        StdOut.println("The common ancestor for quadrangle and mountain_devil is:" +
+                wordNet.sap("quadrangle", "mountain_devil"));
+        StdOut.println("The distance expected between mountain_devil and quadrangle should be 11, the result: " +
+                wordNet.distance("quadrangle", "mountain_devil"));
     }
 }
