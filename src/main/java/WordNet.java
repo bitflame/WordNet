@@ -85,9 +85,8 @@ public class WordNet {
         List<Integer> nounBIds = new ArrayList<>();
         for (int i : db.keySet()) {
             for (String s : db.get(i).split(" ")) {
-
-                if (nounA.equals(s)) nounAIds.add(i);
-                if (nounB.equals(db.get(i))) nounBIds.add(i);
+                if (s.equals(nounA)) nounAIds.add(i);
+                if (s.equals(nounB)) nounBIds.add(i);
             }
         }
         int length = sap.length(nounAIds, nounBIds);

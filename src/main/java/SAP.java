@@ -161,6 +161,7 @@ public class SAP {
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
+        ancestor(v,w);
         return minDistance;
     }
 
@@ -270,7 +271,8 @@ public class SAP {
             }
         }
         minDistance = distance;
-        return currentAncestor;
+        ancestor = currentAncestor;
+        return ancestor;
     }
 
     private List<Integer> getPath(int from, int to) {
