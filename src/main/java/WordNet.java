@@ -1,7 +1,4 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.DirectedCycle;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -141,10 +138,13 @@ public class WordNet {
     public static void main(String[] args) {
         System.out.println("using " + args[0] + " and " + args[1] + "files for this round.");
         WordNet wordNet = new WordNet(args[0], args[1]);
-        System.out.println(wordNet.isNoun("entity"));
+        Stopwatch time = new Stopwatch();
         System.out.println("The common ancestor between worm and animal: " + wordNet.sap("worm", "bird"));
+        Double now = time.elapsedTime();
+        StdOut.println("worm/bird test using RedBlackTrees took: "+now);
         System.out.println("The distance expected between worm and bird is 5, the result: " +
                 wordNet.distance("worm", "bird"));
+        System.out.println(wordNet.isNoun("entity"));
         System.out.println("The shortest path between worm and bird is: " + wordNet.getSapPath("worm", "bird"));
         StdOut.println("The common ancestor for quadrangle and mountain_devil is:" +
                 wordNet.sap("quadrangle", "mountain_devil"));
