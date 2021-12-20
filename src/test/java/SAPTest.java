@@ -49,9 +49,9 @@ class SAPTest {
         sap = new SAP(digraph);
         int[] expected = {0, 1, 2};
         int[] actual = new int[3];
-        for (int i : sap.getPath(from, to)) {
+        /*for (int i : sap.getPath(from, to)) {
             actual[i] = i;
-        }
+        }*/
         Assertions.assertArrayEquals(actual, expected);
     }
 }
