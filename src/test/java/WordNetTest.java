@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WordNetTest {
     WordNet wordNet = new WordNet("synsets15.txt", "hypernyms15Path.txt");
@@ -13,20 +14,20 @@ class WordNetTest {
 
     @Test
     void isNoun() {
-        assertEquals(true, wordNet1.isNoun("entity"));
+        assertTrue(wordNet1.isNoun("entity"));
     }
 
     @Test
     void distance() {
         assertEquals(11, wordNet1.distance("quadrangle", "mountain_devil"));
-        assertEquals(5, wordNet1.distance("worm", ""));
+        assertEquals(5, wordNet1.distance("worm", "bird"));
     }
 
     @Test
     void sap() {
         assertEquals("a", wordNet.sap("a", "a"));
         assertEquals("b", wordNet.sap("a", "b"));
-        assertEquals("", wordNet.sap("a", "o"));
+        assertEquals("o", wordNet.sap("a", "o"));
         assertEquals("animal animate_being beast brute creature fauna", wordNet1.sap("worm", "bird"));
         assertEquals("whole unit", wordNet1.sap("quadrangle", "mountain_devil"));
     }

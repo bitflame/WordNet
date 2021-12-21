@@ -1,10 +1,6 @@
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.Stack;
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.DirectedCycle;
-import edu.princeton.cs.algs4.MinPQ;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.*;
 
 import java.io.File;
 import java.util.*;
@@ -13,14 +9,9 @@ public class SAP {
     private boolean hasCycle = false;
     private final Digraph digraphDFCopy;
     private int ancestor = -1;
-    private int from;
-    private int to;
-    private List<Integer> shortPath;
-    private boolean[] onStack;
-    private boolean[] marked;
-    private boolean stop = false;
     private int minDistance = Integer.MAX_VALUE;
     List<Integer> path;
+
     private static class DeluxeBFS {
         private static final int INFINITY = Integer.MAX_VALUE;
         private final boolean[] marked;
@@ -101,7 +92,7 @@ public class SAP {
         public Iterable<Integer> pathTo(int v) {
             validateVertex(v);
             if (!hasPathTo(v)) return null;
-            Stack<Integer> path = new Stack<Integer>();
+            Stack<Integer> path = new Stack<>();
             int x;
             for (x = v; distTo[x] != 0; x = edgeTo[x])
                 path.push(x);
@@ -135,26 +126,10 @@ public class SAP {
         }
     }
 
-    private class Node {
-        private final int id;
-        private final Node prevNode;
-        private final int movesTaken;
-        private final int movesRemaining;
-
-        public Node(int id, Node prevNode, int taken, int remaining) {
-            this.id = id;
-            this.prevNode = prevNode;
-            this.movesTaken = taken;
-            this.movesRemaining = remaining;
-        }
-    }
-
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
         if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
         DirectedCycle cycleFinder = new DirectedCycle(digraph);
-        onStack = new boolean[digraph.V()];
-        marked = new boolean[digraph.V()];
         if (cycleFinder.hasCycle()) {
             hasCycle = true;
         }
@@ -163,6 +138,7 @@ public class SAP {
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
+        ancestor(v,w);
         return minDistance;
     }
 
@@ -170,7 +146,7 @@ public class SAP {
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
-        ancestor(v,w);
+        ancestor(v, w);
         return minDistance;
     }
 
@@ -242,6 +218,7 @@ public class SAP {
     }
 
     private List<Integer> getPath(int from, int to) {
+        ancestor(from,to);
         return path;
     }
 
@@ -251,9 +228,7 @@ public class SAP {
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
         int[] distances = new int[digraphDFCopy.V()];
-        for (int i = 0; i < distances.length; i++) {
-            distances[i] = -1;
-        }
+        Arrays.fill(distances, -1);
         for (int i = 0; i < digraphDFCopy.V(); i++) {
             if (fromBFS.hasPathTo(i) && toBFS.hasPathTo(i)) {
                 distances[i] = fromBFS.distTo(i) + toBFS.distTo(i);
@@ -272,139 +247,6 @@ public class SAP {
         return ancestor;
     }
 
-    // improved lock-step bfs attempt
-    private int getAncestorImproved(int from, int to) {
-        /* Topological topological = new Topological(digraphDFCopy);
-        assert topological.hasOrder() : "The graph is not a DAG. ";
-        for (int v : topological.order()) {
-            if (fromBFS.hasPathTo(v) && marked[v]) {
-                if (marked[v]) {
-                    minDistance = fromBFS.distTo(v) + toBFS.distTo(v);
-                    ancestor = v;
-                    return ancestor;
-                }
-                marked[v] = true;
-            }
-            if (toBFS.hasPathTo(v) && marked[v]) {
-                // if it is marked already, it must've been by the node on the other end
-                minDistance = fromBFS.distTo(v) + toBFS.distTo(v);
-                ancestor = v;
-                return ancestor;
-            }
-            marked[v] = true;
-        } */
-        marked[from] = true;
-        marked[to] = true;
-        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
-        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
-        MinPQ<Integer> fromQueue = new MinPQ<Integer>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                // number of moves the parent has made plus 1 plus the number moves I have to take from where I am
-                if (fromBFS.distTo(o1) > fromBFS.distTo(o2))
-                    return 1;
-                else if (fromBFS.distTo(o2) > fromBFS.distTo(o1))
-                    return -1;
-                return 0;
-            }
-        });
-        MinPQ<Integer> toQueue = new MinPQ<Integer>(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (toBFS.distTo(o1) > toBFS.distTo(o2))
-                    return 1;
-                else if (toBFS.distTo(o2) > toBFS.distTo(o1))
-                    return -1;
-                return 0;
-            }
-        });
-        for (int i = 0; i < digraphDFCopy.V(); i++) {
-            fromQueue.insert(i);
-            toQueue.insert(i);
-        }
-        int f = fromQueue.delMin();
-        int t = toQueue.delMin();
-        int counter = 0;
-        while (f != t && counter < digraphDFCopy.V()) {
-            if (!fromQueue.isEmpty()) f = fromQueue.delMin();
-            if (!toQueue.isEmpty()) t = toQueue.delMin();
-            counter++;
-        }
-        if (f == t) {
-            ancestor = f;
-            minDistance = fromBFS.distTo(f) + toBFS.distTo(t);// may have to subtract two
-        }
-        return ancestor;
-        /*
-        int distance = 1;
-        int i=0;
-        while(!fromQueue.isEmpty()){
-            i = fromQueue.delMin();
-            if (toBFS.hasPathTo(i)){
-                minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                ancestor = i;
-                return ancestor;
-            }
-            marked[i]=true;
-        }*/
-        /*
-        while (distance < digraphDFCopy.V()) {
-            for (int i = 0; i < digraphDFCopy.V(); i++) {
-                if (fromBFS.hasPathTo(i) && marked[i]) {
-                    minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                    ancestor = i;
-                    return ancestor;
-                }
-                if (fromBFS.distTo(i) == distance) {
-                    if (marked[i]) {
-                        minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                        ancestor = i;
-                        return ancestor;
-                    }
-                    marked[i] = true;
-                }
-
-            }
-            for (int i = 0; i < digraphDFCopy.V(); i++) {
-                if (toBFS.hasPathTo(i) && marked[i]) {
-                    minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                    ancestor = i;
-                    return ancestor;
-                }
-                if (toBFS.distTo(i) == distance) {
-                    if (marked[i]) {
-                        minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                        ancestor = i;
-                        return ancestor;
-                    }
-                    marked[i] = true;
-                }
-            }
-            distance++;
-        } */
-
-    }
-
-
-    private List<Integer> extractPath(Node minF, Node minT, int match) {
-        List<Integer> path = new ArrayList<>();
-        ancestor = match; // ancestor should be the first match
-        while (minF != null && minF.prevNode != null) {
-            if (!path.contains(minF.id)) {
-                path.add(minF.id);
-            }
-            minF = minF.prevNode;
-        }
-        while (minT.prevNode != null) {
-            if (!path.contains(minT.id)) {
-                path.add(minT.id);
-            }
-            minT = minT.prevNode;
-        }
-        if (!path.contains(from)) path.add(from);
-        if (!path.contains(to)) path.add(to);
-        return path;
-    }
 
     public static void main(String[] args) {
         /*
@@ -493,67 +335,67 @@ public class SAP {
 
         System.out.println("********************************* Testing getAncestorImproved() here ******************");
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 6 in digraph9 should be 6: " + sap.getAncestorImproved(7, 6));
+        System.out.println("ancestor between 7 and 6 in digraph9 should be 6: " + sap.ancestor(7, 6));
         StdOut.println("The minimum distance between 7 and 6 should be 1: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 6 and 7 in digraph9 should be 6: " + sap.getAncestorImproved(6, 7));
+        System.out.println("ancestor between 6 and 7 in digraph9 should be 6: " + sap.ancestor(6, 7));
         System.out.println("The minimum distance between 6 and 7 should be 1: " + sap.minDistance);
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 3 in digraph9 should be 3: " + sap.getAncestorImproved(7, 3));
+        System.out.println("ancestor between 7 and 3 in digraph9 should be 3: " + sap.ancestor(7, 3));
         StdOut.println("The minimum distance between 7 and 3 should be 2: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 3 and 7 in digraph9 should be 3: " + sap.getAncestorImproved(3, 7));
+        System.out.println("ancestor between 3 and 7 in digraph9 should be 3: " + sap.ancestor(3, 7));
         System.out.println("The minimum distance between 3 and 7 should be 2: " + sap.minDistance);
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 2 in digraph9 should be 2: " + sap.getAncestorImproved(7, 2));
+        System.out.println("ancestor between 7 and 2 in digraph9 should be 2: " + sap.ancestor(7, 2));
         StdOut.println("The minimum distance between 7 and 2 should be 3: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 2 and 7 in digraph9 should be 2: " + sap.getAncestorImproved(2, 7));
+        System.out.println("ancestor between 2 and 7 in digraph9 should be 2: " + sap.ancestor(2, 7));
         System.out.println("The minimum distance between 2 and 7 should be 3: " + sap.minDistance);
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 0 in digraph9 should be 6: " + sap.getAncestorImproved(7, 0));
+        System.out.println("ancestor between 7 and 0 in digraph9 should be 6: " + sap.ancestor(7, 0));
         StdOut.println("The minimum distance between 7 and 0 should be 2: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 0 and 7 in digraph9 should be 6: " + sap.getAncestorImproved(0, 7));
+        System.out.println("ancestor between 0 and 7 in digraph9 should be 6: " + sap.ancestor(0, 7));
         System.out.println("The minimum distance between 0 and 7 should be 2: " + sap.minDistance);
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 1 in digraph9 should be 3: " + sap.getAncestorImproved(7, 1));
+        System.out.println("ancestor between 7 and 1 in digraph9 should be 3: " + sap.ancestor(7, 1));
         StdOut.println("The minimum distance between 7 and 1 should be 3: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 1 and 7 in digraph9 should be 3: " + sap.getAncestorImproved(1, 7));
+        System.out.println("ancestor between 1 and 7 in digraph9 should be 3: " + sap.ancestor(1, 7));
         System.out.println("The minimum distance between 1 and 7 should be 3: " + sap.minDistance);
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 4 in digraph9 should be 4: " + sap.getAncestorImproved(7, 4));
+        System.out.println("ancestor between 7 and 4 in digraph9 should be 4: " + sap.ancestor(7, 4));
         StdOut.println("The minimum distance between 7 and 4 should be 3: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 4 and 7 in digraph9 should be 4: " + sap.getAncestorImproved(4, 7));
+        System.out.println("ancestor between 4 and 7 in digraph9 should be 4: " + sap.ancestor(4, 7));
         System.out.println("The minimum distance between 4 and 7 should be 3: " + sap.minDistance);
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 5 in digraph9 should be 4: " + sap.getAncestorImproved(7, 5));
+        System.out.println("ancestor between 7 and 5 in digraph9 should be 4: " + sap.ancestor(7, 5));
         StdOut.println("The minimum distance between 7 and 5 should be 4: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 5 and 7 in digraph9 should be 4: " + sap.getAncestorImproved(5, 7));
+        System.out.println("ancestor between 5 and 7 in digraph9 should be 4: " + sap.ancestor(5, 7));
         System.out.println("The minimum distance between 5 and 7 should be 4: " + sap.minDistance);
         System.out.println();
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 8 in digraph9 should be -1: " + sap.getAncestorImproved(7, 8));
+        System.out.println("ancestor between 7 and 8 in digraph9 should be -1: " + sap.ancestor(7, 8));
         StdOut.println("The minimum distance between 7 and 8 should be 2147483647: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 8 and 7 in digraph9 should be -1: " + sap.getAncestorImproved(8, 7));
+        System.out.println("ancestor between 8 and 7 in digraph9 should be -1: " + sap.ancestor(8, 7));
         System.out.println("The minimum distance between 8 and 7 should be 2147483647: " + sap.minDistance);
         System.out.println();
 
         sap = new SAP(digraph);
-        System.out.println("ancestor between 7 and 7 in digraph9 should be 7: " + sap.getAncestorImproved(7, 7));
+        System.out.println("ancestor between 7 and 7 in digraph9 should be 7: " + sap.ancestor(7, 7));
         StdOut.println("The minimum distance between 7 and 7 should be 0: " + sap.minDistance);
         sap = new SAP(digraph);
-        System.out.println("ancestor between 8 and 8 in digraph9 should be 8: " + sap.getAncestorImproved(8, 8));
+        System.out.println("ancestor between 8 and 8 in digraph9 should be 8: " + sap.ancestor(8, 8));
         System.out.println("The minimum distance between 8 and 8 should be 0: " + sap.minDistance);
         System.out.println();
 

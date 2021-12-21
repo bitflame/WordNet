@@ -2,7 +2,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Outcast {
-    private WordNet wordNet;
+    private final WordNet wordNet;
 
     public Outcast(WordNet wordNet) {
         this.wordNet = wordNet;
@@ -13,8 +13,8 @@ public class Outcast {
         int[] distances = new int[nouns.length];
         int dist = 0;
         for (int i = 0; i < nouns.length; i++) {
-            for (int j = 0; j < nouns.length; j++) {
-                dist += wordNet.distance(nouns[i], nouns[j]);
+            for (String noun : nouns) {
+                dist += wordNet.distance(nouns[i], noun);
             }
             distances[i] = dist;
             dist = 0;
