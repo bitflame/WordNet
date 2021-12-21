@@ -7,11 +7,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.io.File;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Collections;
-import java.util.Arrays;
+import java.util.*;
 
 public class SAP {
     private boolean hasCycle = false;
@@ -25,14 +21,13 @@ public class SAP {
     private boolean stop = false;
     private int minDistance = Integer.MAX_VALUE;
     List<Integer> path;
-    private class DeluxBFS {
+    private static class DeluxeBFS {
         private static final int INFINITY = Integer.MAX_VALUE;
-        private boolean[] marked;
-        private int[] edgeTo;
-        private int[] distTo;
+        private final boolean[] marked;
+        private final int[] edgeTo;
+        private final int[] distTo;
 
-
-        public DeluxBFS(Digraph G, int s) {
+        public DeluxeBFS(Digraph G, int s) {
             marked = new boolean[G.V()];
             distTo = new int[G.V()];
             edgeTo = new int[G.V()];
@@ -43,7 +38,7 @@ public class SAP {
             bfs(G, s);
         }
 
-        public DeluxBFS(Digraph G, Iterable<Integer> sources) {
+        public DeluxeBFS(Digraph G, Iterable<Integer> sources) {
             marked = new boolean[G.V()];
             distTo = new int[G.V()];
             edgeTo = new int[G.V()];
@@ -56,7 +51,7 @@ public class SAP {
 
 
         private void bfs(Digraph G, int s) {
-            Queue<Integer> q = new Queue<Integer>();
+            Queue<Integer> q = new Queue<>();
             marked[s] = true;
             distTo[s] = 0;
             q.enqueue(s);
@@ -74,7 +69,7 @@ public class SAP {
         }
 
         private void bfs(Digraph G, Iterable<Integer> sources) {
-            Queue<Integer> q = new Queue<Integer>();
+            Queue<Integer> q = new Queue<>();
             for (int s : sources) {
                 marked[s] = true;
                 distTo[s] = 0;
@@ -103,7 +98,6 @@ public class SAP {
             return distTo[v];
         }
 
-
         public Iterable<Integer> pathTo(int v) {
             validateVertex(v);
             if (!hasPathTo(v)) return null;
@@ -114,6 +108,7 @@ public class SAP {
             path.push(x);
             return path;
         }
+
 
         private void validateVertex(int v) {
             int V = marked.length;
@@ -126,10 +121,16 @@ public class SAP {
                 throw new IllegalArgumentException("argument is null");
             }
             int V = marked.length;
-            for (int v : vertices) {
-                if (v < 0 || v >= V) {
-                    throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (V - 1));
+            int count = 0;
+            for (Integer v : vertices) {
+                count++;
+                if (v == null) {
+                    throw new IllegalArgumentException("vertex is null");
                 }
+                validateVertex(v);
+            }
+            if (count == 0) {
+                throw new IllegalArgumentException("zero vertices");
             }
         }
     }
@@ -176,8 +177,8 @@ public class SAP {
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         //StdOut.printf("from: %d to: %d v: %d w: %d at the beginning of call to ancestor. ", from, to, v, w);
-        DeluxBFS fromBFS = new DeluxBFS(digraphDFCopy, v);
-        DeluxBFS toBFS = new DeluxBFS(digraphDFCopy, w);
+        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
+        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
         List<Integer> fromList = new ArrayList<>();
         List<Integer> toList = new ArrayList<>();
         for (int i = 0; i < digraphDFCopy.V(); i++) {
@@ -191,72 +192,29 @@ public class SAP {
             }
         }
         //StdOut.printf("The size of from_list and to_list before sort: %d %d\n",fromList.size(),toList.size());
-        Collections.sort(fromList, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (fromBFS.distTo(o1) > fromBFS.distTo(o2)) return 1;
-                if (fromBFS.distTo(o2) > fromBFS.distTo(o1)) return -1;
-                return 0;
-            }
-        });
-        Collections.sort(toList, new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                if (toBFS.distTo(o1) > toBFS.distTo(o2)) return 1;
-                if (toBFS.distTo(o2) > toBFS.distTo(o1)) return -1;
-                return 0;
-            }
-        });
-        /*StdOut.printf("The size of from_list and to_list after sort: %d %d\n",fromList.size(),toList.size());
-        StdOut.println("Here is everything that is in fromList: ");
-        for (int i : fromList) {
-            StdOut.println(" Node: " + i + " Node distance from fromNode:" + fromBFS.distTo(i));
-            if (i==20743) StdOut.println("ancestor is in the from list");
-        }
-        StdOut.println("Here is everything that is in toList: ");
-        for (int j : toList) {
-            StdOut.println(" Ndoe: " + j + " Node distance from toNode: " + toBFS.distTo(j));
-            if (j==20743) StdOut.println("ancestor is in the to list");
-        }*/
-       path = new ArrayList<>();
-        int i = 0, counter = 0;
-        while (counter < fromList.size() && counter < toList.size()) {
-            i = fromList.get(counter);
-            for (int k = 0; k < toList.size(); k++) {
-                if (i==toList.get(k)){
-                    minDistance = fromBFS.distTo(i) + toBFS.distTo(i);
-                    //StdOut.println("minDistance was just changed to :" + minDistance + " for i value of: " + i);
-                    ancestor = i;
+        fromList.sort(Comparator.comparingInt(fromBFS::distTo));
+        toList.sort(Comparator.comparingInt(toBFS::distTo));
+
+        path = new ArrayList<>();
+        int from;
+        int to;
+        for (Integer integer : fromList) {
+            for (Integer value : toList) {
+                from = integer;
+                to = value;
+                if (from == to) {
+                    minDistance = fromBFS.distTo(from) + toBFS.distTo(to);
+                    ancestor = from;
                     path = new ArrayList<>();
-                    for (int j : fromBFS.pathTo(i)) {
-                        path.add(j);
+                    for (int k : Objects.requireNonNull(fromBFS.pathTo(ancestor))) {
+                        path.add(k);
                     }
-                    for (int j : toBFS.pathTo(i)) {
-                        if (path.contains(j)) ancestor = j;
-                        else path.add(j);
+                    for (int k : Objects.requireNonNull(toBFS.pathTo(ancestor))) {
+                        if (!path.contains(k)) path.add(k);
                     }
-                    //StdOut.printf("Updated minDistance, and ancestor. The value of i is: %d The value of minDistance is: %d\n", i, minDistance);
                     return ancestor;
                 }
             }
-            /* j = toList.get(counter);
-            StdOut.printf("checking %d and %d. Distance of %d and %d\n", i, j,fromBFS.distTo(i),toBFS.distTo(j));
-            if (i == j) {
-                minDistance = fromBFS.distTo(i) + toBFS.distTo(j);
-                StdOut.println("minDistance was just changed to :" + minDistance + " for i value of: " + i);
-                ancestor = i;
-                path = new ArrayList<>();
-                for (int k : fromBFS.pathTo(i)) {
-                    path.add(k);
-                }
-                for (int k : toBFS.pathTo(j)) {
-                    if (path.contains(k)) ancestor = k;
-                    else path.add(k);
-                }
-                StdOut.printf("Updated minDistance, and ancestor. The value of i is: %d The value of minDistance is: %d\n", i, minDistance);
-                return ancestor;
-            } */
-            counter++;
         }
         return ancestor;
     }
@@ -290,8 +248,8 @@ public class SAP {
     // lock-step bfs attempt
     private int getAncestorII(int from, int to) {
         // create two breath first searches
-        DeluxBFS fromBFS = new DeluxBFS(digraphDFCopy, from);
-        DeluxBFS toBFS = new DeluxBFS(digraphDFCopy, to);
+        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
+        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
         int[] distances = new int[digraphDFCopy.V()];
         for (int i = 0; i < distances.length; i++) {
             distances[i] = -1;
@@ -337,8 +295,8 @@ public class SAP {
         } */
         marked[from] = true;
         marked[to] = true;
-        DeluxBFS fromBFS = new DeluxBFS(digraphDFCopy, from);
-        DeluxBFS toBFS = new DeluxBFS(digraphDFCopy, to);
+        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
+        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
         MinPQ<Integer> fromQueue = new MinPQ<Integer>(new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {

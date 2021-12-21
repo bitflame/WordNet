@@ -19,7 +19,7 @@ class WordNetTest {
     @Test
     void distance() {
         assertEquals(11, wordNet1.distance("quadrangle", "mountain_devil"));
-        assertEquals(5, wordNet1.distance("worm", "bird"));
+        assertEquals(5, wordNet1.distance("worm", ""));
     }
 
     @Test
