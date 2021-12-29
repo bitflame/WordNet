@@ -1,0 +1,4 @@
+81679,worm
+81680,worm
+81681,worm
+81682,worm louse insect dirt_ball
