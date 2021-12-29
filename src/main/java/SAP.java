@@ -18,6 +18,10 @@ public class SAP {
     private int ancestor = -1;
     private int minDistance = -1;
     private List<Integer> path;
+    Stack<Integer> seen;
+    boolean[] visited;
+    int[] lowLink;
+    boolean[] onStack;
 
     private static class DeluxeBFS {
         private static final int INFINITY = Integer.MAX_VALUE;
@@ -187,57 +191,32 @@ public class SAP {
         fromList.sort(Comparator.comparingInt(fromBFS::distTo));
         toList.sort(Comparator.comparingInt(toBFS::distTo));
 
-        /* path = new ArrayList<>();
+        /*path = new ArrayList<>();
         if (fromList.contains(w)) {
             ancestor = w;
             minDistance = fromBFS.distTo(w);
             return ancestor;
-        } */
-        int from = -1;
-        int to = -1; // just to make sure they'll never equal each other
-        int dist = 0;
+        }*/
+        int from;
+        int to;
         int fromCounter = 0;
         int toCounter = 0;
-        while (!fromList.isEmpty() && !toList.isEmpty()) {
-            while (fromCounter < fromList.size() && fromBFS.distTo(fromList.get(fromCounter)) == dist) {
-                from = fromList.get(fromCounter);
-                fromCounter++;
-                if (from == to) {
-                    minDistance = fromBFS.distTo(from) + toBFS.distTo(to);
-                    ancestor = from;
-                    path = new ArrayList<>();
-                    for (int k : Objects.requireNonNull(fromBFS.pathTo(ancestor))) {
-                        path.add(k);
-                    }
-                    for (int k : Objects.requireNonNull(toBFS.pathTo(ancestor))) {
-                        if (!path.contains(k)) path.add(k);
-                    }
-                    return ancestor;
-                }
+        boolean[] onStack = new boolean[digraphDFCopy.V()];
+        Stack<Integer> fromStack = new Stack<>();
+        Stack<Integer> toStack = new Stack<>();
+        for (int dist = 0; dist < digraphDFCopy.V(); dist++) {
+            while (fromBFS.distTo(fromList.get(fromCounter)) == dist) {
+                fromStack.push(fromList.get(fromCounter));
+                onStack[fromList.get(fromCounter)] = true;
             }
-            while (toCounter < toList.size() && toBFS.distTo(toList.get(toCounter)) == dist) {
-                to = toList.get(toCounter);
-                toCounter++;
-                if (from == to) {
-                    minDistance = fromBFS.distTo(from) + toBFS.distTo(to);
-                    ancestor = from;
-                    path = new ArrayList<>();
-                    for (int k : Objects.requireNonNull(fromBFS.pathTo(ancestor))) {
-                        path.add(k);
-                    }
-                    for (int k : Objects.requireNonNull(toBFS.pathTo(ancestor))) {
-                        if (!path.contains(k)) path.add(k);
-                    }
-                    return ancestor;
-                }
-            }
-            dist++;
+            // if to equals from or anything before it, or from equals to or anything before it
+            if (toBFS.distTo(toList.get(dist)) == dist) to = toList.get(dist);
         }
 
-      /*  for (Integer integer : fromList) {
-
+        /*for (Integer integer : fromList) {
+            from = integer;
             for (Integer value : toList) {
-                from = integer;
+
                 to = value;
                 if (from == to) {
                     minDistance = fromBFS.distTo(from) + toBFS.distTo(to);
@@ -250,21 +229,9 @@ public class SAP {
                         if (!path.contains(k)) path.add(k);
                     }
                     return ancestor;
-                } else if (fromBFS.hasPathTo(to)) {
-                    minDistance = fromBFS.distTo(to) + toBFS.distTo(to);
-                    ;
-                    ancestor = to;
-                    path = new ArrayList<>();
-                    for (int k : Objects.requireNonNull(toBFS.pathTo(ancestor))) {
-                        path.add(k);
-                    }
-                    for (int k : Objects.requireNonNull(toBFS.pathTo(ancestor))) {
-                        if (!path.contains(k)) path.add(k);
-                    }
-                    return ancestor;
-                }
+                } else if (!toBFS.hasPathTo(from)) break;
             }
-        } */
+        }*/
         return ancestor;
     }
 
@@ -300,26 +267,33 @@ public class SAP {
         // create two breath first searches
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
-        int[] distances = new int[digraphDFCopy.V()];
-        Arrays.fill(distances, -1);
+        seen = new Stack<>();
+        lowLink = new int[digraphDFCopy.V()];
+        visited = new boolean[digraphDFCopy.V()];
+        onStack = new boolean[digraphDFCopy.V()];
         for (int i = 0; i < digraphDFCopy.V(); i++) {
-            if (fromBFS.hasPathTo(i) && toBFS.hasPathTo(i)) {
-                distances[i] = fromBFS.distTo(i) + toBFS.distTo(i);
-            }
+            dfs(digraphDFCopy, i);
         }
-        int counter = 0;
-
-        while (counter < distances.length) {
-            if (distances[counter] != -1 && distances[counter] < minDistance) {
-                minDistance = distances[counter];
-                ancestor = counter;
-            }
-            counter++;
-        }
-        // minDistance = minDistance - 2;
         return ancestor;
     }
 
+    private void dfs(Digraph d, int i) {
+        visited[i] = true;
+        seen.push(i);
+        lowLink[i] = i;
+        onStack[i] = true;
+        for (int j : digraphDFCopy.adj(i)) {
+            if (!visited[j]) dfs(d, j);
+            else {
+    // if it is visited set low link value to j
+                while(seen.peek()!=j){
+                    lowLink[seen.pop()]=j;
+                }
+                lowLink[seen.pop()]=j;
+            }
+        }
+
+    }
 
     public static void main(String[] args) {
         /*
