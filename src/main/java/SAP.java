@@ -18,7 +18,8 @@ public class SAP {
     private int ancestor = -1;
     private int minDistance = -1;
     private List<Integer> path;
-    Stack<Integer> seen;
+    Stack<Integer> fromStack;
+    Stack<Integer> toStack;
     boolean[] visited;
     int[] lowLink;
     boolean[] onStack;
@@ -263,36 +264,71 @@ public class SAP {
     }
 
     // lock-step bfs attempt
-    private int getAncestorII(int from, int to) {
+    public int getAncestorII(int from, int to) {
         // create two breath first searches
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
-        seen = new Stack<>();
+        List<Integer> fromList = new ArrayList<>();
+        List<Integer> toList = new ArrayList<>();
+        for (int i = 0; i < digraphDFCopy.V(); i++) {
+            if (fromBFS.hasPathTo(i)) {
+                fromList.add(i);
+                // System.out.println("Here is the node: "+i+"Here is its distance from fromNode: "+fromBFS.distTo(i));
+            }
+            if (toBFS.hasPathTo(i)) {
+                toList.add(i);
+                // System.out.println("Here is the node: "+i+"Here is its distance to toNode: "+toBFS.distTo(i));
+            }
+        }
+        // StdOut.printf("The size of from_list and to_list before sort: %d %d\n",fromList.size(),toList.size());
+        fromList.sort(Comparator.comparingInt(fromBFS::distTo));
+        toList.sort(Comparator.comparingInt(toBFS::distTo));
+        path = new ArrayList<>();
+        fromStack = new Stack<>();
+        toStack = new Stack<>();
         lowLink = new int[digraphDFCopy.V()];
         visited = new boolean[digraphDFCopy.V()];
         onStack = new boolean[digraphDFCopy.V()];
-        for (int i = 0; i < digraphDFCopy.V(); i++) {
-            dfs(digraphDFCopy, i);
+        int counter = 0;
+        int next = 0;
+        while (counter < fromList.size()) {
+            next = fromList.get(counter);
+            if (!visited[next]) {
+                visited[next] = true;
+                fromStack.push(next);
+                onStack[next] = true;
+            } else {
+                /* if it is visited pop the stack until you get to from and add them to the path, then update the
+                minDistance and break */
+                while (fromStack.peek() != from) {
+                    int temp = fromStack.pop();
+                    if (path.isEmpty() || fromBFS.distTo(temp) < path.get(0))
+                        path.add(temp);
+                }
+                path.add(fromStack.pop());
+                minDistance = path.size();
+                break;
+            }
+            next = toList.get(counter);
+            if (!visited[next]) {
+                visited[next] = true;
+                toStack.push(next);
+                onStack[next] = true;
+            } else {
+                /* if it is visited pop the stack until you get to to and add them to the path, then update the
+                minDistance and break */
+                while (toStack.peek() != to) {
+                    int temp = toStack.pop();
+                    if (path.isEmpty() || toBFS.distTo(temp) < path.get(0))
+                        path.add(toStack.pop());
+                }
+                path.add(toStack.pop());
+                minDistance = path.size();
+                break;
+            }
+            counter++;
         }
         return ancestor;
-    }
-
-    private void dfs(Digraph d, int i) {
-        visited[i] = true;
-        seen.push(i);
-        lowLink[i] = i;
-        onStack[i] = true;
-        for (int j : digraphDFCopy.adj(i)) {
-            if (!visited[j]) dfs(d, j);
-            else {
-    // if it is visited set low link value to j
-                while(seen.peek()!=j){
-                    lowLink[seen.pop()]=j;
-                }
-                lowLink[seen.pop()]=j;
-            }
-        }
-
     }
 
     public static void main(String[] args) {

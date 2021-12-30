@@ -7,7 +7,7 @@ public class Digraph2Test {
         SAP sap = new SAP(digraph);
         // System.out.println("length between 1 and 3, should be 2: " + sap.length(1, 3));
         // System.out.println("length between 1 and 2, should be 1: " + sap.length(1, 2));
-        int result = sap.length(1, 3);
+        int result = sap.getAncestorII(1, 3);
         if (result != 2)
             throw new AssertionError("the value of length() between 1 and 3 should be 2, but it is: " + result);
         result = sap.length(1, 2);
