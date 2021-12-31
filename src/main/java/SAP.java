@@ -9,7 +9,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.Arrays;
 
 public class SAP {
@@ -18,11 +17,13 @@ public class SAP {
     private int ancestor = -1;
     private int minDistance = -1;
     private List<Integer> path;
-    Stack<Integer> fromStack;
-    Stack<Integer> toStack;
+    Stack<Integer> stack;
+
     boolean[] visited;
-    int[] lowLink;
+    int[] low;
     boolean[] onStack;
+    int source;
+    int destination;
 
     private static class DeluxeBFS {
         private static final int INFINITY = Integer.MAX_VALUE;
@@ -266,6 +267,8 @@ public class SAP {
     // lock-step bfs attempt
     public int getAncestorII(int from, int to) {
         // create two breath first searches
+        source = from;
+        destination = to;
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
         List<Integer> fromList = new ArrayList<>();
@@ -284,51 +287,59 @@ public class SAP {
         fromList.sort(Comparator.comparingInt(fromBFS::distTo));
         toList.sort(Comparator.comparingInt(toBFS::distTo));
         path = new ArrayList<>();
-        fromStack = new Stack<>();
-        toStack = new Stack<>();
-        lowLink = new int[digraphDFCopy.V()];
+        low = new int[digraphDFCopy.V()];
         visited = new boolean[digraphDFCopy.V()];
         onStack = new boolean[digraphDFCopy.V()];
+        stack = new Stack<>();
         int counter = 0;
         int next = 0;
+        /* I may have to go through all the values not just the ones in from or to */
         while (counter < fromList.size()) {
             next = fromList.get(counter);
             if (!visited[next]) {
-                visited[next] = true;
-                fromStack.push(next);
-                onStack[next] = true;
-            } else {
-                /* if it is visited pop the stack until you get to from and add them to the path, then update the
-                minDistance and break */
-                while (fromStack.peek() != from) {
-                    int temp = fromStack.pop();
-                    if (path.isEmpty() || fromBFS.distTo(temp) < path.get(0))
-                        path.add(temp);
-                }
-                path.add(fromStack.pop());
-                minDistance = path.size();
-                break;
-            }
-            next = toList.get(counter);
-            if (!visited[next]) {
-                visited[next] = true;
-                toStack.push(next);
-                onStack[next] = true;
-            } else {
-                /* if it is visited pop the stack until you get to to and add them to the path, then update the
-                minDistance and break */
-                while (toStack.peek() != to) {
-                    int temp = toStack.pop();
-                    if (path.isEmpty() || toBFS.distTo(temp) < path.get(0))
-                        path.add(toStack.pop());
-                }
-                path.add(toStack.pop());
-                minDistance = path.size();
-                break;
+                dfs(next);
             }
             counter++;
         }
+/*      if the above code does not work try the block below
+        int dist =0;
+        while (dist < digraphDFCopy.V()){
+
+            if (fromBFS.distTo(fromList.iterator().next())==dist ){
+                next =fromList.iterator().next();
+                if (!visited[next]) dfs(next);
+            }
+            if (toBFS.distTo(toList.iterator().next())==dist){
+                next = toList.iterator().next();
+                if (!visited[next]) dfs(next);
+            }
+            dist++;
+        }
+        */
         return ancestor;
+    }
+
+    private void dfs(int i) {
+        visited[i] = true;
+        stack.push(i);
+        onStack[i] = true;
+        low[i] = i;
+
+        for (int j : digraphDFCopy.adj(i)) {
+            if (!visited[j]) dfs(j);
+            if (onStack[j]) low[j] = Math.min(low[i], low[j]);
+        }
+        if (i == low[i]) {  /* We should be at the beginning of a SCC if the id of the node is equal to its low link
+         Need to pop all the values off the stack. I do believe the first match would be the shortest path with ancestor
+         */
+            for (int node : stack) {
+                onStack[node] = false;
+                low[node] = i;/* you may have to look at William's code in the video again to make sure this block
+                is exactly like what he said. I am not popping anything off the stack. It is also not working the way
+                 he described */
+                if (node == i) break;
+            }
+        }
     }
 
     public static void main(String[] args) {
