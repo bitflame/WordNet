@@ -17,6 +17,9 @@ public class Digraph2Test {
         int ancestor = sap.getAncestorII(1, 3);
         if (ancestor != 3)
             throw new AssertionError("the value of getAncestorII(1, 3) should be 3 but it is: " + ancestor);
+       /* int distance = sap.length(1, 3);
+        if (distance != 2)
+            throw new AssertionError("The length of Minimum Distance between 1 and 3 should be 2, but it is: " + distance); */
         ancestor = sap.getAncestorII(1, 5);
         if (ancestor != 0)
             throw new AssertionError("the value of getAncestorII(1, 5) should be 0 but it is: " + ancestor);

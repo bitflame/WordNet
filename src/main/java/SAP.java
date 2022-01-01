@@ -22,8 +22,7 @@ public class SAP {
     boolean[] visited;
     int[] low;
     boolean[] onStack;
-    int source;
-    int destination;
+
 
     private static class DeluxeBFS {
         private static final int INFINITY = Integer.MAX_VALUE;
@@ -193,12 +192,6 @@ public class SAP {
         fromList.sort(Comparator.comparingInt(fromBFS::distTo));
         toList.sort(Comparator.comparingInt(toBFS::distTo));
 
-        /*path = new ArrayList<>();
-        if (fromList.contains(w)) {
-            ancestor = w;
-            minDistance = fromBFS.distTo(w);
-            return ancestor;
-        }*/
         int from;
         int to;
         int fromCounter = 0;
@@ -214,26 +207,6 @@ public class SAP {
             // if to equals from or anything before it, or from equals to or anything before it
             if (toBFS.distTo(toList.get(dist)) == dist) to = toList.get(dist);
         }
-
-        /*for (Integer integer : fromList) {
-            from = integer;
-            for (Integer value : toList) {
-
-                to = value;
-                if (from == to) {
-                    minDistance = fromBFS.distTo(from) + toBFS.distTo(to);
-                    ancestor = from;
-                    path = new ArrayList<>();
-                    for (int k : Objects.requireNonNull(fromBFS.pathTo(ancestor))) {
-                        path.add(k);
-                    }
-                    for (int k : Objects.requireNonNull(toBFS.pathTo(ancestor))) {
-                        if (!path.contains(k)) path.add(k);
-                    }
-                    return ancestor;
-                } else if (!toBFS.hasPathTo(from)) break;
-            }
-        }*/
         return ancestor;
     }
 
@@ -264,11 +237,7 @@ public class SAP {
         return path;
     }
 
-    // lock-step bfs attempt
     public int getAncestorII(int from, int to) {
-        // create two breath first searches
-        source = from;
-        destination = to;
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
         List<Integer> fromList = new ArrayList<>();
@@ -291,8 +260,6 @@ public class SAP {
         visited = new boolean[digraphDFCopy.V()];
         onStack = new boolean[digraphDFCopy.V()];
         stack = new Stack<>();
-        int fromCounter;
-        int toCounter;
         int next = 0;
         int dist = 0;
         while (dist < digraphDFCopy.V()) {
