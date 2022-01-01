@@ -7,6 +7,11 @@ public class Digraph1Test {
         SAP sap = new SAP(digraph);
         //System.out.println(" The ancestor between 2 and 6 is: " + sap.ancestorII(2, 6) + " Minimum Distance: " + sap.lengthII(2,6));
         //System.out.println(" The ancestor between 2 and 0 is: " + sap.ancestorII(2, 0) + " Minimum Distance: " + sap.lengthII(2,6));
+        int distance = sap.length(2, 6);
+        sap = new SAP(digraph);
+        distance = sap.length(2,6);
+        if (distance != -1)
+            throw new AssertionError("The length of Minimum Distance between 2 and 6 should be -1, but it is: " + distance);
         int result = sap.length(2, 6);
         if (result != -1)
             throw new AssertionError("the value of length() to nonexistent node should be -1, but it actually is: " + result);

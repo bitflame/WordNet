@@ -14,14 +14,12 @@ import java.util.Arrays;
 public class SAP {
     private boolean hasCycle = false;
     private final Digraph digraphDFCopy;
-    private int ancestor = -1;
-    private int minDistance = -1;
+    private int ancestor;
+    private int minDistance;
     private List<Integer> path;
-    Stack<Integer> stack;
-
-    boolean[] visited;
-    int[] low;
-    boolean[] onStack;
+    private Stack<Integer> stack;
+    private boolean[] visited;
+    private boolean[] onStack;
 
 
     private static class DeluxeBFS {
@@ -146,20 +144,14 @@ public class SAP {
             hasCycle = true;
         }
         digraphDFCopy = digraph;
+        minDistance = -1;
+        ancestor = -1;
     }
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         ancestor(v, w);
         return minDistance;
-    }
-
-    private boolean nodeExists(int h) {
-        boolean exists = false;
-        for (int i = 0; i < digraphDFCopy.V(); i++) {
-            if (h == i) exists = true;
-        }
-        return exists;
     }
 
     // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
@@ -205,6 +197,8 @@ public class SAP {
         }
         return ancestor;
         */
+        minDistance = -1;
+        ancestor = -1;
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
         List<Integer> fromList = new ArrayList<>();
@@ -223,7 +217,7 @@ public class SAP {
         fromList.sort(Comparator.comparingInt(fromBFS::distTo));
         toList.sort(Comparator.comparingInt(toBFS::distTo));
         path = new ArrayList<>();
-        low = new int[digraphDFCopy.V()];
+        // low = new int[digraphDFCopy.V()];
         visited = new boolean[digraphDFCopy.V()];
         onStack = new boolean[digraphDFCopy.V()];
         stack = new Stack<>();
@@ -259,21 +253,21 @@ public class SAP {
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
-        int distance = Integer.MAX_VALUE;
-        int currentAncestor = -1;
+        /*int distance = Integer.MAX_VALUE;
+        int currentAncestor = -1;*/
 
         for (int i : v) {
             for (int j : w) {
                 //StdOut.printf("Calling ancestor(%d, %d) ", i, j);
                 ancestor(i, j);
-                if (distance > minDistance) {
+                /*if (distance > minDistance) {
                     distance = minDistance;
                     currentAncestor = ancestor;
-                }
+                }*/
             }
         }
-        minDistance = distance;
-        ancestor = currentAncestor;
+        /*minDistance = distance;
+        ancestor = currentAncestor;*/
         return ancestor;
     }
 
@@ -301,7 +295,7 @@ public class SAP {
         fromList.sort(Comparator.comparingInt(fromBFS::distTo));
         toList.sort(Comparator.comparingInt(toBFS::distTo));
         path = new ArrayList<>();
-        low = new int[digraphDFCopy.V()];
+        // low = new int[digraphDFCopy.V()];
         visited = new boolean[digraphDFCopy.V()];
         onStack = new boolean[digraphDFCopy.V()];
         stack = new Stack<>();
