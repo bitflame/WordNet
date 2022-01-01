@@ -230,7 +230,7 @@ public class SAP {
         int next = 0;
         int dist = 0;
         while (dist < digraphDFCopy.V()) {
-            while (fromBFS.distTo(fromList.iterator().next()) == dist) {
+            while (!fromList.isEmpty() && fromBFS.distTo(fromList.iterator().next()) == dist) {
                 next = fromList.iterator().next();
                 fromList.remove(0);
                 if (!visited[next]) visited[next] = true;
