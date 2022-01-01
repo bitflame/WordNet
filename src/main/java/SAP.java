@@ -291,55 +291,35 @@ public class SAP {
         visited = new boolean[digraphDFCopy.V()];
         onStack = new boolean[digraphDFCopy.V()];
         stack = new Stack<>();
-        int counter = 0;
+        int fromCounter;
+        int toCounter;
         int next = 0;
-        /* I may have to go through all the values not just the ones in from or to */
-        while (counter < fromList.size()) {
-            next = fromList.get(counter);
-            if (!visited[next]) {
-                dfs(next);
-            }
-            counter++;
-        }
-/*      if the above code does not work try the block below
-        int dist =0;
-        while (dist < digraphDFCopy.V()){
+        int dist = 0;
+        while (dist < digraphDFCopy.V()) {
 
-            if (fromBFS.distTo(fromList.iterator().next())==dist ){
-                next =fromList.iterator().next();
-                if (!visited[next]) dfs(next);
+            while (fromBFS.distTo(fromList.iterator().next()) == dist) {
+                next = fromList.iterator().next();
+                fromList.remove(0);
+                if (!visited[next]) visited[next] = true;
+                else {
+                    ancestor = next;
+                    minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
+                    return ancestor;
+                }
             }
-            if (toBFS.distTo(toList.iterator().next())==dist){
+            while (!toList.isEmpty() && toBFS.distTo(toList.iterator().next()) == dist) {
                 next = toList.iterator().next();
-                if (!visited[next]) dfs(next);
+                toList.remove(0);
+                if (!visited[next]) visited[next] = true;
+                else {
+                    ancestor = next;
+                    minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
+                    return ancestor;
+                }
             }
             dist++;
         }
-        */
         return ancestor;
-    }
-
-    private void dfs(int i) {
-        visited[i] = true;
-        stack.push(i);
-        onStack[i] = true;
-        low[i] = i;
-
-        for (int j : digraphDFCopy.adj(i)) {
-            if (!visited[j]) dfs(j);
-            if (onStack[j]) low[j] = Math.min(low[i], low[j]);
-        }
-        if (i == low[i]) {  /* We should be at the beginning of a SCC if the id of the node is equal to its low link
-         Need to pop all the values off the stack. I do believe the first match would be the shortest path with ancestor
-         */
-            for (int node : stack) {
-                onStack[node] = false;
-                low[node] = i;/* you may have to look at William's code in the video again to make sure this block
-                is exactly like what he said. I am not popping anything off the stack. It is also not working the way
-                 he described */
-                if (node == i) break;
-            }
-        }
     }
 
     public static void main(String[] args) {

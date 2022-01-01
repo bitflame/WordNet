@@ -20,6 +20,14 @@ public class Digraph2Test {
         ancestor = sap.getAncestorII(1, 5);
         if (ancestor != 0)
             throw new AssertionError("the value of getAncestorII(1, 5) should be 0 but it is: " + ancestor);
+        ancestor = sap.getAncestorII(1, 0);
+        if (ancestor != 0) throw new AssertionError("the value of getAncestorII(1,0) should be 0 but it is" + ancestor);
+        ancestor = sap.getAncestorII(1, 4);
+        if (ancestor != 0)
+            throw new AssertionError("the value of getAncestorII(1,4) should be 0 but it is: " + ancestor);
+        ancestor = sap.getAncestorII(1, 2);
+        if (ancestor != 2)
+            throw new AssertionError("the value of getAncestorII(1,2) should be 2, but it is: " + ancestor);
         // result = sap.length(1, 3);
         // if (result != 2) throw new AssertionError("the value of length() between 1 and 3 should be 2, but it is: " + result);
         // result = sap.length(1, 0);
