@@ -172,8 +172,39 @@ public class SAP {
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
-        // StdOut.printf("from: %d to: %d v: %d w: %d at the beginning of call to ancestor. ", from, to, v, w);
+        /*
         if (!nodeExists(v) || !nodeExists(w)) return ancestor;
+        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
+        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
+        List<Integer> fromList = new ArrayList<>();
+        List<Integer> toList = new ArrayList<>();
+        for (int i = 0; i < digraphDFCopy.V(); i++) {
+            if (fromBFS.hasPathTo(i)) {
+                fromList.add(i);
+            }
+            if (toBFS.hasPathTo(i)) {
+                toList.add(i);
+            }
+        }
+        fromList.sort(Comparator.comparingInt(fromBFS::distTo));
+        toList.sort(Comparator.comparingInt(toBFS::distTo));
+
+        int from;
+        int to;
+        int fromCounter = 0;
+
+        boolean[] onStack = new boolean[digraphDFCopy.V()];
+        Stack<Integer> fromStack = new Stack<>();
+        Stack<Integer> toStack = new Stack<>();
+        for (int dist = 0; dist < digraphDFCopy.V(); dist++) {
+            while (fromBFS.distTo(fromList.get(fromCounter)) == dist) {
+                fromStack.push(fromList.get(fromCounter));
+                onStack[fromList.get(fromCounter)] = true;
+            }
+            if (toBFS.distTo(toList.get(dist)) == dist) to = toList.get(dist);
+        }
+        return ancestor;
+        */
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
         List<Integer> fromList = new ArrayList<>();
@@ -191,21 +222,35 @@ public class SAP {
         // StdOut.printf("The size of from_list and to_list before sort: %d %d\n",fromList.size(),toList.size());
         fromList.sort(Comparator.comparingInt(fromBFS::distTo));
         toList.sort(Comparator.comparingInt(toBFS::distTo));
-
-        int from;
-        int to;
-        int fromCounter = 0;
-        int toCounter = 0;
-        boolean[] onStack = new boolean[digraphDFCopy.V()];
-        Stack<Integer> fromStack = new Stack<>();
-        Stack<Integer> toStack = new Stack<>();
-        for (int dist = 0; dist < digraphDFCopy.V(); dist++) {
-            while (fromBFS.distTo(fromList.get(fromCounter)) == dist) {
-                fromStack.push(fromList.get(fromCounter));
-                onStack[fromList.get(fromCounter)] = true;
+        path = new ArrayList<>();
+        low = new int[digraphDFCopy.V()];
+        visited = new boolean[digraphDFCopy.V()];
+        onStack = new boolean[digraphDFCopy.V()];
+        stack = new Stack<>();
+        int next = 0;
+        int dist = 0;
+        while (dist < digraphDFCopy.V()) {
+            while (fromBFS.distTo(fromList.iterator().next()) == dist) {
+                next = fromList.iterator().next();
+                fromList.remove(0);
+                if (!visited[next]) visited[next] = true;
+                else {
+                    ancestor = next;
+                    minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
+                    return ancestor;
+                }
             }
-            // if to equals from or anything before it, or from equals to or anything before it
-            if (toBFS.distTo(toList.get(dist)) == dist) to = toList.get(dist);
+            while (!toList.isEmpty() && toBFS.distTo(toList.iterator().next()) == dist) {
+                next = toList.iterator().next();
+                toList.remove(0);
+                if (!visited[next]) visited[next] = true;
+                else {
+                    ancestor = next;
+                    minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
+                    return ancestor;
+                }
+            }
+            dist++;
         }
         return ancestor;
     }
