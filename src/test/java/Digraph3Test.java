@@ -20,5 +20,7 @@ public class Digraph3Test {
         if (distance != 3)
             throw new AssertionError("The second time running length() for Digraph3Test. the value of " +
                     "length(10, 7) should be 3 but it is: " + distance);
+        distance = sap.length(12, 13);
+        if (distance != 4) throw new AssertionError("The length between 12 and 13 should be 4, but it is: " + distance);
     }
 }

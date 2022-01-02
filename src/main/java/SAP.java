@@ -199,6 +199,12 @@ public class SAP {
         */
         minDistance = -1;
         ancestor = -1;
+        int temp;
+        if (w < v) {
+            temp = w;
+            w = v;
+            v = temp;
+        }
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
         List<Integer> fromList = new ArrayList<>();
@@ -223,6 +229,16 @@ public class SAP {
         stack = new Stack<>();
         int next = 0;
         int dist = 0;
+        if (toBFS.hasPathTo(v)) {
+            minDistance = toBFS.distTo(v);
+            ancestor = v;
+            return ancestor;
+        }
+        if (fromBFS.hasPathTo(w)) {
+            minDistance = fromBFS.distTo(w);
+            ancestor = w;
+            return ancestor;
+        }
         while (dist < digraphDFCopy.V()) {
             while (!fromList.isEmpty() && fromBFS.distTo(fromList.iterator().next()) == dist) {
                 next = fromList.iterator().next();
