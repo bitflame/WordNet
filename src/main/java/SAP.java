@@ -17,10 +17,17 @@ public class SAP {
     private int ancestor;
     private int minDistance;
     private List<Integer> path;
-    private Stack<Integer> stack;
     private boolean[] visited;
+    private int from;
+    private int to;
+    private int n;  // Number of vertices
+    private int[] low;
+    private int[] ids;
     private boolean[] onStack;
-
+    private int num = 0;
+    private Stack<Integer> stack;
+    private int sccCount = 0;
+    private int UNVISITED = -1;
 
     private static class DeluxeBFS {
         private static final int INFINITY = Integer.MAX_VALUE;
@@ -142,6 +149,7 @@ public class SAP {
         DirectedCycle cycleFinder = new DirectedCycle(digraph);
         if (cycleFinder.hasCycle()) {
             hasCycle = true;
+            // throw new IllegalArgumentException("The input to the constructor does not correspond to a rooted DAG");
         }
         digraphDFCopy = digraph;
         minDistance = -1;
@@ -150,6 +158,7 @@ public class SAP {
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
+        if (v == from && w == to) return minDistance;
         ancestor(v, w);
         return minDistance;
     }
@@ -197,14 +206,17 @@ public class SAP {
         }
         return ancestor;
         */
+        if (v == from && w == to) return ancestor;
+        from = v;
+        to = w;
         minDistance = -1;
         ancestor = -1;
         int temp;
-        if (w < v) {
+      /*  if (w < v) {
             temp = w;
             w = v;
             v = temp;
-        }
+        }*/
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
         List<Integer> fromList = new ArrayList<>();
@@ -225,11 +237,9 @@ public class SAP {
         path = new ArrayList<>();
         // low = new int[digraphDFCopy.V()];
         visited = new boolean[digraphDFCopy.V()];
-        onStack = new boolean[digraphDFCopy.V()];
-        stack = new Stack<>();
         int next = 0;
         int dist = 0;
-        if (toBFS.hasPathTo(v)) {
+        /*if (toBFS.hasPathTo(v)) {
             minDistance = toBFS.distTo(v);
             ancestor = v;
             return ancestor;
@@ -238,7 +248,7 @@ public class SAP {
             minDistance = fromBFS.distTo(w);
             ancestor = w;
             return ancestor;
-        }
+        }*/
         while (dist < digraphDFCopy.V()) {
             while (!fromList.isEmpty() && fromBFS.distTo(fromList.iterator().next()) == dist) {
                 next = fromList.iterator().next();
@@ -246,6 +256,7 @@ public class SAP {
                 if (!visited[next]) visited[next] = true;
                 else {
                     ancestor = next;
+                    if (next == to) minDistance = fromBFS.distTo(next);
                     minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
                     return ancestor;
                 }
@@ -256,7 +267,9 @@ public class SAP {
                 if (!visited[next]) visited[next] = true;
                 else {
                     ancestor = next;
-                    minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
+                    if (next == from) minDistance = toBFS.distTo(next);
+                    else minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
+
                     return ancestor;
                 }
             }
@@ -271,7 +284,8 @@ public class SAP {
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
         /*int distance = Integer.MAX_VALUE;
         int currentAncestor = -1;*/
-
+        minDistance = -1;
+        ancestor = -1;
         for (int i : v) {
             for (int j : w) {
                 //StdOut.printf("Calling ancestor(%d, %d) ", i, j);
@@ -292,7 +306,8 @@ public class SAP {
         return path;
     }
 
-    public int getAncestorII(int from, int to) {
+
+    private int getAncestorII(int from, int to) {
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, from);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, to);
         List<Integer> fromList = new ArrayList<>();
@@ -313,8 +328,6 @@ public class SAP {
         path = new ArrayList<>();
         // low = new int[digraphDFCopy.V()];
         visited = new boolean[digraphDFCopy.V()];
-        onStack = new boolean[digraphDFCopy.V()];
-        stack = new Stack<>();
         int next = 0;
         int dist = 0;
         while (dist < digraphDFCopy.V()) {
@@ -342,6 +355,47 @@ public class SAP {
             dist++;
         }
         return ancestor;
+    }
+
+    public int[] findSccs() {
+        /*
+    private int n;  // Number of vertices
+    private int[]  low;
+    private boolean [] onStack;
+    private int num = 0;
+    private Stack<Integer> stack;
+    private int sccCount = 0;
+         */
+        n = digraphDFCopy.V();
+        low = new int[n];
+        onStack = new boolean[n];
+        stack = new Stack<>();
+        visited = new boolean[n];
+
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) dfs(i);
+        }
+        return low;
+    }
+
+    private void dfs(int i) {
+        stack.push(i);
+        onStack[i] = true;
+        visited[i] = true;
+        low[i] = i;
+        for (int j : digraphDFCopy.adj(i)) {
+            if (!visited[j]) dfs(j);
+            if (onStack[j]) low[i] = Math.min(low[i], low[j]);
+        }
+        /* If we at the start of a SCC empty the seen stack until we're back to the start of the SCC */
+        if (i == low[i]) {
+            for (int node : stack) {
+                stack.pop();
+                onStack[node] = false;
+                if (node == i) break;
+            }
+            sccCount++;
+        }
     }
 
     public static void main(String[] args) {
