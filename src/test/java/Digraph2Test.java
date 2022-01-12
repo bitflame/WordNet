@@ -5,11 +5,17 @@ public class Digraph2Test {
     public static void main(String[] args) {
         Digraph digraph = new Digraph(new In(args[0]));
         SAP sap = new SAP(digraph);
-        int ancestor = sap.ancestor(1, 5);
+        int ancestor = sap.ancestor(2, 0);
+        if (ancestor != 0)
+            throw new AssertionError("the value of ancesttor(2, 0) should be 0 but it is: " + ancestor);
+        int dist = sap.length(2, 0);
+        if (dist != 4) throw new AssertionError("the value of length(2, 0) should be 4 but it is: " +
+                dist);
+        ancestor = sap.ancestor(1, 5);
         if (ancestor != 0)
             throw new AssertionError("the value of ancesttor(1, 5) should be 0 but it is: " + ancestor);
-        int dist = sap.length(1, 5);
-        if (dist != 2) throw new AssertionError("the value of length(1, 5) should be 2 but it is: " +
+        dist = sap.length(1, 5);
+        if (dist != 4) throw new AssertionError("the value of length(1, 5) should be 4 but it is: " +
                 dist);
         ancestor = sap.ancestor(1, 3);
         if (ancestor != 3)

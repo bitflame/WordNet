@@ -1,6 +1,4 @@
-import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.SeparateChainingHashST;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.StdOut;
@@ -154,6 +152,7 @@ public class SAP {
     public int length(int v, int w) {
         if (v == from && w == to) return minDistance;
         if (v == w) {
+            ancestor = v;
             return minDistance = 0;
         }
         ancestor(v, w);
@@ -255,15 +254,15 @@ public class SAP {
             dist++;
         }
         */
-        if (this.from == from && this.to == to) return ancestor;
-        if (from == to) {
+        if (this.from == v && this.to == w) return ancestor;
+        if (v == w) {
             minDistance = 0;
             return ancestor = from;
         }
         ancestor = -1;
         minDistance = -1;
-        this.from = v;
-        this.to = w;
+        from = v;
+        to = w;
         n = digraphDFCopy.V();
         marked = new boolean[n];
         edgeTo = new int[n];
@@ -332,10 +331,9 @@ public class SAP {
                     // what about marked[]? What does it have in it?
                     ancestor = j;
                     minDistance = 0;
-                    for (int i = from; i != to; i = edgeTo[i]) {
-                        minDistance++;
+                    for (int i = 0; i < n; i++) {
+                        if (marked[i] && edgeTo[i] != i) minDistance++;
                     }
-                    if (ancestor != to && ancestor != from) minDistance++;
                     return;
                 }
             }
@@ -349,10 +347,9 @@ public class SAP {
                     ancestor = j;
                     minDistance = 0;
                     // Go from ancestor to from, and to 'to'
-                    for (int i = ancestor; i != from; i = edgeTo[i]) {
-                        minDistance++;
+                    for (int i = 0; i < n; i++) {
+                        if (marked[i] && edgeTo[i] != i) minDistance++;
                     }
-                    minDistance++;
                     return;
                 }
             }
