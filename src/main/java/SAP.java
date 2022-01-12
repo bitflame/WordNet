@@ -163,6 +163,7 @@ public class SAP {
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
+
         ancestor(v, w);
         return minDistance;
     }
@@ -290,7 +291,7 @@ public class SAP {
     }
 
 
-    private int getAncestorII(int from, int to) {
+    public int getAncestorII(int from, int to) {
         if (this.from == from && this.to == to) return ancestor;
         if (from == to) {
             minDistance = 0;
@@ -307,7 +308,7 @@ public class SAP {
         return ancestor;
     }
 
-    private int getLengthII(int f, int t) {
+    public int getLengthII(int f, int t) {
         if (f != from && t != to) {
             getAncestorII(f, t);
         }
@@ -332,25 +333,26 @@ public class SAP {
                     ancestor = j;
                     minDistance = 0;
                     for (int i = 0; i < n; i++) {
-                        if (marked[i] && edgeTo[i] != i) minDistance++;
+                        if (marked[i] && i != from && i != to) minDistance++;
                     }
                     return;
                 }
             }
-            v = queue.dequeue();
-            for (int j : digraphDFCopy.adj(v)) {
-                if (!marked[j]) {
-                    edgeTo[j] = v;
-                    marked[j] = true;
-                    queue.enqueue(j);
-                } else {
-                    ancestor = j;
-                    minDistance = 0;
-                    // Go from ancestor to from, and to 'to'
-                    for (int i = 0; i < n; i++) {
-                        if (marked[i] && edgeTo[i] != i) minDistance++;
+            if (!queue.isEmpty()) {
+                v = queue.dequeue();
+                for (int j : digraphDFCopy.adj(v)) {
+                    if (!marked[j]) {
+                        edgeTo[j] = v;
+                        marked[j] = true;
+                        queue.enqueue(j);
+                    } else {
+                        ancestor = j;
+                        minDistance = 0;
+                        for (int i = 0; i < n; i++) {
+                            if (marked[i] && i != from && i != to) minDistance++;
+                        }
+                        return;
                     }
-                    return;
                 }
             }
         }
