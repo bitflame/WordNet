@@ -14,9 +14,20 @@ public class Digraph2Test {
         ancestor = sap.ancestor(1, 3);
         if (ancestor != 3)
             throw new AssertionError("the value of ancesttor(1, 3) should be 3 but it is: " + ancestor);
-         dist = sap.length(1, 3);
+        dist = sap.length(1, 3);
         if (dist != 2) throw new AssertionError("the value of length(1, 3) should be 2 but it is: " +
                 dist);
+        ancestor = sap.ancestor(1, 2);
+        if (ancestor != 2)
+            throw new AssertionError("the value of ancestor(1,2) should be 2 but it is: " + dist);
+        dist = sap.length(1, 2);
+        if (dist != 1) throw new AssertionError("the value of length(1,2) should be 1 but it is: " +
+                dist);
+        ancestor = sap.ancestor(1, 0);
+        if (ancestor != 0)
+            throw new AssertionError("the value of ancestor(1,0) should be 0 but it is: " + ancestor);
+        dist = sap.length(1, 0);
+        if (dist != 1) throw new AssertionError("the value of length(1,0) should be 1 but it is: " + dist);
          /* System.out.println("length between 1 and 3, should be 2: " + sap.length(1, 3));
          System.out.println("length between 1 and 2, should be 1: " + sap.length(1, 2));
          int result = sap.getAncestorII(1, 3);
