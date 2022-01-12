@@ -30,5 +30,6 @@ public class Digraph1Test {
         if (result != 3)
             throw new AssertionError("the value of length() between 12 and 9 should be 3, but it actually is: " + result);
         // if (result != 45) throw new AssertionError("why isn't minDistance value = 45? ");
+
     }
 }

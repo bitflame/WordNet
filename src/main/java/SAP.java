@@ -219,6 +219,8 @@ public class SAP {
         to = w;
         minDistance = -1;
         ancestor = -1;
+        if ((digraphDFCopy.indegree(v) == 0 && digraphDFCopy.outdegree(v) == 0) || (digraphDFCopy.indegree(w) == 0 && digraphDFCopy.outdegree(w) == 0))
+            return ancestor;
         int temp;
       /*  if (w < v) {
             temp = w;
@@ -330,6 +332,12 @@ public class SAP {
         return ancestor;
     }
 
+    public int getLengthII(int f, int t) {
+        if (f != from && t != to) {
+            getAncestorII(f, t);
+        }
+        return minDistance;
+    }
 
     private void lockStepBFS(int f, int t) {
         Queue<Integer> queue = new Queue<>();
@@ -351,7 +359,7 @@ public class SAP {
                     for (int i = from; i != to; i = edgeTo[i]) {
                         minDistance++;
                     }
-                    minDistance++;
+                    if (ancestor != to && ancestor != from) minDistance++;
                     return;
                 }
             }
