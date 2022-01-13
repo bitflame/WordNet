@@ -4,6 +4,7 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Topological;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,15 +16,17 @@ public class SAP {
     private final Digraph digraphDFCopy;
     private int ancestor;
     private int minDistance;
-    private List<Integer> path;
+    private Stack<Integer> path;
     private int from;
     private int to;
     private int n;
     private boolean[] marked;
     private int[] edgeTo;
+    private int[] disTo;
+    Topological topological;
+    private static final int INFINITY = Integer.MAX_VALUE;
 
     private static class DeluxeBFS {
-        private static final int INFINITY = Integer.MAX_VALUE;
         private final boolean[] marked;
         private final int[] edgeTo;
         private final int[] distTo;
@@ -262,11 +265,18 @@ public class SAP {
         }
         ancestor = -1;
         minDistance = -1;
+        if ((digraphDFCopy.indegree(w) == 0 && digraphDFCopy.outdegree(w) == 0) || (digraphDFCopy.indegree(v) == 0 && digraphDFCopy.outdegree(v) == 0))
+            return ancestor;
         from = v;
         to = w;
         n = digraphDFCopy.V();
         marked = new boolean[n];
         edgeTo = new int[n];
+        disTo = new int[n];
+        path = new Stack<>();
+        for (int i = 0; i < n; i++) {
+            disTo[i] = INFINITY;
+        }
         lockStepBFS(from, to);
         return ancestor;
     }
@@ -285,7 +295,7 @@ public class SAP {
         return ancestor;
     }
 
-    private List<Integer> getPath(int from, int to) {
+    private Stack<Integer> getPath(int from, int to) {
         ancestor(from, to);
         return path;
     }
@@ -304,6 +314,10 @@ public class SAP {
         n = digraphDFCopy.V();
         marked = new boolean[n];
         edgeTo = new int[n];
+        disTo = new int[n];
+        for (int i = 0; i < n; i++) {
+            disTo[i] = INFINITY;
+        }
         lockStepBFS(from, to);
         return ancestor;
     }
@@ -320,23 +334,30 @@ public class SAP {
         queue.enqueue(f);
         queue.enqueue(t);
         marked[f] = true;
+        path.push(f);
+        disTo[f] = 0;
         marked[t] = true;
+        path.push(t);
+        disTo[t] = 0;
         while (!queue.isEmpty()) {
             int v = queue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
                 if (!marked[j]) {
                     edgeTo[j] = v;
                     marked[j] = true;
+                    disTo[j] = disTo[v] + 1;
                     queue.enqueue(j);
                 } else {
-                    // what about marked[]? What does it have in it?
                     ancestor = j;
-                    minDistance = 0;
-                    for (int i = 0; i < n; i++) {
-                        if (marked[i] && i != from && i != to) minDistance++;
+                    if ((ancestor == f || ancestor == t) && (disTo[ancestor] == 0)) minDistance = 1;
+                    else {
+                        while (path.isEmpty()) {
+                            minDistance += disTo[path.pop()];
+                        }
                     }
                     return;
                 }
+                path.push(j);
             }
             if (!queue.isEmpty()) {
                 v = queue.dequeue();
@@ -344,15 +365,20 @@ public class SAP {
                     if (!marked[j]) {
                         edgeTo[j] = v;
                         marked[j] = true;
+                        disTo[j] = disTo[v] + 1;
                         queue.enqueue(j);
                     } else {
                         ancestor = j;
-                        minDistance = 0;
-                        for (int i = 0; i < n; i++) {
-                            if (marked[i] && i != from && i != to) minDistance++;
+                        if ((ancestor == f || ancestor == t) && (disTo[ancestor] == 0)) minDistance = 1;
+                        // add the disTo for all the nodes in path except
+                        else {
+                            while (path.isEmpty()) {
+                                minDistance += disTo[path.pop()];
+                            }
                         }
                         return;
                     }
+                    path.push(j);
                 }
             }
         }
