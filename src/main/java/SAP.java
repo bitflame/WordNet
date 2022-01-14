@@ -159,10 +159,12 @@ public class SAP {
             return minDistance = 0;
         }
         ancestor(v, w);
+        /*
         if (ancestor == -1) return minDistance;
         DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
         DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
         minDistance = fromBFS.distTo(ancestor) + toBFS.distTo(ancestor);
+        */
         return minDistance;
     }
 
@@ -177,103 +179,18 @@ public class SAP {
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
-        /*
-        if (!nodeExists(v) || !nodeExists(w)) return ancestor;
-        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
-        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
-        List<Integer> fromList = new ArrayList<>();
-        List<Integer> toList = new ArrayList<>();
-        for (int i = 0; i < digraphDFCopy.V(); i++) {
-            if (fromBFS.hasPathTo(i)) {
-                fromList.add(i);
-            }
-            if (toBFS.hasPathTo(i)) {
-                toList.add(i);
-            }
-        }
-        fromList.sort(Comparator.comparingInt(fromBFS::distTo));
-        toList.sort(Comparator.comparingInt(toBFS::distTo));
-
-        int from;
-        int to;
-        int fromCounter = 0;
-
-        boolean[] onStack = new boolean[digraphDFCopy.V()];
-        Stack<Integer> fromStack = new Stack<>();
-        Stack<Integer> toStack = new Stack<>();
-        for (int dist = 0; dist < digraphDFCopy.V(); dist++) {
-            while (fromBFS.distTo(fromList.get(fromCounter)) == dist) {
-                fromStack.push(fromList.get(fromCounter));
-                onStack[fromList.get(fromCounter)] = true;
-            }
-            if (toBFS.distTo(toList.get(dist)) == dist) to = toList.get(dist);
-        }
-        return ancestor;
-        */
-        /*
-        if (v == from && w == to) return ancestor;
-        from = v;
-        to = w;
-        minDistance = -1;
-        ancestor = -1;
-        if ((digraphDFCopy.indegree(v) == 0 && digraphDFCopy.outdegree(v) == 0) || (digraphDFCopy.indegree(w) == 0 && digraphDFCopy.outdegree(w) == 0))
-            return ancestor;
-        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
-        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
-        List<Integer> fromList = new ArrayList<>();
-        List<Integer> toList = new ArrayList<>();
-        for (int i = 0; i < digraphDFCopy.V(); i++) {
-            if (fromBFS.hasPathTo(i)) {
-                fromList.add(i);
-            }
-            if (toBFS.hasPathTo(i)) {
-                toList.add(i);
-            }
-        }
-        fromList.sort(Comparator.comparingInt(fromBFS::distTo));
-        toList.sort(Comparator.comparingInt(toBFS::distTo));
-        path = new ArrayList<>();
-        visited = new boolean[digraphDFCopy.V()];
-        int next = 0;
-        int dist = 0;
-        while (dist < digraphDFCopy.V()) {
-            while (!fromList.isEmpty() && fromBFS.distTo(fromList.iterator().next()) == dist) {
-                next = fromList.iterator().next();
-                fromList.remove(0);
-                if (!visited[next]) visited[next] = true;
-                else {
-                    ancestor = next;
-                    if (next == to) minDistance = fromBFS.distTo(next);
-                    minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
-                    return ancestor;
-                }
-            }
-            while (!toList.isEmpty() && toBFS.distTo(toList.iterator().next()) == dist) {
-                next = toList.iterator().next();
-                toList.remove(0);
-                if (!visited[next]) visited[next] = true;
-                else {
-                    ancestor = next;
-                    if (next == from) minDistance = toBFS.distTo(next);
-                    else minDistance = fromBFS.distTo[next] + toBFS.distTo[next];
-                    return ancestor;
-                }
-            }
-            dist++;
-        }
-        */
         if (this.from == v && this.to == w) return ancestor;
         if (v == w) {
             minDistance = 0;
             ancestor = v;
             return ancestor;
         }
+        from = v;
+        to = w;
         ancestor = -1;
         minDistance = -1;
         if ((digraphDFCopy.indegree(w) == 0 && digraphDFCopy.outdegree(w) == 0) || (digraphDFCopy.indegree(v) == 0 && digraphDFCopy.outdegree(v) == 0))
             return ancestor;
-        from = v;
-        to = w;
         n = digraphDFCopy.V();
         marked = new boolean[n];
         edgeTo = new int[n];
@@ -343,36 +260,51 @@ public class SAP {
         disTo[f] = 0;
         marked[t] = true;
         path.push(t);
+        minDistance = 1;
         disTo[t] = 0;
         while (!queue.isEmpty()) {
             int v = queue.dequeue();
+            int w = queue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
-                if (!marked[j]) {
+                if (j == w) {
+                    ancestor = j;
+                    minDistance = 1;
+                    while (!path.isEmpty()) {
+                        minDistance += disTo[path.pop()];
+                    }
+                    return;
+                } else if (!marked[j]) {
                     edgeTo[j] = v;
                     marked[j] = true;
                     disTo[j] = disTo[v] + 1;
                     queue.enqueue(j);
                 } else {
                     ancestor = j;
+                    minDistance = 0;
+                    while (!path.isEmpty()) {
+                        minDistance += disTo[path.pop()];
+                    }
                     return;
                 }
                 path.push(j);
             }
-            if (!queue.isEmpty()) {
-                v = queue.dequeue();
-                for (int j : digraphDFCopy.adj(v)) {
-                    if (!marked[j]) {
-                        edgeTo[j] = v;
-                        marked[j] = true;
-                        disTo[j] = disTo[v] + 1;
-                        queue.enqueue(j);
-                    } else {
-                        ancestor = j;
-                        return;
+            for (int k : digraphDFCopy.adj(w)) {
+                if (!marked[k]) {
+                    edgeTo[k] = v;
+                    marked[k] = true;
+                    disTo[k] = disTo[v] + 1;
+                    queue.enqueue(k);
+                } else {
+                    ancestor = k;
+                    minDistance = 0;
+                    while (!path.isEmpty()) {
+                        minDistance += disTo[path.pop()];
                     }
-                    path.push(j);
+                    return;
                 }
+                path.push(k);
             }
+
         }
     }
 
