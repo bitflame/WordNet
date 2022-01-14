@@ -159,6 +159,10 @@ public class SAP {
             return minDistance = 0;
         }
         ancestor(v, w);
+        if (ancestor == -1) return minDistance;
+        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
+        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
+        minDistance = fromBFS.distTo(ancestor) + toBFS.distTo(ancestor);
         return minDistance;
     }
 
@@ -261,7 +265,8 @@ public class SAP {
         if (this.from == v && this.to == w) return ancestor;
         if (v == w) {
             minDistance = 0;
-            return ancestor = from;
+            ancestor = v;
+            return ancestor;
         }
         ancestor = -1;
         minDistance = -1;
@@ -349,12 +354,6 @@ public class SAP {
                     queue.enqueue(j);
                 } else {
                     ancestor = j;
-                    if ((ancestor == f || ancestor == t) && (disTo[ancestor] == 0)) minDistance = 1;
-                    else {
-                        while (path.isEmpty()) {
-                            minDistance += disTo[path.pop()];
-                        }
-                    }
                     return;
                 }
                 path.push(j);
@@ -369,13 +368,6 @@ public class SAP {
                         queue.enqueue(j);
                     } else {
                         ancestor = j;
-                        if ((ancestor == f || ancestor == t) && (disTo[ancestor] == 0)) minDistance = 1;
-                        // add the disTo for all the nodes in path except
-                        else {
-                            while (path.isEmpty()) {
-                                minDistance += disTo[path.pop()];
-                            }
-                        }
                         return;
                     }
                     path.push(j);
