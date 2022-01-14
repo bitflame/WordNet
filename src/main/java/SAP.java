@@ -261,7 +261,6 @@ public class SAP {
         int w = -1;
         while (!queue.isEmpty()) {
             int v = queue.dequeue();
-            if (!queue.isEmpty()) w = queue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
                 if (!marked[j]) {
                     edgeTo[j] = v;
@@ -269,20 +268,17 @@ public class SAP {
                     disTo[j] = disTo[v] + 1;
                     queue.enqueue(j);
                 } else {
-                    /* If ancestor has an edgeTo other than 0, then we need to count it
-                     * in distance, otherwise it should not contribute to distance */
                     ancestor = j;
                     minDistance = 0;
-                    while (!fromPath.isEmpty()) {
-                        minDistance++;
-                        fromPath.pop();
-                    }
-                    /* set minDistance to the distance of ancestor to the node immediately before
-                     * which has to be 1, and count the distance to the other node */
+                    if (j == w) minDistance += disTo[edgeTo[j]];
+                    else minDistance += disTo[edgeTo[j]] + 1;
+                    if (j == v) minDistance += disTo[v];
+                    else minDistance += disTo[v] + 1;
                     return;
                 }
                 fromPath.push(j);
             }
+            if (!queue.isEmpty()) w = queue.dequeue();
             for (int k : digraphDFCopy.adj(w)) {
                 if (!marked[k]) {
                     edgeTo[k] = v;
@@ -290,17 +286,13 @@ public class SAP {
                     disTo[k] = disTo[v] + 1;
                     queue.enqueue(k);
                 } else {
-                    /* Do I have to empty the queue since 2 was in there? Maybe set
-                    * distTo of the values in the queue to 0 before adding them all
-                    * up to the minDistance? You can also use digraph.degree() to
-                    * know if a node has more than one adjacency that needs to be
-                    * dealt with */
+
                     ancestor = k;
                     minDistance = 0;
-                    while (!toPath.isEmpty()) {
-                        minDistance++;
-                        toPath.pop();
-                    }
+                    if (k == v) minDistance += disTo[edgeTo[k]];
+                    else minDistance += disTo[edgeTo[k]] + 1;
+                    if (k == w) minDistance += disTo[w];
+                    else minDistance += disTo[w] + 1;
                     return;
                 }
                 toPath.push(k);
