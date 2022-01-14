@@ -4,7 +4,6 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Topological;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ public class SAP {
     private boolean[] marked;
     private int[] edgeTo;
     private int[] disTo;
-    Topological topological;
     private static final int INFINITY = Integer.MAX_VALUE;
 
     private static class DeluxeBFS {
@@ -159,12 +157,6 @@ public class SAP {
             return minDistance = 0;
         }
         ancestor(v, w);
-        /*
-        if (ancestor == -1) return minDistance;
-        DeluxeBFS fromBFS = new DeluxeBFS(digraphDFCopy, v);
-        DeluxeBFS toBFS = new DeluxeBFS(digraphDFCopy, w);
-        minDistance = fromBFS.distTo(ancestor) + toBFS.distTo(ancestor);
-        */
         return minDistance;
     }
 
@@ -256,10 +248,14 @@ public class SAP {
         queue.enqueue(f);
         queue.enqueue(t);
         marked[f] = true;
-        path.push(f);
+        // path.push(f);
+        Stack<Integer> fromPath = new Stack<>();
+        Stack<Integer> toPath = new Stack<>();
+        fromPath.push(f);
         disTo[f] = 0;
         marked[t] = true;
-        path.push(t);
+        // path.push(t);
+        toPath.push(to);
         minDistance = 1;
         disTo[t] = 0;
         int w = -1;
@@ -270,7 +266,7 @@ public class SAP {
             for (int j : digraphDFCopy.adj(v)) {
                 if (j == w) {
                     ancestor = j;
-                    minDistance = path.size()-1;
+                    minDistance = fromPath.size()  ;
                     /*
                     while (!path.isEmpty()) {
                         minDistance += disTo[path.pop()];
@@ -287,16 +283,24 @@ public class SAP {
                 } else {
                     ancestor = j;
                     minDistance = 0;
-                    while (!path.isEmpty()) {
-                        minDistance += disTo[path.pop()];
+                    while (!fromPath.isEmpty()) {
+                        minDistance += disTo[fromPath.pop()];
+                    }
+                    while (!toPath.isEmpty()) {
+                        minDistance += disTo[toPath.pop()];
                     }
                     return;
                 }
-                path.push(j);
+                fromPath.push(j);
             }
             if (w != prevW) {
                 prevW = w;
                 for (int k : digraphDFCopy.adj(w)) {
+                    if (k == v) {
+                        ancestor = k;
+                        minDistance = toPath.size();
+                        return;
+                    }
                     if (!marked[k]) {
                         edgeTo[k] = v;
                         marked[k] = true;
@@ -305,12 +309,15 @@ public class SAP {
                     } else {
                         ancestor = k;
                         minDistance = 0;
-                        while (!path.isEmpty()) {
-                            minDistance += disTo[path.pop()];
+                        while (!fromPath.isEmpty()) {
+                            minDistance += disTo[fromPath.pop()];
+                        }
+                        while (!toPath.isEmpty()) {
+                            minDistance += disTo[toPath.pop()];
                         }
                         return;
                     }
-                    path.push(k);
+                    toPath.push(k);
                 }
             }
         }
