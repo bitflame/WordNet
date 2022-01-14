@@ -31,6 +31,9 @@ public class Digraph1Test {
         result = sap.length(10, 1);
         if (result != 2)
             throw new AssertionError("the value of length() between 10 and 1 should be 2, but it actually is: " + result);
+        result = sap.length(1, 10);
+        if (result != 2)
+            throw new AssertionError("the value of length() between 1 and 10 should 2, but it actually is: " + result);
         result = sap.length(12, 9);
         if (result != 3)
             throw new AssertionError("the value of length() between 12 and 9 should be 3, but it actually is: " + result);

@@ -262,16 +262,22 @@ public class SAP {
         path.push(t);
         minDistance = 1;
         disTo[t] = 0;
+        int w = -1;
+        int prevW = -1;
         while (!queue.isEmpty()) {
             int v = queue.dequeue();
-            int w = queue.dequeue();
+            if (!queue.isEmpty()) w = queue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
                 if (j == w) {
                     ancestor = j;
-                    minDistance = 1;
+                    minDistance = path.size()-1;
+                    /*
                     while (!path.isEmpty()) {
                         minDistance += disTo[path.pop()];
+                        path.pop();
+                        minDistance++;
                     }
+                    */
                     return;
                 } else if (!marked[j]) {
                     edgeTo[j] = v;
@@ -288,23 +294,25 @@ public class SAP {
                 }
                 path.push(j);
             }
-            for (int k : digraphDFCopy.adj(w)) {
-                if (!marked[k]) {
-                    edgeTo[k] = v;
-                    marked[k] = true;
-                    disTo[k] = disTo[v] + 1;
-                    queue.enqueue(k);
-                } else {
-                    ancestor = k;
-                    minDistance = 0;
-                    while (!path.isEmpty()) {
-                        minDistance += disTo[path.pop()];
+            if (w != prevW) {
+                prevW = w;
+                for (int k : digraphDFCopy.adj(w)) {
+                    if (!marked[k]) {
+                        edgeTo[k] = v;
+                        marked[k] = true;
+                        disTo[k] = disTo[v] + 1;
+                        queue.enqueue(k);
+                    } else {
+                        ancestor = k;
+                        minDistance = 0;
+                        while (!path.isEmpty()) {
+                            minDistance += disTo[path.pop()];
+                        }
+                        return;
                     }
-                    return;
+                    path.push(k);
                 }
-                path.push(k);
             }
-
         }
     }
 
