@@ -190,6 +190,7 @@ public class SAP {
         path = new Stack<>();
         for (int i = 0; i < n; i++) {
             disTo[i] = INFINITY;
+            edgeTo[i] = -1;
         }
         lockStepBFS(from, to);
         return ancestor;
@@ -271,8 +272,10 @@ public class SAP {
                 } else {
                     ancestor = j;
                     minDistance = 0;
-                    if (j == w) minDistance += disTo[v]+1;
-                    else if (j == v) minDistance += disTo[w]+1;
+                    /* If ancestor and w are the same node, then minDistance is how many
+                     * hopes it took to v plus 1 */
+                    if (j == t && j != w) minDistance = disTo[w] + disTo[v];
+                    else if (j == t) minDistance = disTo[w] + disTo[v] + 1;
                     else minDistance += disTo[v] + disTo[w] + 2;
                     return;
                 }
@@ -281,16 +284,15 @@ public class SAP {
 
             for (int k : digraphDFCopy.adj(w)) {
                 if (!marked[k]) {
-                    edgeTo[k] = v;
+                    edgeTo[k] = w;
                     marked[k] = true;
-                    disTo[k] = disTo[v] + 1;
+                    disTo[k] = disTo[w] + 1;
                     queue.enqueue(k);
                 } else {
-
                     ancestor = k;
                     minDistance = 0;
-                    if (k == v) minDistance += disTo[w]+1;
-                    else if (k == w) minDistance += disTo[v]+1;
+                    if (k == f && k != v) minDistance = disTo[w] + disTo[v];
+                    else if (k == f) minDistance = disTo[w] + disTo[v] + 1;
                     else minDistance += disTo[w] + disTo[v] + 2;
                     return;
                 }
