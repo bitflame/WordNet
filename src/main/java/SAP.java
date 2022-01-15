@@ -261,6 +261,7 @@ public class SAP {
         int w = -1;
         while (!queue.isEmpty()) {
             int v = queue.dequeue();
+            if (!queue.isEmpty()) w = queue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
                 if (!marked[j]) {
                     edgeTo[j] = v;
@@ -270,15 +271,14 @@ public class SAP {
                 } else {
                     ancestor = j;
                     minDistance = 0;
-                    if (j == w) minDistance += disTo[edgeTo[j]];
-                    else minDistance += disTo[edgeTo[j]] + 1;
-                    if (j == v) minDistance += disTo[v];
-                    else minDistance += disTo[v] + 1;
+                    if (j == w) minDistance += disTo[v]+1;
+                    else if (j == v) minDistance += disTo[w]+1;
+                    else minDistance += disTo[v] + disTo[w] + 2;
                     return;
                 }
                 fromPath.push(j);
             }
-            if (!queue.isEmpty()) w = queue.dequeue();
+
             for (int k : digraphDFCopy.adj(w)) {
                 if (!marked[k]) {
                     edgeTo[k] = v;
@@ -289,10 +289,9 @@ public class SAP {
 
                     ancestor = k;
                     minDistance = 0;
-                    if (k == v) minDistance += disTo[edgeTo[k]];
-                    else minDistance += disTo[edgeTo[k]] + 1;
-                    if (k == w) minDistance += disTo[w];
-                    else minDistance += disTo[w] + 1;
+                    if (k == v) minDistance += disTo[w]+1;
+                    else if (k == w) minDistance += disTo[v]+1;
+                    else minDistance += disTo[w] + disTo[v] + 2;
                     return;
                 }
                 toPath.push(k);
