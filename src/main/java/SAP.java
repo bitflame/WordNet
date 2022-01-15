@@ -277,7 +277,8 @@ public class SAP {
                     if (j == t && j != w) minDistance = disTo[w] + disTo[v];
                     else if (j == t) minDistance = disTo[w] + disTo[v] + 1;
                         // Just added the line below ...
-                    else if (j == w && j != t) minDistance = disTo[w] + disTo[v] + 1;
+                    else if (j == w && edgeTo[j] == t) minDistance = disTo[w] + disTo[v] + 1;
+                    else if (j == w && edgeTo[j] != t) minDistance = disTo[w] + 1;
                     else minDistance += disTo[v] + disTo[w] + 2;
                     return;
                 }
@@ -296,7 +297,8 @@ public class SAP {
                     if (k == f && k != v) minDistance = disTo[w] + disTo[v];
                     else if (k == f) minDistance = disTo[w] + disTo[v] + 1;
                         // Just added the line below ...
-                    else if (k == v && k != f) minDistance = disTo[v] + disTo[w] + 1;
+                    else if (k == v && edgeTo[k] == f) minDistance = disTo[v] + disTo[w] + 1;
+                    else if (k == v && edgeTo[k] != f) minDistance = disTo[v] + 1;
                     else minDistance += disTo[w] + disTo[v] + 2;
                     return;
                 }
