@@ -202,11 +202,14 @@ public class SAP {
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
         minDistance = -1;
         ancestor = -1;
+        int prevMinDistance = INFINITY;
         for (int i : v) {
             for (int j : w) {
                 ancestor(i, j);
+                if (prevMinDistance > minDistance) prevMinDistance = minDistance;
             }
         }
+        minDistance = prevMinDistance;
         return ancestor;
     }
 
