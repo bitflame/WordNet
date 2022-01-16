@@ -273,6 +273,10 @@ public class SAP {
                     disTo[j] = disTo[v] + 1;
                     queue.enqueue(j);
                 } else {
+                    /* Try walking the edgeTo back to f as soon as you have a match here; you know one of them
+                    * is v, and the other is w even if only w is in edgeTo since we do not update edgeTo above because
+                    * it is already marked. Same for the section below and that should avoid all the if/else statements
+                    *  */
                     ancestor = j;
                     minDistance = 0;
                     /* If ancestor and w are the same node, then minDistance is how many
