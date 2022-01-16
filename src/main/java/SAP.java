@@ -281,8 +281,9 @@ public class SAP {
                     else if (j == t) minDistance = disTo[w] + disTo[v] + 1;
                         // Just added the line below ...
                     else if (j == w && edgeTo[j] == t) minDistance = disTo[w] + disTo[v] + 1;
-                    else if (j == w && edgeTo[j] != t) minDistance = disTo[w] + 1;
-                    else minDistance += disTo[v] + disTo[w] + 2;
+                    else if (j == w && edgeTo[j] != t) {
+                        minDistance = disTo[w] + disTo[v] + 1;
+                    } else minDistance += disTo[v] + disTo[w] + 2;
                     return;
                 }
                 fromPath.push(j);
