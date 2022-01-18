@@ -102,6 +102,7 @@ public class WordNet {
 
     // do unit testing here
     public static void main(String[] args) {
+        System.out.println("----------------------Running WordNet Main---------------------");
         System.out.println("using " + args[0] + " and " + args[1] + "files for this round.");
         WordNet wordNet = new WordNet(args[0], args[1]);
         Stopwatch time = new Stopwatch();

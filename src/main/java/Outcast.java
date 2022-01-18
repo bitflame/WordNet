@@ -32,6 +32,7 @@ public class Outcast {
     }
 
     public static void main(String[] args) {
+        System.out.println("----------------------Running Outcast Main---------------------");
         WordNet wordNet = new WordNet(args[0], args[1]);
         Outcast outcast = new Outcast(wordNet);
         for (int t = 2; t < args.length; t++) {

@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.In;
 
 public class Digraph3Test {
     public static void main(String[] args) {
+        System.out.println("----------------------Running Digraph3Test---------------------");
         Digraph digraph = new Digraph(new In(args[0]));
         SAP sap = new SAP(digraph);
         int distance = sap.length(10, 9);

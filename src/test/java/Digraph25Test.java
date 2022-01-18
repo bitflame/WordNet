@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.In;
 
 public class Digraph25Test {
     public static void main(String[] args) {
+        System.out.println("----------------------Running Digraph25Test---------------------");
         Digraph digraph = new Digraph(new In(args[0]));
         SAP sap = new SAP(digraph);
         int result = sap.length(13, 16);
