@@ -1,13 +1,7 @@
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
 
 public class SAP {
     private boolean hasCycle = false;
@@ -18,8 +12,12 @@ public class SAP {
     private int to;
     private int n;
     private boolean[] marked;
-    private int[] edgeTo;
-    private int[] disTo;
+    private boolean[] fromMarked;
+    private boolean[] toMarked;
+    private int[] fromEdgeTo;
+    private int[] toEdgeTo;
+    private int[] fromDistTo;
+    private int[] toDistTo;
     private static final int INFINITY = Integer.MAX_VALUE;
 
     // constructor takes a digraph ( not necessarily a DAG )
@@ -70,12 +68,12 @@ public class SAP {
             return ancestor;
         n = digraphDFCopy.V();
         marked = new boolean[n];
-        edgeTo = new int[n];
-        disTo = new int[n];
-        for (int i = 0; i < n; i++) {
-            disTo[i] = INFINITY;
-            edgeTo[i] = -1;
-        }
+        fromMarked = new boolean[n];
+        toMarked = new boolean[n];
+        fromEdgeTo = new int[n];
+        toEdgeTo = new int[n];
+        fromDistTo = new int[n];
+        toDistTo = new int[n];
         lockStepBFS(from, to);
         return ancestor;
     }
@@ -113,12 +111,6 @@ public class SAP {
         this.from = from;
         this.to = to;
         n = digraphDFCopy.V();
-        marked = new boolean[n];
-        edgeTo = new int[n];
-        disTo = new int[n];
-        for (int i = 0; i < n; i++) {
-            disTo[i] = INFINITY;
-        }
         lockStepBFS(from, to);
         return ancestor;
     }
@@ -135,10 +127,10 @@ public class SAP {
         Queue<Integer> toQueue = new Queue<>();
         fromQueue.enqueue(f);
         toQueue.enqueue(t);
-        marked[f] = true;
-        disTo[f] = 0;
-        marked[t] = true;
-        disTo[t] = 0;
+        fromMarked[f] = true;
+        fromDistTo[f] = 0;
+        toMarked[t] = true;
+        toDistTo[t] = 0;
         int w = -1;
         int v = -1;
         minDistance = INFINITY;
@@ -147,84 +139,32 @@ public class SAP {
             if (!toQueue.isEmpty()) w = toQueue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
                 if (!marked[j]) {
-                    edgeTo[j] = v;
+                    fromEdgeTo[j] = v;
                     marked[j] = true;
-                    disTo[j] = disTo[v] + 1;
+                    fromDistTo[j] = fromDistTo[v] + 1;
                     fromQueue.enqueue(j);
                 } else {
                     ancestor = j;
-                    if (j == t) {
-                        minDistance = disTo[v] + 1;
-                        // System.out.println(" j == t rule hit for pairs: " + " " + f + " " + t);
-                        return;
-                    } else if (j == w) {
-                        /* If I have hit a loop, either I will get back to my source in one or few steps */
-                        while (!toQueue.isEmpty()) {
-                            int temp = toQueue.dequeue();
-                            if (temp == f) {
-                                minDistance = disTo[w] + 1;
-                                // System.out.println("j = w with cycle rule hit a node in the queue for pairs: " + " " + f + " " + t);
-                            }
-                        }
-                        for (int i : digraphDFCopy.adj(j)) {
-                            if (i == f) {
-                                minDistance = disTo[w] + 1;
-                                // System.out.println("j = w with cycle rule hit a node not in the queue for pairs: " + " " + f + " " + t);
-                                return;
-                            }
-                        }
-                        minDistance = disTo[w] + disTo[v] + 1;
-                        // System.out.println("j == w without cycle rule hit for pairs: " + " " + f + " " + t);
-                        return;
-                    }
-                    // System.out.println(" Default rule hit in fromQueue for pairs: " + " " + f + " " + t);
-                    // minDistance = disTo[w] + disTo[v] + 1;
-                    minDistance = disTo[w]+disTo[j] + 1;
-                    return;
+                    break;
                 }
             }
             for (int k : digraphDFCopy.adj(w)) {
                 if (!marked[k]) {
-                    edgeTo[k] = w;
+                    toEdgeTo[k] = w;
                     marked[k] = true;
-                    disTo[k] = disTo[w] + 1;
+                    toDistTo[k] = toDistTo[w] + 1;
                     toQueue.enqueue(k);
                 } else {
                     ancestor = k;
-                    if (k == f) {
-                        minDistance = disTo[w] + 1;
-                        // System.out.println("k = f rule hit for pairs: " + " " + f + " " + t);
-                        return;
-                    } else if (k == v) {
-                        while (!fromQueue.isEmpty()) {
-                            int temp = fromQueue.dequeue();
-                            if (temp == to) {
-                                minDistance = disTo[v] + 1;
-                                // System.out.println("k = v with cycle rule hit a node in the queue for pairs: " + " " + f + " " + t);
-                            }
-                        }
-                        for (int i : digraphDFCopy.adj(k)) {
-                            if (i == t) {
-                                minDistance = disTo[w] + 1;
-                                // System.out.println("k = v with cycle rule hit a node not in the queue for pairs: " + " " + f + " " + t);
-                                return;
-                            }
-                        }
-                        // System.out.println("k = v without cycle rule hit for pairs: " + " " + f + " " + t);
-                        //minDistance = disTo[k] + disTo[w] + 1;
-                        minDistance = disTo[v] + disTo[w] + 1;
-                        return;
-                    }
-                    minDistance = 0;
-                    minDistance += disTo[k] + disTo[w] + 1; /* may have to change this w to v since in the mirror of it
-                    above it is disTo[w]+disTo[j] + 1 */
-                    // System.out.println(" Default rule hit in toQueue for pairs: " + " " + f + " " + t);
-                    return;
+                    break;
                 }
             }
         }
+        int fromDist = (fromDistTo[ancestor] < INFINITY) ? fromDistTo[ancestor] : 0;
+        int toDist = (toDistTo[ancestor] < INFINITY) ? toDistTo[ancestor] : 0;
+        minDistance = fromDist + toDist;
+        if (minDistance == 0) minDistance = 1;
     }
-
 
     public static void main(String[] args) {
         Digraph digraph = new Digraph(new In("digraph1.txt"));
@@ -237,5 +177,6 @@ public class SAP {
         length = sap.length(4, 1);
         if (length != 3)
             throw new AssertionError("The value of length between nodes 4,1 in digraph2 should be 3, but it is: " + length);
+
     }
 }
