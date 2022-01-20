@@ -11,7 +11,6 @@ public class SAP {
     private int from;
     private int to;
     private int n;
-    private boolean[] marked;
     private boolean[] fromMarked;
     private boolean[] toMarked;
     private int[] fromEdgeTo;
@@ -19,6 +18,10 @@ public class SAP {
     private int[] fromDistTo;
     private int[] toDistTo;
     private static final int INFINITY = Integer.MAX_VALUE;
+    private boolean fromPathLoop = false;
+    private boolean toPathLoop = false;
+    private boolean fromBridge = false;
+    private boolean toBridge = false;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -66,8 +69,9 @@ public class SAP {
         if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0) || (digraphDFCopy.indegree(to) == 0 &&
                 digraphDFCopy.outdegree(to) == 0))
             return ancestor;
+        fromPathLoop = false;
+        toPathLoop = false;
         n = digraphDFCopy.V();
-        marked = new boolean[n];
         fromMarked = new boolean[n];
         toMarked = new boolean[n];
         fromEdgeTo = new int[n];
@@ -134,35 +138,56 @@ public class SAP {
         int w = -1;
         int v = -1;
         minDistance = INFINITY;
-        while (!fromQueue.isEmpty() || !toQueue.isEmpty()) {
+        while ((!fromQueue.isEmpty() && !toQueue.isEmpty()) || (fromPathLoop && toPathLoop)) {
             if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
             if (!toQueue.isEmpty()) w = toQueue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
-                if (!marked[j]) {
+                // keep going until you hit a loop in both queues or you run out of nodes to process
+                if (fromMarked[j]) {// you are in a self loop
+                    ancestor = -1;
+                    minDistance = -1;
+                    fromPathLoop = true;
+                } else if (!toMarked[j]) {
                     fromEdgeTo[j] = v;
-                    marked[j] = true;
+                    fromMarked[j] = true;
                     fromDistTo[j] = fromDistTo[v] + 1;
                     fromQueue.enqueue(j);
+                } else if (toEdgeTo[j] != w) {
+                    // you hit one of the other guys previously traversed nodes
+                    if (minDistance > 1 + fromDistTo[v]) {
+                        ancestor = j;
+                        minDistance = 1 + fromDistTo[v];
+                    }
+                    fromBridge = true;
                 } else {
                     ancestor = j;
-                    break;
+                    minDistance = Math.min(minDistance, toDistTo[j] + fromDistTo[v] + 1);
                 }
             }
+
             for (int k : digraphDFCopy.adj(w)) {
-                if (!marked[k]) {
+                if (toMarked[k]) {
+                    // you are in a self loop
+                    ancestor = -1;
+                    minDistance = -1;
+                    toPathLoop = true;
+                } else if (!fromMarked[k]) {
                     toEdgeTo[k] = w;
-                    marked[k] = true;
+                    toMarked[k] = true;
                     toDistTo[k] = toDistTo[w] + 1;
                     toQueue.enqueue(k);
+                } else if (fromEdgeTo[k] != v && fromEdgeTo[k] != 0) {
+                    // only update the ancestor if you have a shorter minDistance
+                    if (minDistance > (toDistTo[toEdgeTo[k]] + 1 + fromDistTo[v] + 1)) {
+                        ancestor = k;
+                        minDistance = (toDistTo[toEdgeTo[k]] + 1 + fromDistTo[v] + 1);
+                    }
                 } else {
                     ancestor = k;
-                    break;
+                    minDistance = Math.min(minDistance, fromDistTo[k] + toDistTo[w] + 1);
                 }
             }
         }
-        int fromDist = (fromDistTo[ancestor] < INFINITY) ? fromDistTo[ancestor] : 0;
-        int toDist = (toDistTo[ancestor] < INFINITY) ? toDistTo[ancestor] : 0;
-        minDistance = fromDist + toDist;
         if (minDistance == 0) minDistance = 1;
     }
 

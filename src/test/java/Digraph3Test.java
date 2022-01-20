@@ -36,7 +36,7 @@ public class Digraph3Test {
         if (ancestor != 0)
             throw new AssertionError("The ancestor between 0 and 13 should be 0, but it is: " + ancestor);
         distance = sap.length(13, 12);
-        if (distance != 4) throw new AssertionError("The length between 13 and 13 should be 4, but it is: " + distance);
+        if (distance != 4) throw new AssertionError("The length between 13 and 12 should be 4, but it is: " + distance);
         ancestor = sap.ancestor(13, 12);
         if (ancestor != 11)
             throw new AssertionError("The ancestor between 13 and 12 should be 11, but it is" + ancestor);
