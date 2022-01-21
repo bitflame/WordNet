@@ -2,6 +2,7 @@ import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Stack;
 
 public class SAP {
     private boolean hasCycle = false;
@@ -159,7 +160,7 @@ public class SAP {
                     if (minDistance > 1 + fromDistTo[v]) {
                         System.out.println("Updating minDistance for j with abnormal edgeTo.");
                         ancestor = j;
-                        minDistance = 1 + fromDistTo[v];
+                        minDistance = fromDistTo[v] + 1 + toDistTo[j];
                     }
                     fromBridge = true;
                 } else {
@@ -175,7 +176,6 @@ public class SAP {
                     minDistance = -1;
                     toPathLoop = true;
                 } else if (!fromMarked[k]) {
-
                     toEdgeTo[k] = w;
                     toMarked[k] = true;
                     toDistTo[k] = toDistTo[w] + 1;
@@ -186,7 +186,7 @@ public class SAP {
                     if (minDistance > (toDistTo[toEdgeTo[k]] + 1 + fromDistTo[v] + 1)) {
                         System.out.println("Updating minDistance for k with abnormal edgeTo.");
                         ancestor = k;
-                        minDistance = (toDistTo[toEdgeTo[k]] + 1 + fromDistTo[v] + 1);
+                        minDistance = fromDistTo[k] + toDistTo[w] + 1;
                     }
                 } else {
                     ancestor = k;
