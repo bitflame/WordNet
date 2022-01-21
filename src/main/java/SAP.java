@@ -142,8 +142,9 @@ public class SAP {
             if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
             if (!toQueue.isEmpty()) w = toQueue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
-                // keep going until you hit a loop in both queues or you run out of nodes to process
-                if (fromMarked[j]) {// you are in a self loop
+                // keep going until you hit a loop in both queues, or you run out of nodes to process
+                if (fromMarked[j]) {
+                    // you are in a self loop
                     ancestor = -1;
                     minDistance = -1;
                     fromPathLoop = true;
@@ -154,7 +155,9 @@ public class SAP {
                     fromQueue.enqueue(j);
                 } else if (toEdgeTo[j] != w) {
                     // you hit one of the other guys previously traversed nodes
+                    System.out.println("Found a j with abnormal edgeTo. source is: " + f + " destination is: " + t);
                     if (minDistance > 1 + fromDistTo[v]) {
+                        System.out.println("Updating minDistance for j with abnormal edgeTo.");
                         ancestor = j;
                         minDistance = 1 + fromDistTo[v];
                     }
@@ -172,13 +175,16 @@ public class SAP {
                     minDistance = -1;
                     toPathLoop = true;
                 } else if (!fromMarked[k]) {
+
                     toEdgeTo[k] = w;
                     toMarked[k] = true;
                     toDistTo[k] = toDistTo[w] + 1;
                     toQueue.enqueue(k);
                 } else if (fromEdgeTo[k] != v && fromEdgeTo[k] != 0) {
+                    System.out.println("Found a k with abnormal edgeTo. source is: " + f + " destination is: " + t);
                     // only update the ancestor if you have a shorter minDistance
                     if (minDistance > (toDistTo[toEdgeTo[k]] + 1 + fromDistTo[v] + 1)) {
+                        System.out.println("Updating minDistance for k with abnormal edgeTo.");
                         ancestor = k;
                         minDistance = (toDistTo[toEdgeTo[k]] + 1 + fromDistTo[v] + 1);
                     }

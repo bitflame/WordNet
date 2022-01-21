@@ -32,5 +32,26 @@ public class AutoGraderTests {
         distance = sap.length(12, 13);
         if (distance != 4)
             throw new AssertionError("The distance between 12 and 13 should be 4, but it is: " + distance);
+        StdOut.println("----------------------------------Running AutoGrader Tests for Digraph4----------------------------------");
+        digraph = new Digraph(new In("digraph4.txt"));
+        sap = new SAP(digraph);
+        distance = sap.length(1, 4);
+        if (distance != 3) throw new AssertionError("The distance between 1 and 4 should be 3, but it is: " + distance);
+        StdOut.println("----------------------------------Running AutoGrader Tests for Digraph5----------------------------------");
+        digraph = new Digraph(new In("digraph5.txt"));
+        sap = new SAP(digraph);
+        distance = sap.length(17, 21);
+        if (distance != 5)
+            throw new AssertionError("The distance between 17 and 21 should be 5, but it is: " + distance);
+        StdOut.println("----------------------------------Running AutoGrader Tests for Digraph6----------------------------------");
+        digraph = new Digraph(new In("digraph6.txt"));
+        sap = new SAP(digraph);
+        distance = sap.length(0, 5);
+        if (distance != 5) throw new AssertionError("The distance between 0 and 5 should be 5, but it is: " + distance);
+        StdOut.println("----------------------------------Running AutoGrader Tests for Digraph9----------------------------------");
+        digraph = new Digraph(new In("digraph9.txt"));
+        sap = new SAP(digraph);
+        distance = sap.length(7, 8);
+        if (distance != -1) throw new AssertionError("The distance between 7 and 8 should be -1, but it is: " + distance);
     }
 }
