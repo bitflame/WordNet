@@ -55,8 +55,8 @@ public class SAP {
         fromDistTo = new int[n];
         toDistTo = new int[n];
         for (int i = 0; i < n; i++) {
-            toEdgeTo[i]=-1;
-            fromEdgeTo[i]=-1;
+            toEdgeTo[i] = -1;
+            fromEdgeTo[i] = -1;
         }
         return calculateMinDistance(v, w);
     }
@@ -139,6 +139,8 @@ public class SAP {
             for (int j : digraphDFCopy.adj(v)) {
                 if (fromMarked[j]) {
                     fromPathLoop = true;
+                    if (currentDistance != INFINITY)
+                        currentDistance = Math.min(currentDistance, toDistTo[j] + fromDistTo[v] + 1);
                 }
                 if (fromEdgeTo[j] != v) {
                     fromEdgeTo[j] = v;
@@ -159,6 +161,8 @@ public class SAP {
             for (int k : digraphDFCopy.adj(w)) {
                 if (toMarked[k]) {
                     toPathLoop = true;
+                    if (currentDistance != INFINITY)
+                        currentDistance = Math.min(currentDistance, fromDistTo[k] + toDistTo[w] + 1);
                 }
                 if (toEdgeTo[k] != w) {
                     toEdgeTo[k] = w;
