@@ -12,11 +12,19 @@ public class AutoGraderTests {
         int ancestor = sap.ancestor(3, 3);
         if (ancestor != 3)
             throw new AssertionError("The value of ancestor between 3 and 3 should be 3, but it is: " + ancestor);
+        distance = sap.length(3, 8);
+        if (distance != 1)
+            throw new AssertionError("The value of length between 3 and 8 should be 1, but it is: " + distance);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 2 ----------------------------------");
         digraph = new Digraph(new In("digraph2.txt"));
         sap = new SAP(digraph);
         distance = sap.length(4, 1);
         if (distance != 3) throw new AssertionError("Distance between 4, and 1 should be 3, but it is: " + distance);
+        distance = sap.length(4, 0);
+        if (distance != 2) throw new AssertionError("Distance between 4, and 0 should be 2, but it is: " + distance);
+        ancestor = sap.ancestor(4, 0);
+        if (ancestor != 0)
+            throw new AssertionError("The value of ancestor between 4, and 0 should be 0, but it is: " + ancestor);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 3 ----------------------------------");
         digraph = new Digraph(new In("digraph3.txt"));
         sap = new SAP(digraph);
@@ -45,6 +53,18 @@ public class AutoGraderTests {
         distance = sap.length(12, 13);
         if (distance != 4)
             throw new AssertionError("The distance between 12 and 13 should be 4, but it is: " + distance);
+        ancestor = sap.ancestor(10, 11);
+        if (ancestor != 11)
+            throw new AssertionError("The value of ancestor between 10 and 11 should be 11, but it is: " + ancestor);
+        distance = sap.length(10, 11);
+        if (distance != 1)
+            throw new AssertionError("The distance between 10 and 11 should be 1, but it is: " + distance);
+        ancestor = sap.ancestor(11, 10);
+        if (ancestor != 11)
+            throw new AssertionError("The value of ancestor between 11 and 10 should be 11, but it is: " + ancestor);
+        distance = sap.length(11, 10);
+        if (distance != 1)
+            throw new AssertionError("The distance between 11 and 10 should be 1, but it is: " + distance);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 4 ----------------------------------");
         digraph = new Digraph(new In("digraph4.txt"));
         sap = new SAP(digraph);
@@ -52,6 +72,8 @@ public class AutoGraderTests {
         if (distance != 3) throw new AssertionError("The distance between 1 and 4 should be 3, but it is: " + distance);
         distance = sap.length(4, 1);
         if (distance != 3) throw new AssertionError("The distance between 4 and 1 should be 3, but it is: " + distance);
+        distance = sap.length(9, 3);
+        if (distance != 6) throw new AssertionError("The distance between 9 and 3 should be 6, but it is: " + distance);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 5 ----------------------------------");
         digraph = new Digraph(new In("digraph5.txt"));
         sap = new SAP(digraph);
@@ -61,6 +83,9 @@ public class AutoGraderTests {
         distance = sap.length(14, 21);
         if (distance != 8)
             throw new AssertionError("The distance between 14 and 21 should be 8, but it is: " + distance);
+        distance = sap.length(9, 20);
+        if (distance != 3)
+            throw new AssertionError("The distance between 9 and 20 should be 3, but it is: " + distance);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 6 ----------------------------------");
         digraph = new Digraph(new In("digraph6.txt"));
         sap = new SAP(digraph);

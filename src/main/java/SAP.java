@@ -38,6 +38,8 @@ public class SAP {
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         if (v == lengthSource && w == lengthDestination) return minDistance;
+        lengthSource = v;
+        lengthDestination = w;
         if (v == w) {
             return minDistance = 0;
         }
@@ -52,41 +54,34 @@ public class SAP {
         toEdgeTo = new int[n];
         fromDistTo = new int[n];
         toDistTo = new int[n];
-        calculateMinDistance(v, w);
-        return minDistance;
+        return calculateMinDistance(v, w);
     }
 
     // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
-        int distance = INFINITY;
+        minDistance = INFINITY;
+        int distance = 0;
         // System.out.printf("sap triggers ancestor() with iterables ");
         for (int i : v) {
             for (int j : w) {
-                // StdOut.printf("Calling ancestor(%d, %d) ", i, j);
-                if (i == lengthSource && j == lengthDestination) return minDistance;
-                else if (i == 0 && j == 0) {
-                    minDistance = calculateMinDistance(i, j);
-                } else {
-                    distance = calculateMinDistance(i, j);
-                    if (distance < minDistance) minDistance = distance;
-                }
+                distance = length(i, j);
+                if (distance < minDistance) minDistance = distance;
             }
         }
-        minDistance = distance;
         return minDistance;
     }
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         if (this.from == v && this.to == w) return ancestor;
+        from = v;
+        to = w;
         if (v == w) {
             return ancestor = v;
         }
         ancestor = -1;
-        this.from = v;
-        this.to = w;
         if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0) || (digraphDFCopy.indegree(to) == 0 &&
                 digraphDFCopy.outdegree(to) == 0))
             return ancestor;
@@ -107,9 +102,11 @@ public class SAP {
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
+        minDistance = INFINITY;
         for (int i : v) {
             for (int j : w) {
-                lockStepBFS(i, j);
+                if (length(i, j) < minDistance)
+                     ancestor(i, j);
             }
         }
         return ancestor;
@@ -117,34 +114,32 @@ public class SAP {
 
     private int calculateMinDistance(int f, int t) {
         int currentDistance = INFINITY;
-        if (f != lengthSource && t != lengthDestination) {
-            lengthSource = f;
-            lengthDestination = t;
-            Queue<Integer> fromQueue = new Queue<>();
-            Queue<Integer> toQueue = new Queue<>();
-            fromQueue.enqueue(f);
-            toQueue.enqueue(t);
-            fromMarked[f] = true;
-            fromDistTo[f] = 0;
-            toMarked[t] = true;
-            toDistTo[t] = 0;
-            int w = -1;
-            int v = -1;
-            while (!(fromPathLoop && toPathLoop)) {
-                if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
-                if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
-                if (!toQueue.isEmpty()) w = toQueue.dequeue();
-                for (int j : digraphDFCopy.adj(v)) {
-                    if (fromMarked[j]) {
-                        fromPathLoop = true;
-                    } else if (!toMarked[j]) {
-                        fromEdgeTo[j] = v;
-                        fromMarked[j] = true;
-                        fromDistTo[j] = fromDistTo[v] + 1;
-                        fromQueue.enqueue(j);
-                    } else {
-                        currentDistance = Math.min(currentDistance, toDistTo[j] + fromDistTo[v] + 1);
-                    }
+        lengthSource = f;
+        lengthDestination = t;
+        Queue<Integer> fromQueue = new Queue<>();
+        Queue<Integer> toQueue = new Queue<>();
+        fromQueue.enqueue(f);
+        toQueue.enqueue(t);
+        fromMarked[f] = true;
+        fromDistTo[f] = 0;
+        toMarked[t] = true;
+        toDistTo[t] = 0;
+        int w = -1;
+        int v = -1;
+        while (!(fromPathLoop && toPathLoop)) {
+            if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
+            if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
+            if (!toQueue.isEmpty()) w = toQueue.dequeue();
+            for (int j : digraphDFCopy.adj(v)) {
+                if (fromMarked[j]) {
+                    fromPathLoop = true;
+                } else if (!toMarked[j]) {
+                    fromEdgeTo[j] = v;
+                    fromMarked[j] = true;
+                    fromDistTo[j] = fromDistTo[v] + 1;
+                    fromQueue.enqueue(j);
+                } else {
+                    currentDistance = Math.min(currentDistance, toDistTo[j] + fromDistTo[v] + 1);
                 }
             }
             for (int k : digraphDFCopy.adj(w)) {
@@ -178,6 +173,7 @@ public class SAP {
         toDistTo[t] = 0;
         int w = -1;
         int v = -1;
+        int currentDistance = INFINITY;
         while (!(fromPathLoop && toPathLoop)) {
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
             if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
@@ -193,7 +189,11 @@ public class SAP {
                     fromDistTo[j] = fromDistTo[v] + 1;
                     fromQueue.enqueue(j);
                 } else {
-                    ancestor = j;
+                    if (toDistTo[j] + fromDistTo[v] + 1 < currentDistance) {
+                        ancestor = j;
+                        currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+                    }
+
                 }
             }
 
@@ -206,7 +206,10 @@ public class SAP {
                     toDistTo[k] = toDistTo[w] + 1;
                     toQueue.enqueue(k);
                 } else {
-                    ancestor = k;
+                    if (fromDistTo[k] + toDistTo[w] + 1 < currentDistance) {
+                        ancestor = k;
+                        currentDistance = fromDistTo[k] + toDistTo[w] + 1;
+                    }
                 }
             }
         }
