@@ -54,6 +54,10 @@ public class SAP {
         toEdgeTo = new int[n];
         fromDistTo = new int[n];
         toDistTo = new int[n];
+        for (int i = 0; i < n; i++) {
+            toEdgeTo[i]=-1;
+            fromEdgeTo[i]=-1;
+        }
         return calculateMinDistance(v, w);
     }
 
@@ -106,7 +110,7 @@ public class SAP {
         for (int i : v) {
             for (int j : w) {
                 if (length(i, j) < minDistance)
-                     ancestor(i, j);
+                    ancestor(i, j);
             }
         }
         return ancestor;
@@ -128,31 +132,48 @@ public class SAP {
         int v = -1;
         while (!(fromPathLoop && toPathLoop)) {
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
+            if ((fromPathLoop == true && currentDistance == INFINITY) || (toPathLoop == true && currentDistance == INFINITY))
+                break;
             if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
             if (!toQueue.isEmpty()) w = toQueue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
                 if (fromMarked[j]) {
                     fromPathLoop = true;
-                } else if (!toMarked[j]) {
+                }
+                if (fromEdgeTo[j] != v) {
                     fromEdgeTo[j] = v;
-                    fromMarked[j] = true;
                     fromDistTo[j] = fromDistTo[v] + 1;
+                    // } else if (!toMarked[j] && !fromMarked[j]) {
+                }
+                if (!toMarked[j] && !fromMarked[j]) {
                     fromQueue.enqueue(j);
-                } else {
+                }
+                if (!fromMarked[j]) {
+                    fromMarked[j] = true;
+                }
+                if (fromMarked[j] && toMarked[j]) {
                     currentDistance = Math.min(currentDistance, toDistTo[j] + fromDistTo[v] + 1);
                 }
+
             }
             for (int k : digraphDFCopy.adj(w)) {
                 if (toMarked[k]) {
                     toPathLoop = true;
-                } else if (!fromMarked[k]) {
+                }
+                if (toEdgeTo[k] != w) {
                     toEdgeTo[k] = w;
-                    toMarked[k] = true;
                     toDistTo[k] = toDistTo[w] + 1;
+                }
+                if (!toMarked[k] && !fromMarked[k]) {
                     toQueue.enqueue(k);
-                } else {
+                }
+                if (!toMarked[k]) {
+                    toMarked[k] = true;
+                }
+                if (fromMarked[k] && toMarked[k]) {
                     currentDistance = Math.min(currentDistance, fromDistTo[k] + toDistTo[w] + 1);
                 }
+
             }
         }
         if (currentDistance == 0) currentDistance = 1;
