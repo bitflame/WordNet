@@ -7,7 +7,7 @@ public class SAP {
     private boolean hasCycle = false;
     private final Digraph digraphDFCopy;
     private int ancestor;
-    private int minDistance;
+    private int minDistance = INFINITY;
     private int from;
     private int to;
     private int n;
@@ -58,14 +58,14 @@ public class SAP {
             toEdgeTo[i] = -1;
             fromEdgeTo[i] = -1;
         }
-        return calculateMinDistance(v, w);
+        minDistance = calculateMinDistance(v, w);
+        return minDistance;
     }
 
     // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
-        minDistance = INFINITY;
         int distance = 0;
         // System.out.printf("sap triggers ancestor() with iterables ");
         for (int i : v) {
@@ -106,6 +106,7 @@ public class SAP {
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
+
         minDistance = INFINITY;
         for (int i : v) {
             for (int j : w) {
