@@ -15,6 +15,9 @@ public class AutoGraderTests {
         distance = sap.length(3, 8);
         if (distance != 1)
             throw new AssertionError("The value of length between 3 and 8 should be 1, but it is: " + distance);
+        distance = sap.length(1, 1);
+        if (distance != 0)
+            throw new AssertionError("The value of length between 1 and 1 should be 0, but it is: " + distance);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 2 ----------------------------------");
         digraph = new Digraph(new In("digraph2.txt"));
         sap = new SAP(digraph);

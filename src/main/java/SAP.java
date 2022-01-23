@@ -41,7 +41,7 @@ public class SAP {
         lengthSource = v;
         lengthDestination = w;
         if (v == w) {
-            return minDistance = 0;
+            return 0;
         }
         if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0) || (digraphDFCopy.indegree(to) == 0 &&
                 digraphDFCopy.outdegree(to) == 0)) return minDistance;
@@ -66,14 +66,15 @@ public class SAP {
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
-        int distance = 0;
+        int distance = INFINITY;
         // System.out.printf("sap triggers ancestor() with iterables ");
         for (int i : v) {
             for (int j : w) {
-                distance = length(i, j);
-                if (distance < minDistance) minDistance = distance;
+                length(i, j);
+                if (minDistance < distance) distance = minDistance;
             }
         }
+        minDistance = distance;
         return minDistance;
     }
 
