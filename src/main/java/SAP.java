@@ -3,6 +3,8 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
+import java.util.Iterator;
+
 public class SAP {
     private boolean hasCycle = false;
     private final Digraph digraphDFCopy;
@@ -37,6 +39,7 @@ public class SAP {
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
+        // System.out.println("Calculating the distance between : " + v + " " + w);
         if (v == lengthSource && w == lengthDestination) return minDistance;
         lengthSource = v;
         lengthDestination = w;
@@ -68,11 +71,16 @@ public class SAP {
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
         int distance = INFINITY;
         // System.out.printf("sap triggers ancestor() with iterables ");
-        for (int i : v) {
-            for (int j : w) {
-                length(i, j);
+        Iterator<Integer> i = v.iterator();
+        Iterator<Integer> j = w.iterator();
+        while (i.hasNext()) {
+            int source = i.next();
+            while (j.hasNext()) {
+                int destination = j.next();
+                length(source, destination);
                 if (minDistance < distance) distance = minDistance;
             }
+            j = w.iterator();
         }
         minDistance = distance;
         return minDistance;
@@ -203,6 +211,8 @@ public class SAP {
         int currentDistance = INFINITY;
         while (!(fromPathLoop && toPathLoop)) {
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
+            if ((fromPathLoop == true && currentDistance == INFINITY) || (toPathLoop == true && currentDistance == INFINITY))
+                break;
             if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
             if (!toQueue.isEmpty()) w = toQueue.dequeue();
             for (int j : digraphDFCopy.adj(v)) {
@@ -210,30 +220,44 @@ public class SAP {
                 if (fromMarked[j]) {
                     // in a self loop
                     fromPathLoop = true;
-                } else if (!toMarked[j]) {
+                    if (currentDistance != INFINITY && currentDistance > toDistTo[j] + fromDistTo[v] + 1) ancestor = j;
+                }
+                if (fromEdgeTo[j] != v) {
                     fromEdgeTo[j] = v;
-                    fromMarked[j] = true;
                     fromDistTo[j] = fromDistTo[v] + 1;
+                }
+                if (!toMarked[j] && !fromMarked[j]) {
                     fromQueue.enqueue(j);
-                } else {
+                }
+                if (!fromMarked[j]) {
+                    fromMarked[j] = true;
+                }
+                if (fromMarked[j] && toMarked[j]) {
                     if (toDistTo[j] + fromDistTo[v] + 1 < currentDistance) {
                         ancestor = j;
                         currentDistance = toDistTo[j] + fromDistTo[v] + 1;
                     }
-
                 }
             }
 
             for (int k : digraphDFCopy.adj(w)) {
                 if (toMarked[k]) {
                     toPathLoop = true;
-                } else if (!fromMarked[k]) {
+                    if (currentDistance != INFINITY && currentDistance > (fromDistTo[k] + toDistTo[w] + 1))
+                        ancestor = k;
+                }
+                if (toEdgeTo[k] != w) {
                     toEdgeTo[k] = w;
-                    toMarked[k] = true;
                     toDistTo[k] = toDistTo[w] + 1;
+                }
+                if (!toMarked[k] && !fromMarked[k]) {
                     toQueue.enqueue(k);
-                } else {
-                    if (fromDistTo[k] + toDistTo[w] + 1 < currentDistance) {
+                }
+                if (!toMarked[k]) {
+                    toMarked[k] = true;
+                }
+                if (fromMarked[k] && toMarked[k]) {
+                    if ((fromDistTo[k] + toDistTo[w] + 1) < currentDistance) {
                         ancestor = k;
                         currentDistance = fromDistTo[k] + toDistTo[w] + 1;
                     }

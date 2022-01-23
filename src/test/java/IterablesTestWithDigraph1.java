@@ -13,18 +13,18 @@ public class IterablesTestWithDigraph1 {
         digraph = new Digraph(in);
         sap = new SAP(digraph);
         List<Integer> sources = new ArrayList<>();
-        sources.add(1);
+        sources.add(7);
         List<Integer> destinations = new ArrayList<>();
-        destinations.add(0);
+        destinations.add(1);
+        // int result = sap.length(sources, destinations);
+        // if (result != 1)
+        //    throw new AssertionError("The minimum distance between 1 and 0 should be 1, but it is: " + result);
+        sources.add(3);
+        destinations.add(4);
         int result = sap.length(sources, destinations);
         if (result != 1)
-            throw new AssertionError("The minimum distance between 1 and 0 should be 1, but it is: " + result);
-        sources.add(7);
-        destinations.add(1);
-        result = sap.length(sources,destinations);
-        if (result != 0)
-            throw new AssertionError("The minimum distance between two sets of values {1,0} {7,1} should be the minimum " +
-                    "of each outcome, which in this case should be 0, but it is: " + result);
+            throw new AssertionError("The minimum distance between two sets of values {7,3} {1,4} should be the minimum " +
+                    "of each outcome, which in this case should be 1, but it is: " + result);
         sources = new ArrayList<>(Arrays.asList(13, 23, 24));
         destinations = new ArrayList<>(Arrays.asList(6, 16, 17));
         result = sap.length(sources, destinations);
