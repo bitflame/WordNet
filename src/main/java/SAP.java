@@ -88,6 +88,7 @@ public class SAP {
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
+        // System.out.println("Calculating the ancestor between : " + v + " " + w);
         if (this.from == v && this.to == w) return ancestor;
         from = v;
         to = w;
@@ -116,13 +117,26 @@ public class SAP {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
 
-        minDistance = INFINITY;
-        for (int i : v) {
-            for (int j : w) {
-                if (length(i, j) < minDistance)
-                    ancestor(i, j);
+        int lastMinDist = minDistance;
+        int distance = INFINITY;
+        int len = 0;
+        Iterator<Integer> i = v.iterator();
+        Iterator<Integer> j = w.iterator();
+        while (i.hasNext()) {
+            int source = i.next();
+            while (j.hasNext()) {
+                int destination = j.next();
+                len = length(source, destination);
+                // System.out.printf("Here is: source: %d and destination: %d and length: %d before the loop. \n", source, destination, len);
+                if (distance > len) {
+                    lockStepBFS(source, destination);
+                    // System.out.printf("Calling lockStepBFS when distance is: %d source is: %d and destination is: %d \n", distance, source, destination);
+                    distance = minDistance;
+                }
             }
+            j = w.iterator();
         }
+        minDistance = lastMinDist;
         return ancestor;
     }
 

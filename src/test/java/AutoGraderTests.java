@@ -92,6 +92,14 @@ public class AutoGraderTests {
         distance = sap.length(9, 20);
         if (distance != 3)
             throw new AssertionError("The distance between 9 and 20 should be 3, but it is: " + distance);
+        ancestor = sap.ancestor(10, 12);
+        if (ancestor != 10) throw new AssertionError("The value of ancestor should be 10, and it is: " + ancestor);
+        distance = sap.length(10, 12);
+        if (distance != 2)
+            throw new AssertionError("The distance between 10 and 12 should be 2, but it is: " + distance);
+        distance = sap.length(21, 0);
+        if (distance != 1)
+            throw new AssertionError("The distance between 21, and 0 should be 1, and it is: " + distance);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 6 ----------------------------------");
         digraph = new Digraph(new In("digraph6.txt"));
         sap = new SAP(digraph);
@@ -105,6 +113,11 @@ public class AutoGraderTests {
         distance = sap.length(7, 7);
         if (distance != 0)
             throw new AssertionError("The distance between 7, and 7 should be 0, but it is: " + distance);
+        distance = sap.length(1, 7);
+        if (distance != 3) throw new AssertionError("The distance between 1 and 7 should be 3, but it is: " + distance);
+        distance = sap.length(4, 4);
+        if (distance != 0)
+            throw new AssertionError("The distance between the same node is should be 0, but it is: " + distance);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 9 ----------------------------------");
         digraph = new Digraph(new In("digraph9.txt"));
         sap = new SAP(digraph);
@@ -117,5 +130,19 @@ public class AutoGraderTests {
         distance = sap.length(4, 0);
         if (distance != 3)
             throw new AssertionError("The distance between 4, and 0 should be 3, but it is: " + distance);
+        distance = sap.length(7, 3);
+        if (distance != 2)
+            throw new AssertionError("The distance between 7, and 3 should be 2, but it is: " + distance);
+        distance = sap.length(4, 0);
+        if (distance != 3) throw new AssertionError("The distance between 4 and 0 should be 3, but it is: " + distance);
+        distance = sap.length(4, 3);
+        if (distance != 1)
+            throw new AssertionError("The distance between 4, and 3 should be 1, but it is: " + distance);
+        distance = sap.length(0, 3);
+        if (distance != 1)
+            throw new AssertionError("The distance between 0, and 3 should be 1, but it is: " + distance);
+        ancestor = sap.ancestor(0, 3);
+        if (ancestor != 0)
+            throw new AssertionError("The ancestor between 0, and 3 should be 0, but it is: " + ancestor);
     }
 }

@@ -25,11 +25,19 @@ public class IterablesTestWithDigraph1 {
         if (result != 1)
             throw new AssertionError("The minimum distance between two sets of values {7,3} {1,4} should be the minimum " +
                     "of each outcome, which in this case should be 1, but it is: " + result);
+        int ancestor = sap.ancestor(sources, destinations);
+        if (ancestor != 1)
+            throw new AssertionError("The ancestor for two sets of values should be the one with the shortest" +
+                    "path, which in this case is 1, but the value calculated is: " + ancestor);
         sources = new ArrayList<>(Arrays.asList(13, 23, 24));
         destinations = new ArrayList<>(Arrays.asList(6, 16, 17));
         result = sap.length(sources, destinations);
         if (result != 4)
             throw new AssertionError("The shortest ancestral path of digraph25 example should be 4, but " +
                     "it is: " + result);
+        ancestor = sap.ancestor(sources, destinations);
+        if (ancestor != 3)
+            throw new AssertionError("The shortest common ancestor for the second set, should be 3, but " +
+                    "it is: " + ancestor);
     }
 }
