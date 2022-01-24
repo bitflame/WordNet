@@ -56,10 +56,6 @@ public class SAP {
         toEdgeTo = new int[n];
         fromDistTo = new int[n];
         toDistTo = new int[n];
-        for (int i = 0; i < n; i++) {
-            toEdgeTo[i] = -1;
-            fromEdgeTo[i] = -1;
-        }
         minDistance = lockStepBFS(v, w);
         return minDistance;
     }
@@ -165,9 +161,12 @@ public class SAP {
                         currentDistance = toDistTo[j] + fromDistTo[v] + 1;
                     }
                 }
-                if (fromEdgeTo[j] != v) {
+                if (fromEdgeTo[j] != v && v!=0) {
                     fromEdgeTo[j] = v;
                     fromDistTo[j] = fromDistTo[v] + 1;
+                } else {
+                    fromEdgeTo[j]=v;
+                    fromDistTo[j]=fromDistTo[v]+1;
                 }
                 if (!toMarked[j] && !fromMarked[j]) {
                     fromQueue.enqueue(j);
@@ -192,9 +191,12 @@ public class SAP {
                     }
 
                 }
-                if (toEdgeTo[k] != w) {
+                if (toEdgeTo[k] != w && w!=0) {
                     toEdgeTo[k] = w;
                     toDistTo[k] = toDistTo[w] + 1;
+                } else {
+                    toEdgeTo[k]=w;
+                    toDistTo[k]=toDistTo[w]+1;
                 }
                 if (!toMarked[k] && !fromMarked[k]) {
                     toQueue.enqueue(k);
