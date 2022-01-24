@@ -98,7 +98,7 @@ public class WordNet {
         else return db.get(i);
     }
 
-    public int callSap(int v, int w) {
+    private int callSap(int v, int w) {
         sap = new SAP(digraphDFCopy);
         return sap.length(v, w);
     }

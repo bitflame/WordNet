@@ -95,6 +95,12 @@ public class AutoGraderTests {
         distance = sap.length(8, 13);
         if (distance != 5)
             throw new AssertionError("The distance between 8 and 13 should be 5, but it is: " + distance);
+        distance = sap.length(9, 2);
+        if (distance != -1) throw new AssertionError("The distance between 9 and 2 should be -1 since they are " +
+                "not connected, but it actually is: " + distance);
+        ancestor = sap.ancestor(9, 2);
+        if (ancestor != -1) throw new AssertionError("The ancestor between the nodes 9 and 2 should be -1" +
+                "since they are not connected, but it actually comes up as: " + ancestor);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 4 ----------------------------------");
         digraph = new Digraph(new In("digraph4.txt"));
         sap = new SAP(digraph);
@@ -168,5 +174,7 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(0, 3);
         if (ancestor != 0)
             throw new AssertionError("The ancestor between 0, and 3 should be 0, but it is: " + ancestor);
+        distance = sap.length(0, 5);
+        if (distance != 4) throw new AssertionError("The distance between 0 and 5 should be 4, but it is: " + distance);
     }
 }

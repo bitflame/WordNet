@@ -172,9 +172,37 @@ public class SAP {
                     // in a self loop
                     fromPathLoop = true;
                     if (currentDistance != INFINITY && currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
+                        /* This whole block is to make sure there is a path from ancestor to each side whereas
+                         * a line that changes direction in the middle */
                         ancestor = j;
-
-                        currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+                        int hops = 0;
+                        int counter = v;
+                        boolean fromConncted = false;
+                        boolean toConnected = false;
+                        int previousCounterValue = INFINITY;
+                        while (fromEdgeTo[counter] != from && counter != previousCounterValue) {
+                            hops++;
+                            previousCounterValue = counter;
+                            counter = fromEdgeTo[counter];
+                            // If counter does not get to from this loop keeps on going
+                        }
+                        if (counter == f) fromConncted = true;
+                        // one for stopping early and another for starting from the previous node
+                        hops += 2;
+                        counter = j;
+                        previousCounterValue = INFINITY;
+                        while (toEdgeTo[counter] != to && counter != previousCounterValue) {
+                            hops++;
+                            previousCounterValue = counter;
+                            counter = toEdgeTo[counter];
+                        }
+                        if (counter == t) toConnected = true;
+                        hops++;// one more for stopping one node too early
+                        /* For some reason I was not using Math.min() here and all the tests were passing. I have switched
+                         * back and will have to test to see if it works. If not, just change the below comments around */
+                        // if (fromConncted&& toConnected) currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+                        if (fromConncted && toConnected)
+                            currentDistance = Math.min(currentDistance, toDistTo[j] + fromDistTo[v] + 1);
                     }
                 }
                 if (fromEdgeTo[j] != v && v != 0) {
@@ -194,11 +222,44 @@ public class SAP {
                     fromMarked[j] = true;
                 }
                 if (fromMarked[j] && toMarked[j]) {
-                    if (toDistTo[j] + fromDistTo[v] + 1 < currentDistance) {
+                    if (currentDistance != INFINITY && currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
+                        /* This whole block is to make sure there is a path from ancestor to each side whereas
+                         * a line that changes direction in the middle */
                         ancestor = j;
-                        currentDistance = toDistTo[j] + fromDistTo[v] + 1;
-
+                        int hops = 0;
+                        int counter = v;
+                        boolean fromConncted = false;
+                        boolean toConnected = false;
+                        int previousCounterValue = INFINITY;
+                        while (fromEdgeTo[counter] != from && counter != previousCounterValue) {
+                            hops++;
+                            previousCounterValue = counter;
+                            counter = fromEdgeTo[counter];
+                            // If counter does not get to from this loop keeps on going
+                        }
+                        if (counter == f) fromConncted = true;
+                        // one for stopping early and another for starting from the previous node
+                        hops += 2;
+                        counter = j;
+                        previousCounterValue = INFINITY;
+                        while (toEdgeTo[counter] != to && counter != previousCounterValue) {
+                            hops++;
+                            previousCounterValue = counter;
+                            counter = toEdgeTo[counter];
+                        }
+                        if (counter == t) toConnected = true;
+                        hops++;// one more for stopping one node too early
+                        /* For some reason I was not using Math.min() here and all the tests were passing. I have switched
+                         * back and will have to test to see if it works. If not, just change the below comments around */
+                        if (fromConncted && toConnected) {
+                            // currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+                            currentDistance = hops;
+                        }
+                        fromConncted = false;
+                        toConnected = false;
+                        // if (fromConncted&& toConnected) currentDistance = Math.min(currentDistance, toDistTo[j] + fromDistTo[v] + 1) ;
                     }
+
                 }
             }
 
@@ -207,8 +268,31 @@ public class SAP {
                     toPathLoop = true;
                     if (currentDistance != INFINITY && currentDistance > (fromDistTo[k] + toDistTo[w] + 1)) {
                         ancestor = k;
-                        currentDistance = fromDistTo[k] + toDistTo[w] + 1;
-
+                        int hops = 0;
+                        int counter = k;
+                        boolean fromConnected = false;
+                        boolean toConnected = false;
+                        int previousCounterValue = INFINITY;
+                        while (toEdgeTo[counter] != to && counter != previousCounterValue) {
+                            hops++;
+                            previousCounterValue = counter;
+                            counter = toEdgeTo[counter];
+                        }
+                        if (counter == t) toConnected = true;
+                        hops++;// just one increment to hops since I stopped right before t
+                        counter = k;
+                        previousCounterValue = INFINITY;
+                        while (fromEdgeTo[counter] != from && counter != previousCounterValue) {
+                            hops++;
+                            previousCounterValue = counter;
+                            counter = fromEdgeTo[counter];
+                        }
+                        if (counter == f) fromConnected = true;
+                        hops++;// one increment for stopping right before f
+                        if (fromConnected && toConnected) currentDistance = hops;
+                        // currentDistance = fromDistTo[k] + toDistTo[w] + 1;
+                        fromConnected = false;
+                        toConnected = false;
                     }
 
                 }
@@ -236,6 +320,7 @@ public class SAP {
         }
         if (currentDistance == INFINITY) {
             minDistance = -1;
+            ancestor = -1;
             return minDistance;
         } else minDistance = currentDistance;
         return currentDistance;
