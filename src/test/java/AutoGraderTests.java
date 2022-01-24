@@ -18,6 +18,30 @@ public class AutoGraderTests {
         distance = sap.length(1, 1);
         if (distance != 0)
             throw new AssertionError("The value of length between 1 and 1 should be 0, but it is: " + distance);
+        distance = sap.length(3, 11);
+        if (distance != 4)
+            throw new AssertionError("The value of length between 3 and 11 should be 4, but it is: " + distance);
+        ancestor = sap.ancestor(3, 11);
+        if (ancestor != 1)
+            throw new AssertionError("The value of ancestor of 3 and 11 should be 1, but it is: " + ancestor);
+        distance = sap.length(9, 12);
+        if (distance != 3) throw new AssertionError("The value of length between the nodes 9 and 12 should be 3, " +
+                "but it is: " + distance);
+        ancestor = sap.ancestor(9, 12);
+        if (ancestor != 5)
+            throw new AssertionError("The value of ancestor of 9 and 12 should be 5, but it is: " + ancestor);
+        distance = sap.length(7, 2);
+        if (distance != 4) throw new AssertionError("The value of length between the nodes 7, and 2 should be 4, " +
+                "but it is: " + distance);
+        ancestor = sap.ancestor(7, 2);
+        if (ancestor != 0)
+            throw new AssertionError("The value of ancestor of 7 and 2 should be 0, but it is: " + ancestor);
+        distance = sap.length(1, 6);
+        if (distance != -1) throw new AssertionError("The value of length between 1 and 6 should be -1 since they " +
+                "are not connected but it is: " + distance);
+        ancestor = sap.ancestor(1, 6);
+        if (ancestor != -1) throw new AssertionError("The value of ancestor between 1 and 6 should be -1 since " +
+                "they are not connected, but it is: " + ancestor);
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 2 ----------------------------------");
         digraph = new Digraph(new In("digraph2.txt"));
         sap = new SAP(digraph);

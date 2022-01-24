@@ -46,7 +46,11 @@ public class SAP {
             return 0;
         }
         if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0) || (digraphDFCopy.indegree(to) == 0 &&
-                digraphDFCopy.outdegree(to) == 0)) return minDistance;
+                digraphDFCopy.outdegree(to) == 0)) {
+            ancestor = -1;
+            return minDistance = -1;
+
+        }
         fromPathLoop = false;
         toPathLoop = false;
         n = digraphDFCopy.V();
@@ -64,7 +68,8 @@ public class SAP {
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
-        int distance = INFINITY;
+        int currentDistance = 0;
+        int prevDistance = INFINITY;
         // System.out.printf("sap triggers ancestor() with iterables ");
         Iterator<Integer> i = v.iterator();
         Iterator<Integer> j = w.iterator();
@@ -72,12 +77,16 @@ public class SAP {
             int source = i.next();
             while (j.hasNext()) {
                 int destination = j.next();
-                length(source, destination);
-                if (minDistance < distance) distance = minDistance;
+                currentDistance = length(source, destination);
+                // System.out.printf("Current Distance: %d \n", currentDistance);
+                if (currentDistance != -1 && currentDistance < prevDistance) {
+                    prevDistance = currentDistance;
+                }
             }
             j = w.iterator();
         }
-        minDistance = distance;
+        // System.out.printf("Here is the last value in previous distance: %d\n" , prevDistance);
+        minDistance = prevDistance;
         return minDistance;
     }
 
@@ -91,8 +100,11 @@ public class SAP {
             return ancestor = v;
         }
         if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0) || (digraphDFCopy.indegree(to) == 0 &&
-                digraphDFCopy.outdegree(to) == 0))
-            return ancestor;
+                digraphDFCopy.outdegree(to) == 0)) {
+            minDistance = -1;
+            return ancestor = -1;
+        }
+
         fromPathLoop = false;
         toPathLoop = false;
         n = digraphDFCopy.V();
@@ -111,27 +123,27 @@ public class SAP {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
 
-        int lastMinDist = minDistance;
-        int distance = INFINITY;
         int len = 0;
+        int prevLen = INFINITY;
+        int currentAncestor = 0;
         Iterator<Integer> i = v.iterator();
         Iterator<Integer> j = w.iterator();
         while (i.hasNext()) {
             int source = i.next();
             while (j.hasNext()) {
                 int destination = j.next();
-                len = lockStepBFS(source, destination);
-                // System.out.printf("Here is: source: %d and destination: %d and length: %d before the loop. \n", source, destination, len);
-                if (distance > len) {
-                    // System.out.printf("Calling lockStepBFS when distance is: %d source is: %d and destination is: %d \n", distance, source, destination);
-                    distance = len;
+                len = length(source, destination);
+                if (len != -1 && len < prevLen) {
+                    currentAncestor = ancestor;
+                    prevLen = len;
                 }
             }
             j = w.iterator();
         }
+        ancestor = currentAncestor;
+        minDistance = prevLen;
         return ancestor;
     }
-
 
     private int lockStepBFS(int f, int t) {
         Queue<Integer> fromQueue = new Queue<>();
@@ -146,27 +158,31 @@ public class SAP {
         int v = -1;
         int currentDistance = INFINITY;
         while (!(fromPathLoop && toPathLoop)) {
+
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
             if ((fromPathLoop == true && currentDistance == INFINITY) || (toPathLoop == true && currentDistance == INFINITY))
                 break;
             if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
             if (!toQueue.isEmpty()) w = toQueue.dequeue();
+            // System.out.printf("Here is v: %d w: %d \n", v, w);
             for (int j : digraphDFCopy.adj(v)) {
                 // keep going until you hit a loop in both queues, or you run out of nodes to process
+
                 if (fromMarked[j]) {
                     // in a self loop
                     fromPathLoop = true;
                     if (currentDistance != INFINITY && currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
                         ancestor = j;
+
                         currentDistance = toDistTo[j] + fromDistTo[v] + 1;
                     }
                 }
-                if (fromEdgeTo[j] != v && v!=0) {
+                if (fromEdgeTo[j] != v && v != 0) {
                     fromEdgeTo[j] = v;
                     fromDistTo[j] = fromDistTo[v] + 1;
                 } else {
-                    fromEdgeTo[j]=v;
-                    fromDistTo[j]=fromDistTo[v]+1;
+                    fromEdgeTo[j] = v;
+                    fromDistTo[j] = fromDistTo[v] + 1;
                 }
                 if (!toMarked[j] && !fromMarked[j]) {
                     fromQueue.enqueue(j);
@@ -178,6 +194,7 @@ public class SAP {
                     if (toDistTo[j] + fromDistTo[v] + 1 < currentDistance) {
                         ancestor = j;
                         currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+
                     }
                 }
             }
@@ -188,15 +205,16 @@ public class SAP {
                     if (currentDistance != INFINITY && currentDistance > (fromDistTo[k] + toDistTo[w] + 1)) {
                         ancestor = k;
                         currentDistance = fromDistTo[k] + toDistTo[w] + 1;
+
                     }
 
                 }
-                if (toEdgeTo[k] != w && w!=0) {
+                if (toEdgeTo[k] != w && w != 0) {
                     toEdgeTo[k] = w;
                     toDistTo[k] = toDistTo[w] + 1;
                 } else {
-                    toEdgeTo[k]=w;
-                    toDistTo[k]=toDistTo[w]+1;
+                    toEdgeTo[k] = w;
+                    toDistTo[k] = toDistTo[w] + 1;
                 }
                 if (!toMarked[k] && !fromMarked[k]) {
                     toQueue.enqueue(k);
@@ -208,15 +226,15 @@ public class SAP {
                     if ((fromDistTo[k] + toDistTo[w] + 1) < currentDistance) {
                         ancestor = k;
                         currentDistance = fromDistTo[k] + toDistTo[w] + 1;
+
                     }
                 }
             }
         }
-        if (currentDistance==INFINITY) {
-            minDistance=-1;
+        if (currentDistance == INFINITY) {
+            minDistance = -1;
             return minDistance;
-        }
-        else minDistance = currentDistance;
+        } else minDistance = currentDistance;
         return currentDistance;
     }
 

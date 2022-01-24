@@ -18,7 +18,7 @@ public class WordNet {
     // constructor takes the name of two input files
     public WordNet(String synsets, String hypernyms) {
         createDb(synsets);
-        digraphDFCopy= createGraph(hypernyms);
+        digraphDFCopy = createGraph(hypernyms);
         sap = new SAP(digraphDFCopy);
     }
 
@@ -98,7 +98,10 @@ public class WordNet {
         else return db.get(i);
     }
 
-
+    public int callSap(int v, int w) {
+        sap = new SAP(digraphDFCopy);
+        return sap.length(v, w);
+    }
 
     // do unit testing here
     public static void main(String[] args) {
@@ -108,7 +111,7 @@ public class WordNet {
         Stopwatch time = new Stopwatch();
         System.out.println("The common ancestor between worm and animal: " + wordNet.sap("worm", "bird"));
         double now = time.elapsedTime();
-        StdOut.println("worm/bird test using HashMap took: "+now);
+        StdOut.println("worm/bird test using HashMap took: " + now);
         System.out.println("The distance expected between worm and bird is 5, the result: " +
                 wordNet.distance("worm", "bird"));
         System.out.println(wordNet.isNoun("entity"));
@@ -116,5 +119,11 @@ public class WordNet {
                 wordNet.sap("quadrangle", "mountain_devil"));
         StdOut.println("The distance expected between mountain_devil and quadrangle should be 11, the result: " +
                 wordNet.distance("quadrangle", "mountain_devil"));
+
+        /*
+        * wordNet = new WordNet("hypernyms3InvalidCycle.txt", "synsets3.txt");
+        wordNet.sap("a","b");
+        * */
+
     }
 }
