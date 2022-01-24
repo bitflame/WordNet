@@ -158,7 +158,6 @@ public class SAP {
         int v = -1;
         int currentDistance = INFINITY;
         while (!(fromPathLoop && toPathLoop)) {
-
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
             if ((fromPathLoop == true && currentDistance == INFINITY) || (toPathLoop == true && currentDistance == INFINITY))
                 break;
@@ -167,6 +166,18 @@ public class SAP {
             // System.out.printf("Here is v: %d w: %d \n", v, w);
             for (int j : digraphDFCopy.adj(v)) {
                 // keep going until you hit a loop in both queues, or you run out of nodes to process
+                if (fromEdgeTo[j] != v && v != 0) {
+                    fromEdgeTo[j] = v;
+                    int temp = fromDistTo[v];
+                    fromDistTo[j] = temp + 1;
+                } else {
+                    /* since the support arrays like fromEdgeTo have 0s by default, I have to do this and since there
+                    are no double edges this should be fine as far as I can think of.
+                     */
+                    fromEdgeTo[j] = v;
+                    int temp = fromDistTo[v];
+                    fromDistTo[j]=temp+1;
+                }
                 if (fromMarked[j]) {
                     // in a self loop
                     fromPathLoop = true;
@@ -174,16 +185,6 @@ public class SAP {
                         ancestor = j;
                         currentDistance = toDistTo[j] + fromDistTo[v] + 1;
                     }
-                }
-                if (fromEdgeTo[j] != v && v != 0) {
-                    fromEdgeTo[j] = v;
-                    fromDistTo[j] = fromDistTo[v] + 1;
-                } else {
-                    /* since the support arrays like fromEdgeTo have 0s by default, I have to do this and since there
-                    are no double edges this should be fine as far as I can think of.
-                     */
-                    fromEdgeTo[j] = v;
-                    fromDistTo[j] = fromDistTo[v] + 1;
                 }
                 if (!toMarked[j] && !fromMarked[j]) {
                     fromQueue.enqueue(j);
@@ -200,19 +201,21 @@ public class SAP {
             }
 
             for (int k : digraphDFCopy.adj(w)) {
+                if (toEdgeTo[k] != w && w != 0) {
+                    toEdgeTo[k] = w;
+                    int temp = toDistTo[w];
+                    toDistTo[k]=temp+1;
+                } else {
+                    toEdgeTo[k] = w;
+                    int temp = toDistTo[w];
+                    toDistTo[k]=temp+1;
+                }
                 if (toMarked[k]) {
                     toPathLoop = true;
                     if (currentDistance != INFINITY && currentDistance > (fromDistTo[k] + toDistTo[w] + 1)) {
                         ancestor = k;
                         currentDistance = fromDistTo[k] + toDistTo[w] + 1;
                     }
-                }
-                if (toEdgeTo[k] != w && w != 0) {
-                    toEdgeTo[k] = w;
-                    toDistTo[k] = toDistTo[w] + 1;
-                } else {
-                    toEdgeTo[k] = w;
-                    toDistTo[k] = toDistTo[w] + 1;
                 }
                 if (!toMarked[k] && !fromMarked[k]) {
                     toQueue.enqueue(k);
@@ -264,22 +267,19 @@ public class SAP {
         hops++;// one more for stopping one node too early
         /* For some reason I was not using Math.min() here and all the tests were passing. I have switched
          * back and will have to test to see if it works. If not, just change the below comments around */
-        if (fromConncted && toConnected) connected=true;
+        if (fromConncted && toConnected) connected = true;
         // if (fromConncted && toConnected) currentDistance = Math.min(currentDistance, toDistTo[j] + fromDistTo[v] + 1);
         return connected;
-}
+    }
 
     public static void main(String[] args) {
-        Digraph digraph = new Digraph(new In("digraph1.txt"));
+        Digraph digraph = new Digraph(new In("digraph9.txt"));
         SAP sap = new SAP(digraph);
-        int length = sap.length(4, 1);
-        if (length != 1)
-            throw new AssertionError("The value of length between 4,1 in digraph1 should be 1, but it is: " + length);
-        digraph = new Digraph(new In("digraph2.txt"));
-        sap = new SAP(digraph);
-        length = sap.length(4, 1);
-        if (length != 3)
-            throw new AssertionError("The value of length between nodes 4,1 in digraph2 should be 3, but it is: " + length);
+        int length = sap.length(0, 5);
+        if (length != 4)
+            throw new AssertionError("The value of length between 0,5 in digraph9 should be 4, but it is: " + length);
+        int ancestor = sap.ancestor(0, 5);
+        if (ancestor != 4) throw new AssertionError("The ancestor of 0, and 5 should be 4, but it is: " + ancestor);
 
     }
 }
