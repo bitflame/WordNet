@@ -181,6 +181,9 @@ public class SAP {
                     fromEdgeTo[j] = v;
                     fromDistTo[j] = fromDistTo[v] + 1;
                 } else {
+                    /* since the support arrays like fromEdgeTo have 0s by default, I have to do this and since there
+                    are no double edges this should be fine as far as I can think of.
+                     */
                     fromEdgeTo[j] = v;
                     fromDistTo[j] = fromDistTo[v] + 1;
                 }
