@@ -167,14 +167,12 @@ public class SAP {
             // System.out.printf("Here is v: %d w: %d \n", v, w);
             for (int j : digraphDFCopy.adj(v)) {
                 // keep going until you hit a loop in both queues, or you run out of nodes to process
-
                 if (fromMarked[j]) {
                     // in a self loop
                     fromPathLoop = true;
                     if (currentDistance != INFINITY && currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
                         ancestor = j;
                         currentDistance = toDistTo[j] + fromDistTo[v] + 1;
-
                     }
                 }
                 if (fromEdgeTo[j] != v && v != 0) {
@@ -194,11 +192,10 @@ public class SAP {
                     fromMarked[j] = true;
                 }
                 if (fromMarked[j] && toMarked[j]) {
-                    if (currentDistance != INFINITY && currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
+                    if (currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
                         ancestor = j;
                         currentDistance = toDistTo[j] + fromDistTo[v] + 1;
                     }
-
                 }
             }
 
@@ -209,7 +206,6 @@ public class SAP {
                         ancestor = k;
                         currentDistance = fromDistTo[k] + toDistTo[w] + 1;
                     }
-
                 }
                 if (toEdgeTo[k] != w && w != 0) {
                     toEdgeTo[k] = w;
