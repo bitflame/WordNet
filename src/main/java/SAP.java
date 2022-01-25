@@ -161,74 +161,81 @@ public class SAP {
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
             if ((fromPathLoop == true && currentDistance == INFINITY) || (toPathLoop == true && currentDistance == INFINITY))
                 break;
-            if (!fromQueue.isEmpty()) v = fromQueue.dequeue();
-            if (!toQueue.isEmpty()) w = toQueue.dequeue();
-            // System.out.printf("Here is v: %d w: %d \n", v, w);
-            for (int j : digraphDFCopy.adj(v)) {
-                // keep going until you hit a loop in both queues, or you run out of nodes to process
-                if (fromEdgeTo[j] != v && v != 0) {
-                    fromEdgeTo[j] = v;
-                    int temp = fromDistTo[v];
-                    fromDistTo[j] = temp + 1;
-                } else {
+            if (!fromQueue.isEmpty()) {
+                v = fromQueue.dequeue();
+                // System.out.printf("Here is v: %d w: %d \n", v, w);
+                for (int j : digraphDFCopy.adj(v)) {
+                    // keep going until you hit a loop in both queues, or you run out of nodes to process
+                    if (fromEdgeTo[j] != v && v != 0) {
+                        fromEdgeTo[j] = v;
+                        int temp = fromDistTo[v];
+                        fromDistTo[j] = temp + 1;
+                    } else if (fromEdgeTo[j] == 0 && v == 0) {
                     /* since the support arrays like fromEdgeTo have 0s by default, I have to do this and since there
                     are no double edges this should be fine as far as I can think of.
                      */
-                    fromEdgeTo[j] = v;
-                    int temp = fromDistTo[v];
-                    fromDistTo[j]=temp+1;
-                }
-                // for j prevNode = v, edgeNode = w, ancestor = j, and f and t are the same
-                if (fromMarked[j] && validateEdgeTo(v,w,j,f,t)) {
-                    // in a self loop
-                    fromPathLoop = true;
-                    if (currentDistance != INFINITY && currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
-                        ancestor = j;
-                        currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+                        fromEdgeTo[j] = v;
+                        int temp = fromDistTo[v];
+                        fromDistTo[j] = temp + 1;
                     }
-                }
-                if (!toMarked[j] && !fromMarked[j]) {
-                    fromQueue.enqueue(j);
-                }
-                if (!fromMarked[j]) {
-                    fromMarked[j] = true;
-                }
-                if (fromMarked[j] && toMarked[j]) {
-                    if (currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
-                        ancestor = j;
-                        currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+                    // for j prevNode = v, edgeNode = w, ancestor = j, and f and t are the same
+                    if (fromMarked[j] && validateEdgeTo(v, w, j, f, t)) {
+                        // in a self loop
+                        System.out.println("Hit a self loop in j block");
+                        fromPathLoop = true;
+                        if (currentDistance != INFINITY && currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
+                            System.out.println("Hit a self loop in j block, and updated the minDistance. ");
+                            ancestor = j;
+                            currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+                        }
+                    }
+                    if (!toMarked[j] && !fromMarked[j]) {
+                        fromQueue.enqueue(j);
+                    }
+                    if (!fromMarked[j]) {
+                        fromMarked[j] = true;
+                    }
+                    if (fromMarked[j] && toMarked[j]) {
+                        if (currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
+                            ancestor = j;
+                            currentDistance = toDistTo[j] + fromDistTo[v] + 1;
+                        }
                     }
                 }
             }
-
-            for (int k : digraphDFCopy.adj(w)) {
-                if (toEdgeTo[k] != w && w != 0) {
-                    toEdgeTo[k] = w;
-                    int temp = toDistTo[w];
-                    toDistTo[k]=temp+1;
-                } else {
-                    toEdgeTo[k] = w;
-                    int temp = toDistTo[w];
-                    toDistTo[k]=temp+1;
-                }
-                if (toMarked[k]) {
-                    toPathLoop = true;
-                    if (currentDistance != INFINITY && currentDistance > (fromDistTo[k] + toDistTo[w] + 1)) {
-                        ancestor = k;
-                        currentDistance = fromDistTo[k] + toDistTo[w] + 1;
+            if (!toQueue.isEmpty()) {
+                w = toQueue.dequeue();
+                for (int k : digraphDFCopy.adj(w)) {
+                    if (toEdgeTo[k] != w && w != 0) {
+                        toEdgeTo[k] = w;
+                        int temp = toDistTo[w];
+                        toDistTo[k] = temp + 1;
+                    } else if (toEdgeTo[k] == 0 && w == 0) {
+                        toEdgeTo[k] = w;
+                        int temp = toDistTo[w];
+                        toDistTo[k] = temp + 1;
                     }
-                }
-                if (!toMarked[k] && !fromMarked[k]) {
-                    toQueue.enqueue(k);
-                }
-                if (!toMarked[k]) {
-                    toMarked[k] = true;
-                }
-                if (fromMarked[k] && toMarked[k]) {
-                    if ((fromDistTo[k] + toDistTo[w] + 1) < currentDistance) {
-                        ancestor = k;
-                        currentDistance = fromDistTo[k] + toDistTo[w] + 1;
+                    if (toMarked[k]) {
+                        toPathLoop = true;
+                        // System.out.println("Hit a self loop in k block");
+                        if (currentDistance != INFINITY && currentDistance > (fromDistTo[k] + toDistTo[w] + 1)) {
+                            System.out.println("Hit a self loop in k block, and updated the minDistance. ");
+                            ancestor = k;
+                            currentDistance = fromDistTo[k] + toDistTo[w] + 1;
+                        }
+                    }
+                    if (!toMarked[k] && !fromMarked[k]) {
+                        toQueue.enqueue(k);
+                    }
+                    if (!toMarked[k]) {
+                        toMarked[k] = true;
+                    }
+                    if (fromMarked[k] && toMarked[k]) {
+                        if ((fromDistTo[k] + toDistTo[w] + 1) < currentDistance) {
+                            ancestor = k;
+                            currentDistance = fromDistTo[k] + toDistTo[w] + 1;
 
+                        }
                     }
                 }
             }
@@ -240,36 +247,45 @@ public class SAP {
         } else minDistance = currentDistance;
         return currentDistance;
     }
+
     // for j prevNode = v, edgeNode = w, ancestor = j, and f and t are the same
     private boolean validateEdgeTo(int prevNode, int edgeNode, int ancestor, int f, int t) {
+
         boolean connected = false;
         int hops = 0;
-        int counter = prevNode;
-        boolean fromConncted = false;
+        boolean fromConnected = false;
         boolean toConnected = false;
-        int previousCounterValue = INFINITY;
-        while (fromEdgeTo[counter] != from && counter != previousCounterValue) {
-            hops++;
-            previousCounterValue = counter;
-            counter = fromEdgeTo[counter];
-            // If counter does not get to from this loop keeps on going
-        }
-        if (counter == f) fromConncted = true;
-        // one for stopping early and another for starting from the previous node
-        hops += 2;
-        counter = ancestor;
-        previousCounterValue = INFINITY;
-        while (toEdgeTo[counter] != to && counter != previousCounterValue) {
-            hops++;
-            previousCounterValue = counter;
-            counter = toEdgeTo[counter];
-        }
-        if (counter == t) toConnected = true;
-        hops++;// one more for stopping one node too early
+        int counter;
+        int previousCounterValue;
+        if (ancestor != f) {
+            counter = prevNode;
+            previousCounterValue = INFINITY;
+            while (fromEdgeTo[counter] != from && counter != previousCounterValue) {
+                hops++;
+                previousCounterValue = counter;
+                counter = fromEdgeTo[counter];
+                // If counter does not get to from this loop keeps on going
+            }
+            if (counter == f) fromConnected = true;
+            // one for stopping early and another for starting from the previous node
+            hops += 2;
+        } else fromConnected = true;
+        if (ancestor != t) {
+            counter = ancestor;
+            previousCounterValue = INFINITY;
+            while (toEdgeTo[counter] != to && counter != previousCounterValue) {
+                hops++;
+                previousCounterValue = counter;
+                counter = toEdgeTo[counter];
+            }
+            if (counter == t) toConnected = true;
+            hops++;// one more for stopping one node too early
+        } else toConnected = true;
         /* For some reason I was not using Math.min() here and all the tests were passing. I have switched
          * back and will have to test to see if it works. If not, just change the below comments around */
-        if (fromConncted && toConnected) connected = true;
+        if (fromConnected && toConnected) connected = true;
         // if (fromConncted && toConnected) currentDistance = Math.min(currentDistance, toDistTo[j] + fromDistTo[v] + 1);
+        System.out.println("validateEdgeTo() was triggered for " + f + " and " + t + " and returned " + connected);
         return connected;
     }
 
