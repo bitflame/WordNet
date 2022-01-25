@@ -178,7 +178,8 @@ public class SAP {
                     int temp = fromDistTo[v];
                     fromDistTo[j]=temp+1;
                 }
-                if (fromMarked[j]) {
+                // for j prevNode = v, edgeNode = w, ancestor = j, and f and t are the same
+                if (fromMarked[j] && validateEdgeTo(v,w,j,f,t)) {
                     // in a self loop
                     fromPathLoop = true;
                     if (currentDistance != INFINITY && currentDistance > (toDistTo[j] + fromDistTo[v] + 1)) {
@@ -239,11 +240,11 @@ public class SAP {
         } else minDistance = currentDistance;
         return currentDistance;
     }
-
-    private boolean validateEdgeTo(int ancestor, int v, int f, int t) {
+    // for j prevNode = v, edgeNode = w, ancestor = j, and f and t are the same
+    private boolean validateEdgeTo(int prevNode, int edgeNode, int ancestor, int f, int t) {
         boolean connected = false;
         int hops = 0;
-        int counter = v;
+        int counter = prevNode;
         boolean fromConncted = false;
         boolean toConnected = false;
         int previousCounterValue = INFINITY;
