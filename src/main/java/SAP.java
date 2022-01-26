@@ -230,6 +230,7 @@ public class SAP {
                     if (!toMarked[k]) {
                         toMarked[k] = true;
                     }
+
                     if (fromMarked[k] && toMarked[k]) {
                         if ((fromDistTo[k] + toDistTo[w] + 1) < currentDistance) {
                             ancestor = k;
@@ -237,6 +238,7 @@ public class SAP {
 
                         }
                     }
+
                 }
             }
         }
