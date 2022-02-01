@@ -4,10 +4,20 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class AutoGraderTests {
     public static void main(String[] args) {
-        StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 1 ----------------------------------");
-        Digraph digraph = new Digraph(new In("digraph1.txt"));
+        StdOut.println("------------------------ Running AutoGrader Tests for digraph-wordnet.txt ------------------------");
+        Digraph digraph = new Digraph(new In(args[0]));
         SAP sap = new SAP(digraph);
-        int distance = sap.length(3, 3);
+        int distance = sap.length(64451, 25327);
+        if (distance != 15)
+            throw new AssertionError("The distance between the nodes 64451, and 25327 should be 15, but it is: " + distance);
+        distance = sap.length(35205, 21385);
+        if (distance != 17)
+            throw new AssertionError("The distance between the nodes 35295, and 21385 should be 17, but it is: " + distance);
+
+        StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 1 ----------------------------------");
+        digraph = new Digraph(new In("digraph1.txt"));
+        sap = new SAP(digraph);
+        distance = sap.length(3, 3);
         if (distance != 0) throw new AssertionError("Distance between 3, and 3 should be 0, but it is: " + distance);
         int ancestor = sap.ancestor(3, 3);
         if (ancestor != 3)
