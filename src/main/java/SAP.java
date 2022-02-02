@@ -177,23 +177,7 @@ public class SAP {
                         edgeTo[j] = v;
                         int temp = fromDistTo[v];
                         fromDistTo[j] = temp + 1;
-                        if (!toMarked[j]) {
-                            fromQueue.enqueue(j);
-                        }
-                        else {
-                            int fromDist = 0;
-                            if (fromDistTo[v] > 0) fromDist = fromDistTo[v];
-                            int toDist = 0;
-                            if (toDistTo[j] > 0) toDist = toDistTo[j];
-                            if (print)
-                                System.out.printf("Found an ancestor in the normal from match for f: %d t: %d ancestor: %d fromDist = %d toDist = %d currentDist= %d \n", f, t, ancestor, fromDist, toDist, currentDistance);
-                            if (currentDistance > (toDist + fromDist + 1)) {
-                                ancestor = j;
-                                currentDistance = toDist + fromDist + 1;
-                                if (print)
-                                    System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: %d in J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
-                            }
-                        }
+                        fromQueue.enqueue(j);
                     }
                     // for j prevNode = v, edgeNode = w, ancestor = j, and f and t are the same
                     else if (fromMarked[j]) {
@@ -203,7 +187,8 @@ public class SAP {
                         source or destination */
                         int w = edgeTo[j];
                         //edgeTo[j] = v;
-                        fromDistTo[j] = fromDistTo[v];
+                        // fromDistTo[j] = fromDistTo[v];
+                        if (fromDistTo[j] != -1) fromDistTo[j] = Math.min(fromDistTo[j], fromDistTo[v]);
                         boolean one = testEdgeTo(j, f);
                         boolean two = testEdgeTo(w, f);
                         boolean three = testEdgeTo(j, t);
@@ -223,7 +208,21 @@ public class SAP {
                             ancestor = j;
                         }
                         /* If one queue is empty and the new nodes have routes to both sides, both the ancestor and Minimum Distance should be updated . As of now, 12 is
-                        * not counted as an ancestor, and then when 8 comes along, the old data seems to be used. From the digraph3 example */
+                         * not counted as an ancestor, and then when 8 comes along, the old data seems to be used. From the digraph3 example */
+                    }
+                    if (fromMarked[j] && toMarked[j]) {
+                        int fromDist = 0;
+                        if (fromDistTo[v] > 0) fromDist = fromDistTo[v];
+                        int toDist = 0;
+                        if (toDistTo[j] > 0) toDist = toDistTo[j];
+                        if (print)
+                            System.out.printf("Found an ancestor in the normal from match for f: %d t: %d ancestor: %d fromDist = %d toDist = %d currentDist= %d \n", f, t, ancestor, fromDist, toDist, currentDistance);
+                        if (currentDistance > (toDist + fromDist + 1)) {
+                            ancestor = j;
+                            currentDistance = toDist + fromDist + 1;
+                            if (print)
+                                System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: %d in J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
+                        }
                     }
                 }
             }
@@ -237,27 +236,15 @@ public class SAP {
                         if (print) System.out.printf("added %d to toQueue ", k);
                         int temp = toDistTo[w];
                         toDistTo[k] = temp + 1;
-                        if (!fromMarked[k]) toQueue.enqueue(k);
-                        else {
-                            int fromDist = 0;
-                            if (fromDistTo[k] > 0) fromDist = fromDistTo[k];
-                            int toDist = 0;
-                            if (toDistTo[w] > 0) toDist = toDistTo[w];
-                            if (print)
-                                System.out.printf("Found a potential ancestor in the normal to match for: from: %d, to: %d, fromDist: %d, toDist: %d, currentDist: %d\n", f, t, fromDist, toDist, currentDistance);
-                            if ((fromDist + toDist + 1) < currentDistance) {
-                                ancestor = k;
-                                currentDistance = fromDist + toDist + 1;
-                                if (print)
-                                    System.out.printf("lockStepBfs(): updated the ancestor to %d and Minimum Distance to: %d in K block for f: %d f: %d\n", ancestor, minDistance, f, t);
-                            }
-                        }
+                        toQueue.enqueue(k);
                     } else if (toMarked[k]) {
                         //toPathLoop = true;
                         if (print) System.out.println("lockStepBfs(): Hit a self loop in k block");
                         int v = edgeTo[k];
                         //edgeTo[k] = w;
                         toDistTo[k] = toDistTo[w];
+                        if (toDistTo[k] != -1) toDistTo[k] = Math.min(toDistTo[k], toDistTo[w]);
+                        /* I think I should do: if (toDistTo[k]!=-1) toDistTo[k]=Math.Min(toDistTo[k], toDistTo[w]) and create the mirror of it for the loop above */
                         boolean one = testEdgeTo(k, f);
                         boolean two = testEdgeTo(v, f);
                         boolean three = testEdgeTo(k, t);
@@ -276,6 +263,20 @@ public class SAP {
                                 System.out.printf("lockStepBfs(): Hit a self loop in k block, for f: %d and t: %d and updated the currentDistance to: %d . The new ancestor is: %d\n", f, t, currentDistance, ancestor);
                         }
                         edgeTo[k] = w;
+                    }
+                    if (fromMarked[k] && toMarked[k]) {
+                        int fromDist = 0;
+                        if (fromDistTo[k] > 0) fromDist = fromDistTo[k];
+                        int toDist = 0;
+                        if (toDistTo[w] > 0) toDist = toDistTo[w];
+                        if (print)
+                            System.out.printf("Found a potential ancestor in the normal to match for: from: %d, to: %d, fromDist: %d, toDist: %d, currentDist: %d\n", f, t, fromDist, toDist, currentDistance);
+                        if ((fromDist + toDist + 1) < currentDistance) {
+                            ancestor = k;
+                            currentDistance = fromDist + toDist + 1;
+                            if (print)
+                                System.out.printf("lockStepBfs(): updated the ancestor to %d and Minimum Distance to: %d in K block for f: %d f: %d\n", ancestor, minDistance, f, t);
+                        }
                     }
                 }
             }
