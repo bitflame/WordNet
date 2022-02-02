@@ -182,7 +182,8 @@ public class SAP {
                     // for j prevNode = v, edgeNode = w, ancestor = j, and f and t are the same
                     else if (fromMarked[j]) {
                         // in a self loop
-                        if (print) System.out.println("Hit a self loop in j block for " + f + " and" + t);
+                        if (print)
+                        System.out.println("Hit a self loop in j block for " + f + " and " + t);
                         /* ancestor or the node that points to it, should be pointed to by one side starting from the
                         source or destination */
                         int w = edgeTo[j];
@@ -199,13 +200,15 @@ public class SAP {
                         int toDist = 0;
                         if (toDistTo[j] > 0) toDist = toDistTo[j];
                         if (print)
-                            System.out.printf("Found an ancestor in the looped from match for f: %d t: %d : ancestor: %d fromDist = %d toDist = %d currentDist= %d hasPath: %b \n", f, t, ancestor, fromDist, toDist, currentDistance, hasPath);
-                        if (print) System.out.printf("one: %b two: %b three: %b four: %b: ", one, two, three, four);
+                        System.out.printf("one: %b two: %b three: %b four: %b: \n", one, two, three, four);
+                        if (print)
+                        System.out.printf("Found a potential ancestor in the looped from match for f: %d t: %d : ancestor: " +
+                                "%d fromDist = %d toDist = %d currentDist= %d hasPath: %b \n", f, t, ancestor, fromDist, toDist, currentDistance, hasPath);
                         if (currentDistance > (toDist + fromDist) && hasPath) {
-                            if (print)
-                                System.out.println("Hit a self loop in j block, and updated the minDistance for f: %d t: %d" + f + " and " + t);
                             currentDistance = toDist + fromDist;
                             ancestor = j;
+                            if (print)
+                            System.out.printf("Updated currentDistance to: %d for f: %d and t: %d ancestor being: \n", currentDistance, f, t, ancestor);
                         }
                         /* If one queue is empty and the new nodes have routes to both sides, both the ancestor and Minimum Distance should be updated . As of now, 12 is
                          * not counted as an ancestor, and then when 8 comes along, the old data seems to be used. From the digraph3 example */
@@ -214,14 +217,14 @@ public class SAP {
                         int fromDist = 0;
                         if (fromDistTo[v] > 0) fromDist = fromDistTo[v];
                         int toDist = 0;
-                        if (toDistTo[j] > 0) toDist = toDistTo[j];
+                        if (toDistTo[j] > 0) toDist = toDistTo[j] +1;
                         if (print)
                             System.out.printf("Found an ancestor in the normal from match for f: %d t: %d ancestor: %d fromDist = %d toDist = %d currentDist= %d \n", f, t, ancestor, fromDist, toDist, currentDistance);
                         if (currentDistance > (toDist + fromDist + 1)) {
                             ancestor = j;
-                            currentDistance = toDist + fromDist + 1;
+                            currentDistance = toDist + fromDist+1;
                             if (print)
-                                System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: %d in J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
+                            System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: %d in J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
                         }
                     }
                 }
@@ -273,7 +276,7 @@ public class SAP {
                             System.out.printf("Found a potential ancestor in the normal to match for: from: %d, to: %d, fromDist: %d, toDist: %d, currentDist: %d\n", f, t, fromDist, toDist, currentDistance);
                         if ((fromDist + toDist + 1) < currentDistance) {
                             ancestor = k;
-                            currentDistance = fromDist + toDist + 1;
+                            currentDistance = fromDist + toDist +1;
                             if (print)
                                 System.out.printf("lockStepBfs(): updated the ancestor to %d and Minimum Distance to: %d in K block for f: %d f: %d\n", ancestor, minDistance, f, t);
                         }
