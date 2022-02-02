@@ -23,6 +23,9 @@ public class AutoGraderTests {
         shortestDistance = sap.length(53712, 61827);
         if (shortestDistance != 10)
             System.out.printf("shortest distance between 53712, and 61827 should be 10, but it is: %d\n", shortestDistance);
+        shortestDistance = sap.length(45826, 73382);
+        if (shortestDistance != 14)
+            System.out.printf("shortest distance between 45826, and 73382 should bbe 14, but it is: %d\n ", shortestDistance);
     }
 
     private void testDigraph1() {
