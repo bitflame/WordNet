@@ -20,6 +20,9 @@ public class AutoGraderTests {
         shortestDistance = sap.length(35205, 21385);
         if (shortestDistance != 17)
             System.out.printf("shortest distance between 35205, and 21385 should be 17, but it is: %d\n", shortestDistance);
+        shortestDistance = sap.length(53712, 61827);
+        if (shortestDistance != 10)
+            System.out.printf("shortest distance between 53712, and 61827 should be 10, but it is: %d\n", shortestDistance);
     }
 
     private void testDigraph1() {
@@ -134,6 +137,12 @@ public class AutoGraderTests {
         if (ancestor != -1)
             System.out.printf("The ancestor between the nodes 9 and 2 should be -1 since they are not " +
                     "connected, but it actually comes up as: %d\n", ancestor);
+        shortestDistance = sap.length(10, 14);
+        if (shortestDistance != 3)
+            System.out.printf("The distance between 10 and 14 should be 3, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(10, 14);
+        if (ancestor != 11)
+            System.out.printf("The ancestor of 10, and 14 should be node 11, but it is: %d\n ", ancestor);
     }
 
     private void testDigraph4() {

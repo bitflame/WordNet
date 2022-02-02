@@ -15,8 +15,6 @@ public class SAP {
     private int n;
     private boolean[] fromMarked;
     private boolean[] toMarked;
-    //private int[] fromEdgeTo;
-    //private int[] toEdgeTo;
     private int[] edgeTo;
     private int[] fromDistTo;
     private int[] toDistTo;
@@ -191,7 +189,7 @@ public class SAP {
                                 ancestor = j;
                                 currentDistance = toDist + fromDist + 1;
                                 if (print)
-                                    System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: %d in J block \n", ancestor, currentDistance);
+                                    System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: %d in J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
                             }
                             edgeTo[j] = v;
                             fromDistTo[j] = fromDistTo[v] + 1;
@@ -206,7 +204,7 @@ public class SAP {
                         source or destination */
                         int w = edgeTo[j];
                         edgeTo[j] = v;
-                        // fromDistTo[j] = fromDistTo[v] + 1;
+                        fromDistTo[j] = fromDistTo[v];
                         boolean one = testEdgeTo(j, f);
                         boolean two = testEdgeTo(w, f);
                         boolean three = testEdgeTo(j, t);
@@ -216,15 +214,16 @@ public class SAP {
                         if (fromDistTo[j] > 0) fromDist = fromDistTo[j];
                         int toDist = 0;
                         if (toDistTo[j] > 0) toDist = toDistTo[j];
-                        ancestor = j;
                         if (print)
                             System.out.printf("Found an ancestor in the looped from match for f: %d t: %d : ancestor: %d fromDist = %d toDist = %d currentDist= %d hasPath: %b \n", f, t, ancestor, fromDist, toDist, currentDistance, hasPath);
                         if (print) System.out.printf("one: %b two: %b three: %b four: %b: ", one, two, three, four);
                         if (currentDistance > (toDist + fromDist) && hasPath) {
                             if (print)
-                                System.out.println("Hit a self loop in j block, and updated the minDistance for: " + f + " and " + t);
+                                System.out.println("Hit a self loop in j block, and updated the minDistance for f: %d t: %d" + f + " and " + t);
                             currentDistance = toDist + fromDist + 1;
+                            ancestor = j;
                         }
+
                     }
                 }
             }
@@ -250,17 +249,16 @@ public class SAP {
                                 ancestor = k;
                                 currentDistance = fromDist + toDist + 1;
                                 if (print)
-                                    System.out.printf("lockStepBfs(): updated the ancestor to %d and Minimum Distance to: %d in K block \n", ancestor, minDistance);
+                                    System.out.printf("lockStepBfs(): updated the ancestor to %d and Minimum Distance to: %d in K block for f: %d f: %d\n", ancestor, minDistance, f, t);
                             }
                             edgeTo[k] = w;
-                            toDistTo[k] = toDistTo[w] + 1;
                         }
                     } else if (toMarked[k]) {
                         toPathLoop = true;
                         if (print) System.out.println("lockStepBfs(): Hit a self loop in k block");
                         int v = edgeTo[k];
-                        edgeTo[k] = w;
-                        // toDistTo[k] = toDistTo[w] + 1;
+
+                        toDistTo[k] = toDistTo[w];
                         boolean one = testEdgeTo(k, f);
                         boolean two = testEdgeTo(v, f);
                         boolean three = testEdgeTo(k, t);
@@ -271,13 +269,14 @@ public class SAP {
                         int toDist = 0;
                         if (toDistTo[k] > 0) toDist = toDistTo[k];
                         if (print)
-                            System.out.printf("Found a potential ancestor in the looped to match for: from: %d, to: %d, fromDist: %d, toDist: %d, currentDist: %d hasPath: %b\n", f, t, fromDist, toDist, currentDistance, hasPath);
+                        System.out.printf("Found a potential ancestor in the looped to match for: from: %d, to: %d, fromDist: %d, toDist: %d, currentDist: %d hasPath: %b\n", f, t, fromDist, toDist, currentDistance, hasPath);
                         if (currentDistance != INFINITY && currentDistance > (fromDist + toDist + 1) && hasPath) {
-                            if (print)
-                                System.out.println("lockStepBfs(): Hit a self loop in k block, and updated the minDistance. ");
                             ancestor = k;
                             currentDistance = fromDist + toDist + 1;
+                            if (print)
+                            System.out.printf("lockStepBfs(): Hit a self loop in k block, for f: %d and t: %d and updated the currentDistance to: %d . The new ancestor is: %d\n", f, t, currentDistance, ancestor);
                         }
+                        edgeTo[k] = w;
                     }
                 }
             }
@@ -312,13 +311,9 @@ public class SAP {
     }
 
     public static void main(String[] args) {
-        Digraph digraph = new Digraph(new In("digraph9.txt"));
+        Digraph digraph = new Digraph(new In("digraph3.txt"));
         SAP sap = new SAP(digraph);
-        int length = sap.length(0, 5);
-        if (length != 4)
-            throw new AssertionError("The value of length between 0,5 in digraph9 should be 4, but it is: " + length);
-        int ancestor = sap.ancestor(0, 5);
-        if (ancestor != 4) throw new AssertionError("The ancestor of 0, and 5 should be 4, but it is: " + ancestor);
-
+        System.out.printf("%b\n", sap.testEdgeTo(11, 12));
+        System.out.printf("%b\n", sap.testEdgeTo(11, 8));
     }
 }
