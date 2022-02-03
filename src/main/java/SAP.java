@@ -30,12 +30,15 @@ public class SAP {
         if (cycleFinder.hasCycle()) {
             hasCycle = true;
         }
-        digraphDFCopy = digraph;
+        // digraphDFCopy = digraph;
+        digraphDFCopy = new Digraph(digraph);
     }
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
+        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.");
+
         if (v == from && w == to && v != w) return minDistance;
         from = v;
         to = w;
@@ -100,6 +103,7 @@ public class SAP {
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         // System.out.println("Calculating the ancestor between : " + v + " " + w);
+        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.");
         if (this.from == v && this.to == w && v != w) return ancestor;
         from = v;
         to = w;
