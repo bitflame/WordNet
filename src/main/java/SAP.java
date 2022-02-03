@@ -187,16 +187,15 @@ public class SAP {
                         /* ancestor or the node that points to it, should be pointed to by one side starting from the
                         source or destination */
                         int w = edgeTo[j];
-                        //edgeTo[j] = v;
-                        // fromDistTo[j] = fromDistTo[v];
-                        if (fromDistTo[j] != -1) fromDistTo[j] = Math.min(fromDistTo[j], fromDistTo[v]);
+                        edgeTo[j] = v;
+                        fromDistTo[j] = fromDistTo[v]+1;
                         boolean one = testEdgeTo(j, f);
                         boolean two = testEdgeTo(w, f);
                         boolean three = testEdgeTo(j, t);
                         boolean four = testEdgeTo(w, t);
                         boolean hasPath = ((one || two) && (three || four));
                         int fromDist = 0;
-                        if (fromDistTo[j] > 0) fromDist = fromDistTo[v] + 1;
+                        if (fromDistTo[j] > 0) fromDist = fromDistTo[j];
                         int toDist = 0;
                         if (toDistTo[j] > 0) toDist = toDistTo[j];
                         if (print)
