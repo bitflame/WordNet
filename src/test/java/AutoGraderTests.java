@@ -2,12 +2,23 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AutoGraderTests {
     In in;
     Digraph digraph;
+    Digraph digraph1;
+    Digraph digraph2;
     SAP sap;
+    SAP sap1;
+    SAP sap2;
     int shortestDistance;
+    int shortestDistance1;
+    int shortestDistance2;
     int ancestor;
+    List<Integer> v;
+    List<Integer> w;
 
     private void testDigraphWordNet() {
         StdOut.println("----------------------------------Running AutoGrader Tests for DigraphWordNet ----------------------------------");
@@ -86,6 +97,9 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(4, 0);
         if (ancestor != 0)
             System.out.printf("The value of ancestor between 4, and 0 should be 0, but it is: %d\n", shortestDistance);
+        shortestDistance = sap.length(1, 1);
+        if (shortestDistance != 0)
+            System.out.printf("The shortest distance for the same point should be 0, but it is: %d\n", shortestDistance);
     }
 
     private void testDigraph3() {
@@ -247,6 +261,54 @@ public class AutoGraderTests {
         shortestDistance = sap.length(0, 5);
         if (shortestDistance != 4)
             System.out.printf("The distance between 0 and 5 should be 4, but it is: %d\n", shortestDistance);
+
+    }
+
+    private void createTwoObjects() {
+        StdOut.println("-----------------------------Running AutoGrader Tests for Creating Two Objects -------------------");
+        in = new In("digraph1.txt");
+        digraph1 = new Digraph(in);
+        in = new In("digraph2.txt");
+        digraph2 = new Digraph(in);
+        sap1 = new SAP(digraph1);
+        sap2 = new SAP(digraph2);
+        shortestDistance1 = sap1.length(0, 0);
+        if (shortestDistance1 != 0)
+            System.out.printf("The distance for the same node should be 0, but it is: %d\n", shortestDistance1);
+        shortestDistance2 = sap2.length(0, 0);
+        if (shortestDistance2 != 0)
+            System.out.printf("The distance for the same node should be 0, but it is: %d\n", shortestDistance2);
+        ancestor = sap1.ancestor(0, 0);
+        if (ancestor != 0)
+            System.out.printf("The ancestor for the same point should be itself, but it is: %d\n", ancestor);
+    }
+
+    private void testIterables() {
+        StdOut.println("---------------------------Running AutoGrader Tests for testIterables -------------------");
+        in = new In("digraph-wordnet.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        v = new ArrayList<>(List.of());
+        w = new ArrayList<Integer>(List.of(3464, 8331, 23405, 23889, 72520));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != -1) System.out.printf("The shortest distance of two Iterables one of which has not " +
+                "elements should be -1, but it is: %d\n", shortestDistance);
+        v = new ArrayList<>(List.of(9675, 44260, 65806, 80452));
+        w = new ArrayList<>(List.of());
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != -1) System.out.printf("The shortest distance of two Iterables one of which has not " +
+                "elements should be -1, but it is: %d\n", shortestDistance);
+        v = new ArrayList<>(List.of());
+        w = new ArrayList<>(List.of());
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != -1) System.out.printf("The shortest distance of two Iterables one of which has not " +
+                "elements should be -1, but it is: %d\n", shortestDistance);
+        v = null;
+        try {
+            shortestDistance = sap.length(v, w);
+        } catch (IllegalArgumentException ie) {
+            System.out.printf(ie.getMessage());
+        }
     }
 
     public static void main(String[] args) {
@@ -259,5 +321,7 @@ public class AutoGraderTests {
         autoGraderTests.testDigraph5();
         autoGraderTests.testDigraph6();
         autoGraderTests.testDigraph9();
+        autoGraderTests.createTwoObjects();
+        autoGraderTests.testIterables();
     }
 }
