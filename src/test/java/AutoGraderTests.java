@@ -100,6 +100,11 @@ public class AutoGraderTests {
         shortestDistance = sap.length(1, 1);
         if (shortestDistance != 0)
             System.out.printf("The shortest distance for the same point should be 0, but it is: %d\n", shortestDistance);
+        try {
+
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.printf("Illegal Argument Exception:", illegalArgumentException.getMessage());
+        }
     }
 
     private void testDigraph3() {
@@ -289,7 +294,7 @@ public class AutoGraderTests {
         digraph = new Digraph(in);
         sap = new SAP(digraph);
         v = new ArrayList<>(List.of());
-        w = new ArrayList<Integer>(List.of(3464, 8331, 23405, 23889, 72520));
+        w = new ArrayList<>(List.of(3464, 8331, 23405, 23889, 72520));
         shortestDistance = sap.length(v, w);
         if (shortestDistance != -1) System.out.printf("The shortest distance of two Iterables one of which has not " +
                 "elements should be -1, but it is: %d\n", shortestDistance);
@@ -307,7 +312,40 @@ public class AutoGraderTests {
         try {
             shortestDistance = sap.length(v, w);
         } catch (IllegalArgumentException ie) {
-            System.out.printf(ie.getMessage());
+            System.out.printf("IllegalArgumentException for length() was thrown successfully when v is null : %s\n", ie.getMessage());
+        }
+        try {
+            ancestor = sap.ancestor(v, w);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.printf("IllegalArgumentException for ancestor() was thrown successfully when v is null : %s\n", illegalArgumentException.getMessage());
+        }
+        v = new ArrayList<>(List.of(0, 7, 9, 12));
+        w = null;
+        try {
+            ancestor = sap.ancestor(v, w);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.printf("IllegalArgumentException for ancestor() was thrown successfully when w is null : %s\n ",
+                    illegalArgumentException.getMessage());
+        }
+        try {
+            shortestDistance = sap.length(v, w);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.printf("IllegalArgumentException for length() was thrown successfully when w is null: %s\n",
+                    illegalArgumentException.getMessage());
+        }
+        w = null;
+        v = null;
+        try {
+            ancestor = sap.ancestor(v, w);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.printf("IllegalArgumentException for ancestor() was thrown successfully when both v and w are null : %s\n ",
+                    illegalArgumentException.getMessage());
+        }
+        try {
+            shortestDistance = sap.length(v, w);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.printf("IllegalArgumentException for length() was thrown successfully when both v and w are null: %s\n",
+                    illegalArgumentException.getMessage());
         }
     }
 

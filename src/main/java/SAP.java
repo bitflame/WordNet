@@ -37,7 +37,7 @@ public class SAP {
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
-        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.");
+        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
 
         if (v == from && w == to && v != w) return minDistance;
         from = v;
@@ -73,7 +73,7 @@ public class SAP {
     // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
-            throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.");
+            throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.\n");
         int currentDistance = 0;
         int prevDistance = INFINITY;
         // System.out.printf("sap triggers ancestor() with iterables ");
@@ -103,7 +103,7 @@ public class SAP {
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         // System.out.println("Calculating the ancestor between : " + v + " " + w);
-        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.");
+        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (this.from == v && this.to == w && v != w) return ancestor;
         from = v;
         to = w;
@@ -136,7 +136,7 @@ public class SAP {
     // a common ancestor that participates in the shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
-            throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.");
+            throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.\n");
 
         int len = 0;
         int prevLen = INFINITY;
