@@ -389,6 +389,6 @@ public class AutoGraderTests {
         autoGraderTests.testDigraph9();
         autoGraderTests.createTwoObjects();
         autoGraderTests.testIterables();
-        // autoGraderTests.testIterablesWithDigraph1();
+        autoGraderTests.testIterablesWithDigraph1();
     }
 }

@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
 
+import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
 
 public class SAP {
@@ -37,7 +38,9 @@ public class SAP {
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
-        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+
+        if (v < 0 || v >= digraphDFCopy.V()) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+        if (w < 0 || w >= digraphDFCopy.V()) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (v == from && w == to && v != w) return minDistance;
         from = v;
         to = w;
@@ -51,8 +54,6 @@ public class SAP {
             ancestor = -1;
             return minDistance = -1;
         }
-        boolean containsV = false;
-        boolean containsW = false;
         //fromPathLoop = false;
         //toPathLoop = false;
         n = digraphDFCopy.V();
@@ -63,11 +64,8 @@ public class SAP {
         edgeTo = new int[n];
         for (int i = 0; i < n; i++) {
             edgeTo[i] = -1;
-            if (i == v) containsV = true;
-            if (i == w) containsW = true;
         }
-        if (!(containsV && containsW))
-            throw new IllegalArgumentException("At least one of the end points supplied is not in the graph");
+
         fromDistTo = new int[n];
         toDistTo = new int[n];
         minDistance = lockStepBFS(v, w);
@@ -115,8 +113,8 @@ public class SAP {
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         // System.out.println("Calculating the ancestor between : " + v + " " + w);
-        boolean containsV = false;
-        boolean containsW = false;
+        if (v < 0 || v >= digraphDFCopy.V()) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+        if (w < 0 || w >= digraphDFCopy.V()) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (this.from == v && this.to == w && v != w) return ancestor;
         from = v;
@@ -140,11 +138,7 @@ public class SAP {
         edgeTo = new int[n];
         for (int i = 0; i < n; i++) {
             edgeTo[i] = -1;
-            if (i == v) containsV = true;
-            if (i == w) containsW = true;
         }
-        if (!(containsV && containsW))
-            throw new IllegalArgumentException("At least one of the end points supplied is not in the graph");
         fromDistTo = new int[n];
         toDistTo = new int[n];
         lockStepBFS(from, to);
