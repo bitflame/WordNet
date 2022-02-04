@@ -38,7 +38,6 @@ public class SAP {
     public int length(int v, int w) {
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
         if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-
         if (v == from && w == to && v != w) return minDistance;
         from = v;
         to = w;
@@ -51,8 +50,9 @@ public class SAP {
                 digraphDFCopy.outdegree(to) == 0)) {
             ancestor = -1;
             return minDistance = -1;
-
         }
+        boolean containsV = false;
+        boolean containsW = false;
         //fromPathLoop = false;
         //toPathLoop = false;
         n = digraphDFCopy.V();
@@ -63,7 +63,11 @@ public class SAP {
         edgeTo = new int[n];
         for (int i = 0; i < n; i++) {
             edgeTo[i] = -1;
+            if (i == v) containsV = true;
+            if (i == w) containsW = true;
         }
+        if (!(containsV && containsW))
+            throw new IllegalArgumentException("At least one of the end points supplied is not in the graph");
         fromDistTo = new int[n];
         toDistTo = new int[n];
         minDistance = lockStepBFS(v, w);
@@ -76,17 +80,25 @@ public class SAP {
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.\n");
         int currentDistance = 0;
         int prevDistance = INFINITY;
-        // System.out.printf("sap triggers ancestor() with iterables ");
+        //System.out.printf("sap triggers ancestor() with iterables ");
         Iterator<Integer> i = v.iterator();
         Iterator<Integer> j = w.iterator();
         if ((!i.hasNext()) || (!j.hasNext())) {
             return minDistance = -1;
         }
-
+        int source;
+        int destination;
+        Object obj;
         while (i.hasNext()) {
-            int source = i.next();
+            obj = i.next();
+            if (obj == null)
+                throw new IllegalArgumentException("The values Iterables give to length() can not be null.");
+            else source = (Integer) obj;
             while (j.hasNext()) {
-                int destination = j.next();
+                obj = j.next();
+                if (obj == null)
+                    throw new IllegalArgumentException("The values Iterables give to length() can not be null.");
+                destination = (Integer) obj;
                 currentDistance = length(source, destination);
                 // System.out.printf("Current Distance: %d \n", currentDistance);
                 if (currentDistance != -1 && currentDistance < prevDistance) {
@@ -103,6 +115,8 @@ public class SAP {
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         // System.out.println("Calculating the ancestor between : " + v + " " + w);
+        boolean containsV = false;
+        boolean containsW = false;
         if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (this.from == v && this.to == w && v != w) return ancestor;
         from = v;
@@ -126,7 +140,11 @@ public class SAP {
         edgeTo = new int[n];
         for (int i = 0; i < n; i++) {
             edgeTo[i] = -1;
+            if (i == v) containsV = true;
+            if (i == w) containsW = true;
         }
+        if (!(containsV && containsW))
+            throw new IllegalArgumentException("At least one of the end points supplied is not in the graph");
         fromDistTo = new int[n];
         toDistTo = new int[n];
         lockStepBFS(from, to);
@@ -146,10 +164,19 @@ public class SAP {
         if ((!i.hasNext()) || (!j.hasNext())) {
             return ancestor = -1;
         }
+        int source;
+        int destination;
+        Object obj;
         while (i.hasNext()) {
-            int source = i.next();
+            obj = i.next();
+            if (obj == null)
+                throw new IllegalArgumentException("The values Iterables give to length() can not be null.");
+            else source = (Integer) obj;
             while (j.hasNext()) {
-                int destination = j.next();
+                obj = j.next();
+                if (obj == null)
+                    throw new IllegalArgumentException("The values Iterables give to length() can not be null.");
+                destination = (Integer) obj;
                 len = length(source, destination);
                 if (len != -1 && len < prevLen) {
                     currentAncestor = ancestor;
