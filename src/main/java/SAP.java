@@ -127,9 +127,6 @@ public class SAP {
             minDistance = -1;
             return ancestor = -1;
         }
-
-        //fromPathLoop = false;
-        //toPathLoop = false;
         n = digraphDFCopy.V();
         fromMarked = new boolean[n];
         toMarked = new boolean[n];

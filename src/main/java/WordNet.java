@@ -92,7 +92,6 @@ public class WordNet {
                 if (s.equals(nounB)) nounBIds.add(i);
             }
         }
-        // sap = new SAP(digraphDFCopy);
         int i = sap.ancestor(nounAIds, nounBIds);
         if (i == -1) return "";
         else return db.get(i);

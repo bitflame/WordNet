@@ -21,7 +21,7 @@ public class AutoGraderTests {
     List<Integer> w;
 
     private void testDigraphWordNet() {
-        StdOut.println("----------------------------------Running AutoGrader Tests for DigraphWordNet ----------------------------------");
+        StdOut.println("-------------------------- Running AutoGrader Tests for DigraphWordNet --------------------------");
         in = new In("digraph-wordnet.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
@@ -40,6 +40,12 @@ public class AutoGraderTests {
         shortestDistance = sap.length(2657, 55738);
         if (shortestDistance != 15)
             System.out.printf("shortest distance between 2657, and 55738 should be 15, but it is: %d\n ", shortestDistance);
+    }
+
+    private void testSubgraphs() {
+        StdOut.println("--------------------------- Running AutoGrader Tests for SubGraphs ------------------------------");
+        WordNet wordNet = new WordNet("synsets100-subgraph.txt", "hypernyms100-subgraph.txt");
+
     }
 
     private void testDigraph1() {
