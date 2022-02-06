@@ -123,8 +123,8 @@ public class SAP {
         } else lockStepBFS(from, to);
         return ancestor;
     }
-
     // test digraph5 (10, 13), (10,19), and (10, 18) also
+    // In (8,13) edgeTo[11] should be 0, but it is 10 since 11 has more than one incoming
     // method to find the ancestor if both source and destination are marked
     private void updateAncestor(int v, int w) {
         int currentMinDist = INFINITY;
@@ -239,7 +239,6 @@ public class SAP {
         toMarked[t] = true;
         toDistTo[t] = 0;
         int currentDistance = INFINITY;
-        // System.out.printf("lockStepBFS(): Here is f: %d t: %d \n", f, t);
         while (!(fromQueue.isEmpty() && toQueue.isEmpty())) {
             if (!fromQueue.isEmpty()) {
                 int v = fromQueue.dequeue();
