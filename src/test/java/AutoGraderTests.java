@@ -62,6 +62,8 @@ public class AutoGraderTests {
         shortestDistance = sap.length(3, 8);
         if (shortestDistance != 1)
             System.out.printf("The value of length between 3 and 8 should be 1, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(3, 8);
+        if (ancestor != 3) System.out.printf("The ancestor for 3, and 8 should be 3, but it is: %d\n ", ancestor);
         shortestDistance = sap.length(1, 1);
         if (shortestDistance != 0)
             System.out.printf("The value of length between 1 and 1 should be 0, but it is: %d\n", shortestDistance);
@@ -98,7 +100,12 @@ public class AutoGraderTests {
         } catch (IllegalArgumentException illegalArgumentException) {
             System.out.printf("Error message for non-exitant value: %s\n", illegalArgumentException.getMessage());
         }
-        ancestor = sap.ancestor(13, 0);
+        try {
+            ancestor = sap.ancestor(13, 0);
+        } catch (IllegalArgumentException illegalArgumentException) {
+            System.out.printf("Error message for non-exitant value: %s\n", illegalArgumentException.getMessage());
+        }
+
 
     }
 
@@ -368,20 +375,6 @@ public class AutoGraderTests {
         }
     }
 
-    private void testIterablesWithDigraph1() {
-        // G = digraph1.txt, v = { 0, null, 7, 9, 12 }, w = { 1, 2, 4, 5, 10 }
-        StdOut.println("------------------ Running AutoGrader Tests for testIterables with Digraph1 -------------------");
-        in = new In("digraph1.txt");
-        digraph = new Digraph(in);
-        sap = new SAP(digraph);
-        v = new ArrayList<>(List.of(0, null, 7, 9, 12));
-        w = new ArrayList<>(List.of(1, 2, 4, 5, 10));
-        try {
-            shortestDistance = sap.length(v, w);
-        } catch (Exception ie) {
-            System.out.printf("Exception result: %s", ie.getMessage());
-        }
-    }
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
@@ -395,6 +388,5 @@ public class AutoGraderTests {
         autoGraderTests.testDigraph9();
         autoGraderTests.createTwoObjects();
         autoGraderTests.testIterables();
-        autoGraderTests.testIterablesWithDigraph1();
     }
 }
