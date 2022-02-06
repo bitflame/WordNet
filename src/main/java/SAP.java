@@ -123,8 +123,13 @@ public class SAP {
         } else lockStepBFS(from, to);
         return ancestor;
     }
+
     // test digraph5 (10, 13), (10,19), and (10, 18) also
-    // In (8,13) edgeTo[11] should be 0, but it is 10 since 11 has more than one incoming
+    /* In (8,13) edgeTo[11] should be 0, but it is 10 since 11 has more than one incoming. Maybe test for indgree of
+    each node before adding it to the path, and if it is more than one, then just run lock-step again? The problem
+    actually is that two steps are in from path as well as to path and they are counted twice, and it is happening
+    in lock-step. I am not sure if testing for he number of incoming will help. I have it there for now, but I will
+    remove it once I fix lock-step and see how it behaves */
     // method to find the ancestor if both source and destination are marked
     private void updateAncestor(int v, int w) {
         int currentMinDist = INFINITY;
@@ -133,7 +138,7 @@ public class SAP {
         int fromCount = 0, toCount = 0;
         path.push(v);
         int i = edgeTo[v], j = edgeTo[w];
-        while (i != -1 && i != w && i != v) {
+        while (i != -1 && i != w && i != v && digraphDFCopy.indegree(i) == 1) {
             fromCount++;
             path.push(i);
             i = edgeTo[i];
@@ -146,7 +151,7 @@ public class SAP {
         path.push(w);
         toCount++;
         // w to v - one of these loops has the path
-        while (j != -1 && j != v && j != w) {
+        while (j != -1 && j != v && j != w && digraphDFCopy.indegree(j) == 1) {
             path.push(j);
             toCount++;
             j = edgeTo[j];
