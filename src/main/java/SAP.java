@@ -1,13 +1,11 @@
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Stack;
 
-import java.util.InvalidPropertiesFormatException;
 import java.util.Iterator;
 
 public class SAP {
-    private boolean hasCycle = false;
     private final Digraph digraphDFCopy;
     private int ancestor;
     private int minDistance;
@@ -20,27 +18,30 @@ public class SAP {
     private int[] fromDistTo;
     private int[] toDistTo;
     private static final int INFINITY = Integer.MAX_VALUE;
-    //private boolean fromPathLoop = false;
-    //private boolean toPathLoop = false;
     private boolean print = false;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
         if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
-        DirectedCycle cycleFinder = new DirectedCycle(digraph);
-        if (cycleFinder.hasCycle()) {
-            hasCycle = true;
-        }
-        // digraphDFCopy = digraph;
         digraphDFCopy = new Digraph(digraph);
+        n = digraphDFCopy.V();
+        fromMarked = new boolean[n];
+        toMarked = new boolean[n];
+        edgeTo = new int[n];
+        for (int i = 0; i < n; i++) {
+            edgeTo[i] = -1;
+        }
+        fromDistTo = new int[n];
+        toDistTo = new int[n];
     }
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
-
-        if (v < 0 || v >= digraphDFCopy.V()) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (w < 0 || w >= digraphDFCopy.V()) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+        if (v < 0 || v >= digraphDFCopy.V())
+            throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+        if (w < 0 || w >= digraphDFCopy.V())
+            throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (v == from && w == to && v != w) return minDistance;
         from = v;
         to = w;
@@ -54,21 +55,9 @@ public class SAP {
             ancestor = -1;
             return minDistance = -1;
         }
-        //fromPathLoop = false;
-        //toPathLoop = false;
-        n = digraphDFCopy.V();
-        fromMarked = new boolean[n];
-        toMarked = new boolean[n];
-        // fromEdgeTo = new int[n];
-        // toEdgeTo = new int[n];
-        edgeTo = new int[n];
-        for (int i = 0; i < n; i++) {
-            edgeTo[i] = -1;
-        }
-
-        fromDistTo = new int[n];
-        toDistTo = new int[n];
-        minDistance = lockStepBFS(v, w);
+        if ((fromMarked[v] || toMarked[v]) && (fromMarked[w] || toMarked[w])) {
+            updateAncestor(v, w);
+        } else lockStepBFS(from, to);
         return minDistance;
     }
 
@@ -113,8 +102,10 @@ public class SAP {
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         // System.out.println("Calculating the ancestor between : " + v + " " + w);
-        if (v < 0 || v >= digraphDFCopy.V()) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (w < 0 || w >= digraphDFCopy.V()) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+        if (v < 0 || v >= digraphDFCopy.V())
+            throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+        if (w < 0 || w >= digraphDFCopy.V())
+            throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (this.from == v && this.to == w && v != w) return ancestor;
         from = v;
@@ -127,19 +118,66 @@ public class SAP {
             minDistance = -1;
             return ancestor = -1;
         }
-        n = digraphDFCopy.V();
-        fromMarked = new boolean[n];
-        toMarked = new boolean[n];
-        // fromEdgeTo = new int[n];
-        // toEdgeTo = new int[n];
-        edgeTo = new int[n];
-        for (int i = 0; i < n; i++) {
-            edgeTo[i] = -1;
-        }
-        fromDistTo = new int[n];
-        toDistTo = new int[n];
-        lockStepBFS(from, to);
+        if ((fromMarked[v] || toMarked[v]) && (fromMarked[w] || toMarked[w])) {
+            updateAncestor(v, w);
+        } else lockStepBFS(from, to);
         return ancestor;
+    }
+    // test digraph5 (10, 13), (10,19), and (10, 18) also
+    // method to find the ancestor if both source and destination are marked
+    private void updateAncestor(int v, int w) {
+        int currentMinDist = INFINITY;
+        // 1- Find the new ancestor
+        Stack<Integer> path = new Stack<>();
+        int fromCount = 0, toCount = 0;
+        path.push(v);
+        int i = edgeTo[v], j = edgeTo[w];
+        while (i != -1 && i != w && i != v) {
+            fromCount++;
+            path.push(i);
+            i = edgeTo[i];
+        }
+        if (i == w) {
+            ancestor = v;
+            currentMinDist = fromCount + 1;
+            minDistance = currentMinDist;
+        }
+        path.push(w);
+        toCount++;
+        // w to v - one of these loops has the path
+        while (j != -1 && j != v && j != w) {
+            path.push(j);
+            toCount++;
+            j = edgeTo[j];
+        }
+        if (j == v && toCount < currentMinDist) {
+            currentMinDist = toCount;
+            minDistance = currentMinDist;
+            ancestor = w;
+        } else if (i != -1 && j != -1) {
+            // pop until you get to w, and start counting
+            int n = path.pop();
+            int previousNode = n;
+            while (n != v && n != w) {
+                n = path.pop();
+                if (previousNode == n) ancestor = n;
+                previousNode = n;
+            }
+            n = path.pop();
+            previousNode = n;
+            int counter = 1;
+            // pop until you get to v, and stop counting -- ancestor should be on top of the stack
+            while (n != v && n != w) {
+                counter++;
+                n = path.pop();
+                if (previousNode == n) ancestor = n;
+                previousNode = n;
+            }
+            if (counter < currentMinDist) {
+                currentMinDist = counter;
+                minDistance = currentMinDist;
+            }
+        } else if (currentMinDist == INFINITY) lockStepBFS(v, w);
     }
 
     // a common ancestor that participates in the shortest ancestral path; -1 if no such path
@@ -181,8 +219,16 @@ public class SAP {
         return ancestor;
     }
 
-    private int lockStepBFS(int f, int t) {
+    private void lockStepBFS(int f, int t) {
         /* todo - you can use digraph indegree to set edgeTo f and t maybe */
+        fromMarked = new boolean[n];
+        toMarked = new boolean[n];
+        edgeTo = new int[n];
+        for (int i = 0; i < n; i++) {
+            edgeTo[i] = -1;
+        }
+        fromDistTo = new int[n];
+        toDistTo = new int[n];
         Queue<Integer> fromQueue = new Queue<>();
         Queue<Integer> toQueue = new Queue<>();
         fromQueue.enqueue(f);
@@ -193,7 +239,6 @@ public class SAP {
         toDistTo[t] = 0;
         int currentDistance = INFINITY;
         // System.out.printf("lockStepBFS(): Here is f: %d t: %d \n", f, t);
-
         while (!(fromQueue.isEmpty() && toQueue.isEmpty())) {
             if (!fromQueue.isEmpty()) {
                 int v = fromQueue.dequeue();
@@ -204,7 +249,6 @@ public class SAP {
                         fromDistTo[j] = Math.min(fromDistTo[j], (fromDistTo[v] + 1));
                         int toDist = 0;
                         if (toDistTo[j] > 0) toDist = toDistTo[j];
-                        edgeTo[j] = v;
                         int fromDist = 0;
                         if (fromDistTo[j] > 0) fromDist = fromDistTo[j];
                         if (print)
@@ -216,6 +260,7 @@ public class SAP {
                             if (print)
                                 System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: " +
                                         "%d in the looped J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
+                            edgeTo[j] = v;
                         }
                     }
                     if (!fromMarked[j]) {
@@ -234,7 +279,7 @@ public class SAP {
                                             " %d in the normal J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
                             }
                         }
-                        edgeTo[j] = v; // since it was not maked, add it to the queue to check its neighbors
+                        edgeTo[j] = v; // since it was not marked, add it to the queue to check its neighbors
                         fromQueue.enqueue(j);
                     }
                 }
@@ -246,7 +291,6 @@ public class SAP {
                     if (fromMarked[k] && toMarked[k]) {
                         int fromDist = 0;
                         if (fromDistTo[k] > 0) fromDist = fromDistTo[k];
-                        edgeTo[k] = w;
                         int toDist = 0;
                         if (toDistTo[k] > 0) toDist = Math.min(toDistTo[k], (toDistTo[w] + 1));
                         if (print)
@@ -258,7 +302,7 @@ public class SAP {
                             if (print)
                                 System.out.printf("lockStepBfs(): updated the ancestor from the looped to %d and Minimum " +
                                         "Distance to: %d in K block for f: %d f: %d\n", ancestor, minDistance, f, t);
-
+                            edgeTo[k] = w;
                         }
                     }
                     if (!toMarked[k]) {
@@ -288,9 +332,9 @@ public class SAP {
             // System.out.println("setting minDistance to -1 becuase currentDistance is INFINITY ");
             minDistance = -1;
             ancestor = -1;
-            return minDistance;
+            // return minDistance;
         } else minDistance = currentDistance;
-        return currentDistance;
+        //return currentDistance;
     }
 
     // testEdgeTo(ancestor, x) and preAncestor'sNode like v, and w to the other end
