@@ -132,6 +132,11 @@ public class AutoGraderTests {
         shortestDistance = sap.length(1, 1);
         if (shortestDistance != 0)
             System.out.printf("The shortest distance for the same point should be 0, but it is: %d\n", shortestDistance);
+        shortestDistance = sap.length(1, 5);
+        if (shortestDistance != 2)
+            System.out.printf("The shortest distance between 1 and 5 should be 2, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(1, 5);
+        if (ancestor != 0) System.out.printf("The ancestor for nodes 1 and 5 should be 0, but it is: %d\n", ancestor);
     }
 
     private void testDigraph3() {
@@ -244,7 +249,7 @@ public class AutoGraderTests {
         shortestDistance = sap.length(9, 3);
         if (shortestDistance != 6)
             System.out.printf("The distance between 9 and 3 should be 6, but it is: %d\n", shortestDistance);
-        ancestor=sap.ancestor(9,3);
+        ancestor = sap.ancestor(9, 3);
 
     }
 
@@ -411,9 +416,19 @@ public class AutoGraderTests {
         }
     }
 
+    private void troubleShooting() {
+        StdOut.println("------------------ Running the troubleshooting method -------------------");
+        in = new In("digraph9.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        shortestDistance = sap.length(4, 3);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
+    }
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
+        // autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
         autoGraderTests.testDigraph1();
         autoGraderTests.testDigraph2();

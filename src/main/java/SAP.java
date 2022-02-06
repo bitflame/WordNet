@@ -123,6 +123,7 @@ public class SAP {
         } else lockStepBFS(from, to);
         return ancestor;
     }
+
     // test digraph5 (10, 13), (10,19), and (10, 18) also
     // method to find the ancestor if both source and destination are marked
     private void updateAncestor(int v, int w) {
@@ -246,37 +247,33 @@ public class SAP {
                 for (int j : digraphDFCopy.adj(v)) {
                     if (fromMarked[j] && toMarked[j]) {
                         // still update the edgeTo and distanceTo j then calculate the minDistance etc
-                        fromDistTo[j] = Math.min(fromDistTo[j], (fromDistTo[v] + 1));
-                        int toDist = 0;
-                        if (toDistTo[j] > 0) toDist = toDistTo[j];
-                        int fromDist = 0;
-                        if (fromDistTo[j] > 0) fromDist = fromDistTo[j];
-                        if (print)
-                            System.out.printf("Found an ancestor in the normal from match for f: %d t: %d ancestor: %d " +
-                                    "fromDist = %d toDist = %d currentDist= %d \n", f, t, ancestor, fromDist, toDist, currentDistance);
-                        if (currentDistance > (toDist + fromDist)) {
+                        if (currentDistance > (toDistTo[j] + fromDistTo[v + 1])) {
+                            fromDistTo[j] = fromDistTo[v + 1];
                             ancestor = j;
-                            currentDistance = toDist + fromDist;
+                            currentDistance = toDistTo[j] + fromDistTo[v + 1];
                             if (print)
                                 System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: " +
                                         "%d in the looped J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
                             edgeTo[j] = v;
+                        } else {
+                            minDistance = currentDistance;
+                            return;
                         }
                     }
                     if (!fromMarked[j]) {
                         fromMarked[j] = true;
                         fromDistTo[j] = fromDistTo[v] + 1;
                         if (toMarked[j]) {
-                            int toDist = 0;
-                            if (toDistTo[j] > 0) toDist = toDistTo[j];
-                            edgeTo[j] = v;
-                            int fromDist = fromDistTo[j];
-                            if (currentDistance > (toDist + fromDist)) {
+                            if (currentDistance > (toDistTo[j] + fromDistTo[j])) {
                                 ancestor = j;
-                                currentDistance = toDist + fromDist;
+                                currentDistance = toDistTo[j] + fromDistTo[j];
                                 if (print)
                                     System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to:" +
                                             " %d in the normal J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
+                                edgeTo[j] = v;
+                            } else {
+                                minDistance = currentDistance;
+                                return;
                             }
                         }
                         edgeTo[j] = v; // since it was not marked, add it to the queue to check its neighbors
@@ -289,37 +286,35 @@ public class SAP {
                 if (print) System.out.printf("took %d from toQueue \n", w);
                 for (int k : digraphDFCopy.adj(w)) {
                     if (fromMarked[k] && toMarked[k]) {
-                        int fromDist = 0;
-                        if (fromDistTo[k] > 0) fromDist = fromDistTo[k];
-                        int toDist = 0;
-                        if (toDistTo[k] > 0) toDist = Math.min(toDistTo[k], (toDistTo[w] + 1));
-                        if (print)
-                            System.out.printf("Found a potential ancestor in the looped to match for: from: %d, to: %d, " +
-                                    "fromDist: %d, toDist: %d, currentDist: %d\n", f, t, fromDist, toDist, currentDistance);
-                        if ((fromDist + toDist) < currentDistance) {
+                        if ((fromDistTo[k] + toDistTo[w] + 1) < currentDistance) {
+                            toDistTo[k] = toDistTo[w] + 1;
                             ancestor = k;
-                            currentDistance = fromDist + toDist;
+                            currentDistance = fromDistTo[k] + toDistTo[k];
                             if (print)
                                 System.out.printf("lockStepBfs(): updated the ancestor from the looped to %d and Minimum " +
                                         "Distance to: %d in K block for f: %d f: %d\n", ancestor, minDistance, f, t);
                             edgeTo[k] = w;
+                        } else {
+                            minDistance = currentDistance;
+                            return;
                         }
                     }
                     if (!toMarked[k]) {
                         toMarked[k] = true;
                         toDistTo[k] = toDistTo[w] + 1;
                         if (fromMarked[k]) {
-                            int fromDist = 0;
-                            if (fromDistTo[k] > 0) fromDist = fromDistTo[k];
-                            edgeTo[k] = w;
-                            int toDist = toDistTo[k];
-                            if (currentDistance > (fromDist + toDist)) {
+                            if (currentDistance > (fromDistTo[k] + toDistTo[k])) {
                                 ancestor = k;
-                                currentDistance = fromDist + toDist;
+                                currentDistance = fromDistTo[k] + toDistTo[k];
                                 if (print)
                                     System.out.printf("lockStepBfs(): updated the ancestor to %d and Minimum Distance to: %d " +
                                             "in normal K block for f: %d f: %d\n", ancestor, minDistance, f, t);
+                                edgeTo[k] = w;
+                            } else {
+                                minDistance = currentDistance;
+                                return;
                             }
+
                         }
                         if (print) System.out.printf("added %d to toQueue ", k);
                         edgeTo[k] = w;
