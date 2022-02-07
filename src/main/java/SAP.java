@@ -118,7 +118,7 @@ public class SAP {
             minDistance = -1;
             return ancestor = -1;
         }
-        if ((fromMarked[v] || toMarked[v]) && (fromMarked[w] || toMarked[w])) {
+        if (fromMarked[v] && toMarked[w]) {
             updateAncestor(v, w);
         } else lockStepBFS(from, to);
         return ancestor;
@@ -161,7 +161,8 @@ public class SAP {
             minDistance = currentMinDist;
             ancestor = w;
         } else if (i != -1 && j != -1) {
-            // pop until you get to w, and start counting
+            /*  todo: this block needs to be fixed. The number of hops are wrong and ancestor is not found because
+             * problems like (7,3) in digraph6 have nodes in the path that do not belong to the shortest path  */
             int n = path.pop();
             int previousNode = n;
             while (n != v && n != w) {
@@ -183,7 +184,10 @@ public class SAP {
                 currentMinDist = counter;
                 minDistance = currentMinDist;
             }
-        } else if (currentMinDist == INFINITY) lockStepBFS(v, w);
+        } else if (currentMinDist == INFINITY) {
+            // System.out.printf("calling lock-step after trying to use the old data.\n");
+            lockStepBFS(v, w);
+        }
     }
 
     // a common ancestor that participates in the shortest ancestral path; -1 if no such path
@@ -272,7 +276,7 @@ public class SAP {
                         fromDistTo[j] = fromDistTo[v] + 1;
                         if (toMarked[j]) {
                             if (currentAncestor == v) {
-                                tempDist = toDistTo[v] + 1;
+                                tempDist = fromDistTo[v] + 1;
                             } else {
                                 tempDist = toDistTo[j] + fromDistTo[j];
                             }
