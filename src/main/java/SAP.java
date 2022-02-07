@@ -244,6 +244,7 @@ public class SAP {
         toMarked[t] = true;
         toDistTo[t] = 0;
         int currentDistance = INFINITY;
+        int tempDist;
         while (!(fromQueue.isEmpty() && toQueue.isEmpty())) {
             if (!fromQueue.isEmpty()) {
                 int v = fromQueue.dequeue();
@@ -251,7 +252,7 @@ public class SAP {
                 for (int j : digraphDFCopy.adj(v)) {
                     if (fromMarked[j] && toMarked[j]) {
                         // still update the edgeTo and distanceTo j then calculate the minDistance etc
-                        if (currentDistance > (toDistTo[j] + fromDistTo[v + 1])) {
+                        if (currentDistance >= (toDistTo[j] + fromDistTo[v + 1])) {
                             fromDistTo[j] = fromDistTo[v + 1];
                             ancestor = j;
                             currentDistance = toDistTo[j] + fromDistTo[v + 1];
@@ -268,9 +269,14 @@ public class SAP {
                         fromMarked[j] = true;
                         fromDistTo[j] = fromDistTo[v] + 1;
                         if (toMarked[j]) {
-                            if (currentDistance > (toDistTo[j] + fromDistTo[j])) {
+                            if (ancestor==v){
+                                tempDist=toDistTo[v]+1;
+                            } else {
+                                tempDist=toDistTo[j]+fromDistTo[j];
+                            }
+                            if (currentDistance >= (tempDist)) {
                                 ancestor = j;
-                                currentDistance = toDistTo[j] + fromDistTo[j];
+                                currentDistance = tempDist;
                                 if (print)
                                     System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to:" +
                                             " %d in the normal J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
@@ -285,15 +291,22 @@ public class SAP {
                     }
                 }
             }
+
             if (!toQueue.isEmpty()) {
                 int w = toQueue.dequeue();
                 if (print) System.out.printf("took %d from toQueue \n", w);
                 for (int k : digraphDFCopy.adj(w)) {
                     if (fromMarked[k] && toMarked[k]) {
-                        if ((fromDistTo[k] + toDistTo[w] + 1) < currentDistance) {
-                            toDistTo[k] = toDistTo[w] + 1;
+                        if (ancestor==w){
+                            /* then only increment the path by 1*/
+                             tempDist = toDistTo[w]+fromDistTo[k];
+                        } else {
+                            tempDist=fromDistTo[k] + toDistTo[w] + 1;
+                        }
+                        if ((tempDist) <= currentDistance) {
+                            toDistTo[k] = toDistTo[w]+1;
                             ancestor = k;
-                            currentDistance = fromDistTo[k] + toDistTo[k];
+                            currentDistance = tempDist;
                             if (print)
                                 System.out.printf("lockStepBfs(): updated the ancestor from the looped to %d and Minimum " +
                                         "Distance to: %d in K block for f: %d f: %d\n", ancestor, minDistance, f, t);
