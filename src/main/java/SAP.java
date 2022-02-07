@@ -244,6 +244,7 @@ public class SAP {
         toMarked[t] = true;
         toDistTo[t] = 0;
         int currentDistance = INFINITY;
+        int currentAncestor = -1;
         int tempDist;
         while (!(fromQueue.isEmpty() && toQueue.isEmpty())) {
             if (!fromQueue.isEmpty()) {
@@ -254,7 +255,7 @@ public class SAP {
                         // still update the edgeTo and distanceTo j then calculate the minDistance etc
                         if (currentDistance >= (toDistTo[j] + fromDistTo[v + 1])) {
                             fromDistTo[j] = fromDistTo[v + 1];
-                            ancestor = j;
+                            currentAncestor = j;
                             currentDistance = toDistTo[j] + fromDistTo[v + 1];
                             if (print)
                                 System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: " +
@@ -262,6 +263,7 @@ public class SAP {
                             edgeTo[j] = v;
                         } else {
                             minDistance = currentDistance;
+                            ancestor = currentAncestor;
                             return;
                         }
                     }
@@ -269,25 +271,29 @@ public class SAP {
                         fromMarked[j] = true;
                         fromDistTo[j] = fromDistTo[v] + 1;
                         if (toMarked[j]) {
-                            if (ancestor==v){
-                                tempDist=toDistTo[v]+1;
+                            if (currentAncestor == v) {
+                                tempDist = toDistTo[v] + 1;
                             } else {
-                                tempDist=toDistTo[j]+fromDistTo[j];
+                                tempDist = toDistTo[j] + fromDistTo[j];
                             }
-                            if (currentDistance >= (tempDist)) {
-                                ancestor = j;
+                            if (currentDistance > (tempDist)) {
+                                currentAncestor = j;
                                 currentDistance = tempDist;
                                 if (print)
                                     System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to:" +
                                             " %d in the normal J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
                                 edgeTo[j] = v;
-                            } else {
+                            } else if (ancestor != v) {
                                 minDistance = currentDistance;
+                                ancestor = currentAncestor;
                                 return;
                             }
                         }
                         edgeTo[j] = v; // since it was not marked, add it to the queue to check its neighbors
                         fromQueue.enqueue(j);
+                    } else {
+                        if (fromDistTo[v] < fromDistTo[j]) edgeTo[j] = v;
+                        fromDistTo[j] = Math.min(fromDistTo[j], fromDistTo[v] + 1);
                     }
                 }
             }
@@ -297,15 +303,15 @@ public class SAP {
                 if (print) System.out.printf("took %d from toQueue \n", w);
                 for (int k : digraphDFCopy.adj(w)) {
                     if (fromMarked[k] && toMarked[k]) {
-                        if (ancestor==w){
+                        if (currentAncestor == w) {
                             /* then only increment the path by 1*/
-                             tempDist = toDistTo[w]+fromDistTo[k];
+                            tempDist = toDistTo[w] + fromDistTo[k];
                         } else {
-                            tempDist=fromDistTo[k] + toDistTo[w] + 1;
+                            tempDist = fromDistTo[k] + toDistTo[w] + 1;
                         }
-                        if ((tempDist) <= currentDistance) {
-                            toDistTo[k] = toDistTo[w]+1;
-                            ancestor = k;
+                        if ((tempDist) < currentDistance) {
+                            toDistTo[k] = toDistTo[w] + 1;
+                            currentAncestor = k;
                             currentDistance = tempDist;
                             if (print)
                                 System.out.printf("lockStepBfs(): updated the ancestor from the looped to %d and Minimum " +
@@ -313,6 +319,7 @@ public class SAP {
                             edgeTo[k] = w;
                         } else {
                             minDistance = currentDistance;
+                            ancestor = currentAncestor;
                             return;
                         }
                     }
@@ -321,21 +328,24 @@ public class SAP {
                         toDistTo[k] = toDistTo[w] + 1;
                         if (fromMarked[k]) {
                             if (currentDistance > (fromDistTo[k] + toDistTo[k])) {
-                                ancestor = k;
+                                currentAncestor = k;
                                 currentDistance = fromDistTo[k] + toDistTo[k];
                                 if (print)
                                     System.out.printf("lockStepBfs(): updated the ancestor to %d and Minimum Distance to: %d " +
                                             "in normal K block for f: %d f: %d\n", ancestor, minDistance, f, t);
                                 edgeTo[k] = w;
-                            } else {
+                            } else if (ancestor != w) {
                                 minDistance = currentDistance;
+                                ancestor = currentAncestor;
                                 return;
                             }
-
                         }
                         if (print) System.out.printf("added %d to toQueue ", k);
                         edgeTo[k] = w;
                         toQueue.enqueue(k);
+                    } else {
+                        if (toDistTo[k] < toDistTo[w] + 1) edgeTo[k] = w;
+                        toDistTo[k] = Math.min(toDistTo[k], toDistTo[w] + 1);
                     }
                 }
             }
@@ -345,7 +355,10 @@ public class SAP {
             minDistance = -1;
             ancestor = -1;
             // return minDistance;
-        } else minDistance = currentDistance;
+        } else {
+            minDistance = currentDistance;
+            ancestor = currentAncestor;
+        }
         //return currentDistance;
     }
 
