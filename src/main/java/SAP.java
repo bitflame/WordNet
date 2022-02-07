@@ -134,11 +134,13 @@ public class SAP {
     private void updateAncestor(int v, int w) {
         int currentMinDist = INFINITY;
         // 1- Find the new ancestor
+        boolean runBFS = false;
         Stack<Integer> path = new Stack<>();
         int fromCount = 0, toCount = 0;
         path.push(v);
         int i = edgeTo[v], j = edgeTo[w];
-        while (i != -1 && i != w && i != v && digraphDFCopy.indegree(i) == 1) {
+        while (i != -1 && i != w && i != v ) {
+            if (digraphDFCopy.indegree(i) != 1 && digraphDFCopy.outdegree(i)!=1) runBFS=true;
             fromCount++;
             path.push(i);
             i = edgeTo[i];
@@ -151,7 +153,8 @@ public class SAP {
         path.push(w);
         toCount++;
         // w to v - one of these loops has the path
-        while (j != -1 && j != v && j != w && digraphDFCopy.indegree(j) == 1) {
+        while (j != -1 && j != v && j != w) {
+            if (digraphDFCopy.indegree(j) != 1 && digraphDFCopy.outdegree(j)!=1) runBFS=true;
             path.push(j);
             toCount++;
             j = edgeTo[j];
@@ -173,7 +176,8 @@ public class SAP {
             n = path.pop();
             previousNode = n;
             int counter = 1;
-            // pop until you get to v, and stop counting -- ancestor should be on top of the stack
+            /* todo ancestor should be on top of the stack. Try this block on digraph25 and see you will get two
+            *   of ancestor next to each other */
             while (n != v && n != w) {
                 counter++;
                 n = path.pop();
@@ -184,8 +188,8 @@ public class SAP {
                 currentMinDist = counter;
                 minDistance = currentMinDist;
             }
-        } else if (currentMinDist == INFINITY) {
-            // System.out.printf("calling lock-step after trying to use the old data.\n");
+        } else if (runBFS) {
+            System.out.printf("calling lock-step after trying to use the old data.\n");
             lockStepBFS(v, w);
         }
     }
