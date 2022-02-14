@@ -55,9 +55,10 @@ public class SAP {
             ancestor = -1;
             return minDistance = -1;
         }
-        if ((fromMarked[v] || toMarked[v]) && (fromMarked[w] || toMarked[w])) {
-            updateAncestor(v, w);
+        if (fromMarked[v] && toMarked[w]) {
+            updateAncestorII(v, w);
         } else lockStepBFS(from, to);
+        // updateAncestorII(v, w);
         return minDistance;
     }
 
@@ -128,7 +129,7 @@ public class SAP {
     /* In (8,13) edgeTo[11] should be 0, but it is 10 since 11 has more than one incoming. Maybe test for indgree of
     each node before adding it to the path, and if it is more than one, then just run lock-step again? The problem
     actually is that two steps are in from path as well as to path and they are counted twice, and it is happening
-    in lock-step. I am not sure if testing for he number of incoming will help. I have it there for now, but I will
+    in lock-step. I am not sure if testing for the number of incoming will help. I have it there for now, but I will
     remove it once I fix lock-step and see how it behaves */
     // method to find the ancestor if both source and destination are marked
     private void updateAncestor(int v, int w) {
@@ -139,8 +140,8 @@ public class SAP {
         int fromCount = 0, toCount = 0;
         path.push(v);
         int i = edgeTo[v], j = edgeTo[w];
-        while (i != -1 && i != w && i != v ) {
-            if (digraphDFCopy.indegree(i) != 1 && digraphDFCopy.outdegree(i)!=1) runBFS=true;
+        while (i != -1 && i != w && i != v) {
+            if (digraphDFCopy.indegree(i) != 1 && digraphDFCopy.outdegree(i) != 1) runBFS = true;
             fromCount++;
             path.push(i);
             i = edgeTo[i];
@@ -154,7 +155,7 @@ public class SAP {
         toCount++;
         // w to v - one of these loops has the path
         while (j != -1 && j != v && j != w) {
-            if (digraphDFCopy.indegree(j) != 1 && digraphDFCopy.outdegree(j)!=1) runBFS=true;
+            if (digraphDFCopy.indegree(j) != 1 && digraphDFCopy.outdegree(j) != 1) runBFS = true;
             path.push(j);
             toCount++;
             j = edgeTo[j];
@@ -177,7 +178,7 @@ public class SAP {
             previousNode = n;
             int counter = 1;
             /* todo ancestor should be on top of the stack. Try this block on digraph25 and see you will get two
-            *   of ancestor next to each other */
+             *   of ancestor next to each other */
             while (n != v && n != w) {
                 counter++;
                 n = path.pop();
@@ -190,6 +191,29 @@ public class SAP {
             }
         } else if (runBFS) {
             System.out.printf("calling lock-step after trying to use the old data.\n");
+            lockStepBFS(v, w);
+        }
+    }
+
+    private void updateAncestorII(int v, int w) {
+        int n = v;
+        int hops = 0;
+        while (n != w) {
+            if (n == -1) break;
+            n = edgeTo[n];
+            hops++;
+        }
+        if (n == w) minDistance = hops;
+        else if (n != w) {
+            n = w;
+            hops = 0;
+            while (n != v) {
+                if (n == -1) break;
+                n = edgeTo[n];
+                hops++;
+            }
+            if (n == v) minDistance = hops;
+        } else {
             lockStepBFS(v, w);
         }
     }
