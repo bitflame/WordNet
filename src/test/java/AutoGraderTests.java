@@ -63,7 +63,8 @@ public class AutoGraderTests {
         if (shortestDistance != 1)
             System.out.printf("The value of length between 3 and 8 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(3, 8);
-
+        if (ancestor != 3)
+            System.out.printf("The value of ancestor between 3 and 8 should be 3, but it is: %d\n", ancestor);
         ancestor = sap.ancestor(3, 7);
         if (ancestor != 3)
             System.out.printf("The value of ancestor between 3 and 7 should be 3, but it is: %d\n", ancestor);
@@ -88,7 +89,7 @@ public class AutoGraderTests {
         shortestDistance = sap.length(7, 1);
         if (shortestDistance != 2)
             System.out.printf("The value of length between 7 and 1 should be 2, but it is: %d\n", shortestDistance);
-            shortestDistance = sap.length(1, 1);
+        shortestDistance = sap.length(1, 1);
         if (shortestDistance != 0)
             System.out.printf("The value of length between 1 and 1 should be 0, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(1, 1);

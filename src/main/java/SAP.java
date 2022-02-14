@@ -259,14 +259,14 @@ public class SAP {
 
     private void lockStepBFS(int f, int t) {
         /* todo - you can use digraph indegree to set edgeTo f and t maybe */
-        fromMarked = new boolean[n];
+        /*fromMarked = new boolean[n];
         toMarked = new boolean[n];
         edgeTo = new int[n];
         for (int i = 0; i < n; i++) {
             edgeTo[i] = -1;
         }
         fromDistTo = new int[n];
-        toDistTo = new int[n];
+        toDistTo = new int[n];*/
         Queue<Integer> fromQueue = new Queue<>();
         Queue<Integer> toQueue = new Queue<>();
         fromQueue.enqueue(f);
