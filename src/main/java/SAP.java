@@ -321,7 +321,9 @@ public class SAP {
                                 return;
                             }
                         }
-                        edgeTo[j] = v; // since it was not marked, add it to the queue to check its neighbors
+                        /* todo: the forum comments all say not to add nodes with distance greater than the minimum found
+                            so far. Try this tomorrow. This means removing the else block above that two lines below  */
+                        edgeTo[j] = v;
                         fromQueue.enqueue(j);
                     } else {
                         if (fromDistTo[v] < fromDistTo[j]) edgeTo[j] = v;
@@ -371,7 +373,8 @@ public class SAP {
                                 ancestor = currentAncestor;
                                 return;
                             }
-                        }
+                        } /* todo: the forum comments all say not to add nodes with distance greater than the minimum found
+                            so far. Try this tomorrow. This means removing the else block above that two lines below  */
                         if (print) System.out.printf("added %d to toQueue ", k);
                         edgeTo[k] = w;
                         toQueue.enqueue(k);
