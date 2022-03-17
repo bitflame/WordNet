@@ -29,6 +29,7 @@ public class WordNet {
             String[] a = in.readLine().split(",");
             val = Integer.parseInt(a[0]);
             db.put(val, a[1]);
+            // todo -- you can not read twice. Fix 
         }
     }
 

@@ -1,7 +1,8 @@
-import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.ST;
+import edu.princeton.cs.algs4.In;
 
 import java.util.Iterator;
 
@@ -11,38 +12,113 @@ public class SAP {
     private int minDistance;
     private int from;
     private int to;
-    private int n;
-    private boolean[] fromMarked;
-    private boolean[] toMarked;
+    private final int n;
+    private boolean[] marked;
+    private boolean[] onStack;
+    Stack<Integer> cycle;
+    Stack<Integer> reversePost;
+    Queue<Integer> pre;
+    Queue<Integer> postOrder;
+    Queue<Integer> fromQueue;
+    Queue<Integer> toQueue;
     private int[] edgeTo;
-    private int[] fromDistTo;
-    private int[] toDistTo;
+    private int[] DistTo;
+    private int[] id;
+    private int count = 0;
+    private int hops = 0;
     private static final int INFINITY = Integer.MAX_VALUE;
-    private boolean print = false;
+    private final boolean print = false;
+    ST<Integer, Integer> st;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
-        if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
+        if (digraph == null)
+            throw new IllegalArgumentException("Digraph value can not be null");
         digraphDFCopy = new Digraph(digraph);
         n = digraphDFCopy.V();
-        fromMarked = new boolean[n];
-        toMarked = new boolean[n];
+        onStack = new boolean[n];
+        // DistTo = new int[n];
         edgeTo = new int[n];
+        id = new int[n];
+        marked = new boolean[n];
+        //pre = new Queue<>();
+        reversePost = new Stack<>();
+        //postOrder = new Queue<>();
         for (int i = 0; i < n; i++) {
-            edgeTo[i] = -1;
+            id[i] = i;
+            edgeTo[i] = i;
         }
-        fromDistTo = new int[n];
-        toDistTo = new int[n];
+        for (int i = 0; i < n; i++) {
+            if (!marked[i]) dfs(digraphDFCopy, i);
+        }
+        reversePostOrder();
+    }
+
+    private void dfs(Digraph digraphDFCopy, int v) {
+        marked[v] = true;
+        onStack[v] = true;
+        // pre.enqueue(v);
+        for (int w : digraphDFCopy.adj(v)) {
+            if (this.hasCycle()) return;
+            if (!marked[w]) {
+                id[w] = id[v];
+                edgeTo[w] = v;
+                dfs(digraphDFCopy, w);
+            } else if (onStack[w]) {
+                cycle = new Stack<>();
+                for (int x = v; x != w; x = edgeTo[x]) {
+                    cycle.push(x);
+                }
+                cycle.push(w);
+                cycle.push(v);
+            }
+        }
+        onStack[v] = false;
+        reversePost.push(v);
+        // postOrder.enqueue(v);
+    }
+
+
+    private boolean stronglyConnected(int v, int w) {
+        return id[v] == id[w];
+    }
+
+    private Iterable<Integer> cycle() {
+        return cycle;
+    }
+
+    private Iterable<Integer> preOrder() {
+        return pre;
+    }
+
+    private Iterable<Integer> reversePostOrder() {
+        st = new ST<>();
+        int counter = n;
+        while (!reversePost.isEmpty() && counter >= 0) {
+            st.put(reversePost.pop(), counter);
+            counter--;
+        }
+        return st.keys();
+    }
+
+    private Iterable<Integer> postOrder() {
+        return postOrder;
+    }
+
+    private boolean hasCycle() {
+        return cycle != null;
     }
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
-        // System.out.println("length(): Calculating the distance between : " + v + " " + w);
+        // System.out.println("length(): Calculating the distance between : " + v + " "
+        // + w);
         if (v < 0 || v >= digraphDFCopy.V())
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (w < 0 || w >= digraphDFCopy.V())
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (v == from && w == to && v != w) return minDistance;
+        if (((this.from == v && this.to == w) || (this.to == v && this.from == w)) && v != w)
+            return minDistance;
         from = v;
         to = w;
         if (v == w) {
@@ -50,25 +126,24 @@ public class SAP {
             minDistance = 0;
             return 0;
         }
-        if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0) || (digraphDFCopy.indegree(to) == 0 &&
+        if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0)
+                || (digraphDFCopy.indegree(to) == 0 &&
                 digraphDFCopy.outdegree(to) == 0)) {
             ancestor = -1;
             return minDistance = -1;
         }
-        if (fromMarked[v] && toMarked[w]) {
-            updateAncestorII(v, w);
-        } else lockStepBFS(from, to);
-        // updateAncestorII(v, w);
+        lockStepBFS();
         return minDistance;
     }
 
-    // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
+    // length of the shortest ancestral path between any vertex in v and any vertex
+    // in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.\n");
         int currentDistance = 0;
         int prevDistance = INFINITY;
-        //System.out.printf("sap triggers ancestor() with iterables ");
+        // System.out.printf("sap triggers ancestor() with iterables ");
         Iterator<Integer> i = v.iterator();
         Iterator<Integer> j = w.iterator();
         if ((!i.hasNext()) || (!j.hasNext())) {
@@ -81,7 +156,8 @@ public class SAP {
             obj = i.next();
             if (obj == null)
                 throw new IllegalArgumentException("The values Iterables give to length() can not be null.");
-            else source = (Integer) obj;
+            else
+                source = (Integer) obj;
             while (j.hasNext()) {
                 obj = j.next();
                 if (obj == null)
@@ -95,130 +171,42 @@ public class SAP {
             }
             j = w.iterator();
         }
-        // System.out.printf("Here is the last value in previous distance: %d\n" , prevDistance);
-        if (prevDistance != INFINITY) minDistance = prevDistance;
+        // System.out.printf("Here is the last value in previous distance: %d\n" ,
+        // prevDistance);
+        if (prevDistance != INFINITY)
+            minDistance = prevDistance;
         return minDistance;
     }
 
-    // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
+    // a common ancestor of v and w that participates in a shortest ancestral path;
+    // -1 if no such path
     public int ancestor(int v, int w) {
         // System.out.println("Calculating the ancestor between : " + v + " " + w);
         if (v < 0 || v >= digraphDFCopy.V())
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (w < 0 || w >= digraphDFCopy.V())
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (this.from == v && this.to == w && v != w) return ancestor;
+        if (v < 0 || w < 0)
+            throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+        if (((this.from == v && this.to == w) || (this.to == v && this.from == w)) && v != w)
+            return ancestor;
         from = v;
         to = w;
         if (v == w) {
             return ancestor = v;
         }
-        if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0) || (digraphDFCopy.indegree(to) == 0 &&
+        if ((digraphDFCopy.indegree(from) == 0 && digraphDFCopy.outdegree(from) == 0)
+                || (digraphDFCopy.indegree(to) == 0 &&
                 digraphDFCopy.outdegree(to) == 0)) {
             minDistance = -1;
             return ancestor = -1;
         }
-        if (fromMarked[v] && toMarked[w]) {
-            updateAncestor(v, w);
-        } else lockStepBFS(from, to);
+        lockStepBFS();
         return ancestor;
     }
 
-    // test digraph5 (10, 13), (10,19), and (10, 18) also
-    /* In (8,13) edgeTo[11] should be 0, but it is 10 since 11 has more than one incoming. Maybe test for indgree of
-    each node before adding it to the path, and if it is more than one, then just run lock-step again? The problem
-    actually is that two steps are in from path as well as to path and they are counted twice, and it is happening
-    in lock-step. I am not sure if testing for the number of incoming will help. I have it there for now, but I will
-    remove it once I fix lock-step and see how it behaves */
-    // method to find the ancestor if both source and destination are marked
-    private void updateAncestor(int v, int w) {
-        int currentMinDist = INFINITY;
-        // 1- Find the new ancestor
-        boolean runBFS = false;
-        Stack<Integer> path = new Stack<>();
-        int fromCount = 0, toCount = 0;
-        path.push(v);
-        int i = edgeTo[v], j = edgeTo[w];
-        while (i != -1 && i != w && i != v) {
-            if (digraphDFCopy.indegree(i) != 1 && digraphDFCopy.outdegree(i) != 1) runBFS = true;
-            fromCount++;
-            path.push(i);
-            i = edgeTo[i];
-        }
-        if (i == w) {
-            ancestor = v;
-            currentMinDist = fromCount + 1;
-            minDistance = currentMinDist;
-        }
-        path.push(w);
-        toCount++;
-        // w to v - one of these loops has the path
-        while (j != -1 && j != v && j != w) {
-            if (digraphDFCopy.indegree(j) != 1 && digraphDFCopy.outdegree(j) != 1) runBFS = true;
-            path.push(j);
-            toCount++;
-            j = edgeTo[j];
-        }
-        if (j == v && toCount < currentMinDist) {
-            currentMinDist = toCount;
-            minDistance = currentMinDist;
-            ancestor = w;
-        } else if (i != -1 && j != -1) {
-            /*  todo: this block needs to be fixed. The number of hops are wrong and ancestor is not found because
-             * problems like (7,3) in digraph6 have nodes in the path that do not belong to the shortest path  */
-            int n = path.pop();
-            int previousNode = n;
-            while (n != v && n != w) {
-                n = path.pop();
-                if (previousNode == n) ancestor = n;
-                previousNode = n;
-            }
-            n = path.pop();
-            previousNode = n;
-            int counter = 1;
-            /* todo ancestor should be on top of the stack. Try this block on digraph25 and see you will get two
-             *   of ancestor next to each other */
-            while (n != v && n != w) {
-                counter++;
-                n = path.pop();
-                if (previousNode == n) ancestor = n;
-                previousNode = n;
-            }
-            if (counter < currentMinDist) {
-                currentMinDist = counter;
-                minDistance = currentMinDist;
-            }
-        } else if (runBFS) {
-            System.out.printf("calling lock-step after trying to use the old data.\n");
-            lockStepBFS(v, w);
-        }
-    }
-
-    private void updateAncestorII(int v, int w) {
-        int n = v;
-        int hops = 0;
-        while (n != w) {
-            if (n == -1) break;
-            n = edgeTo[n];
-            hops++;
-        }
-        if (n == w) minDistance = hops;
-        else if (n != w) {
-            n = w;
-            hops = 0;
-            while (n != v) {
-                if (n == -1) break;
-                n = edgeTo[n];
-                hops++;
-            }
-            if (n == v) minDistance = hops;
-        } else {
-            lockStepBFS(v, w);
-        }
-    }
-
-    // a common ancestor that participates in the shortest ancestral path; -1 if no such path
+    // a common ancestor that participates in the shortest ancestral path; -1 if no
+    // such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         if (v == null || w == null)
             throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.\n");
@@ -238,7 +226,8 @@ public class SAP {
             obj = i.next();
             if (obj == null)
                 throw new IllegalArgumentException("The values Iterables give to length() can not be null.");
-            else source = (Integer) obj;
+            else
+                source = (Integer) obj;
             while (j.hasNext()) {
                 obj = j.next();
                 if (obj == null)
@@ -257,166 +246,345 @@ public class SAP {
         return ancestor;
     }
 
-    private void lockStepBFS(int f, int t) {
-        /* todo - you can use digraph indegree to set edgeTo f and t maybe */
-        /*fromMarked = new boolean[n];
-        toMarked = new boolean[n];
-        edgeTo = new int[n];
-        for (int i = 0; i < n; i++) {
-            edgeTo[i] = -1;
+    /* y is x's current parent. The one that is supposed to be updated edgeTo but is not so we don't lose track of the
+     * previous edgeTo */
+    private boolean checkEdgeTo(int x, int y) {
+        // System.out.printf("************checkEdge activated for %d %d ********************\n.", from, to);
+        hops = 0;
+        // x should have a path to one end and its parent to the other end
+        for (; x != from && x != to; x = edgeTo[x]) {
+            hops++;
         }
-        fromDistTo = new int[n];
-        toDistTo = new int[n];*/
-        Queue<Integer> fromQueue = new Queue<>();
-        Queue<Integer> toQueue = new Queue<>();
-        fromQueue.enqueue(f);
-        toQueue.enqueue(t);
-        fromMarked[f] = true;
-        fromDistTo[f] = 0;
-        toMarked[t] = true;
-        toDistTo[t] = 0;
-        int currentDistance = INFINITY;
-        int currentAncestor = -1;
-        int tempDist;
-        while (!(fromQueue.isEmpty() && toQueue.isEmpty())) {
-            if (!fromQueue.isEmpty()) {
-                int v = fromQueue.dequeue();
-                if (print) System.out.printf("took %d from fromQueue \n", v);
-                for (int j : digraphDFCopy.adj(v)) {
-                    if (fromMarked[j] && toMarked[j]) {
-                        // still update the edgeTo and distanceTo j then calculate the minDistance etc
-                        if (currentDistance >= (toDistTo[j] + fromDistTo[v + 1])) {
-                            fromDistTo[j] = fromDistTo[v + 1];
-                            currentAncestor = j;
-                            currentDistance = toDistTo[j] + fromDistTo[v + 1];
-                            if (print)
-                                System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to: " +
-                                        "%d in the looped J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
-                            edgeTo[j] = v;
-                        } else {
-                            minDistance = currentDistance;
-                            ancestor = currentAncestor;
-                            return;
-                        }
-                    }
-                    if (!fromMarked[j]) {
-                        fromMarked[j] = true;
-                        fromDistTo[j] = fromDistTo[v] + 1;
-                        if (toMarked[j]) {
-                            if (currentAncestor == v) {
-                                tempDist = fromDistTo[v] + 1;
-                            } else {
-                                tempDist = toDistTo[j] + fromDistTo[j];
-                            }
-                            if (currentDistance > (tempDist)) {
-                                currentAncestor = j;
-                                currentDistance = tempDist;
-                                if (print)
-                                    System.out.printf("lockStepBfs(): updated the ancestor to %d and Current Distance to:" +
-                                            " %d in the normal J block for f: %d, and t: %d\n", ancestor, currentDistance, f, t);
-                                edgeTo[j] = v;
-                            } else if (ancestor != v) {
-                                minDistance = currentDistance;
-                                ancestor = currentAncestor;
-                                return;
-                            }
-                        }
-                        /* todo: the forum comments all say not to add nodes with distance greater than the minimum found
-                            so far. Try this tomorrow. This means removing the else block above that two lines below  */
-                        edgeTo[j] = v;
-                        fromQueue.enqueue(j);
-                    } else {
-                        if (fromDistTo[v] < fromDistTo[j]) edgeTo[j] = v;
-                        fromDistTo[j] = Math.min(fromDistTo[j], fromDistTo[v] + 1);
-                    }
-                }
-            }
-
-            if (!toQueue.isEmpty()) {
-                int w = toQueue.dequeue();
-                if (print) System.out.printf("took %d from toQueue \n", w);
-                for (int k : digraphDFCopy.adj(w)) {
-                    if (fromMarked[k] && toMarked[k]) {
-                        if (currentAncestor == w) {
-                            /* then only increment the path by 1*/
-                            tempDist = toDistTo[w] + fromDistTo[k];
-                        } else {
-                            tempDist = fromDistTo[k] + toDistTo[w] + 1;
-                        }
-                        if ((tempDist) < currentDistance) {
-                            toDistTo[k] = toDistTo[w] + 1;
-                            currentAncestor = k;
-                            currentDistance = tempDist;
-                            if (print)
-                                System.out.printf("lockStepBfs(): updated the ancestor from the looped to %d and Minimum " +
-                                        "Distance to: %d in K block for f: %d f: %d\n", ancestor, minDistance, f, t);
-                            edgeTo[k] = w;
-                        } else {
-                            minDistance = currentDistance;
-                            ancestor = currentAncestor;
-                            return;
-                        }
-                    }
-                    if (!toMarked[k]) {
-                        toMarked[k] = true;
-                        toDistTo[k] = toDistTo[w] + 1;
-                        if (fromMarked[k]) {
-                            if (currentDistance > (fromDistTo[k] + toDistTo[k])) {
-                                currentAncestor = k;
-                                currentDistance = fromDistTo[k] + toDistTo[k];
-                                if (print)
-                                    System.out.printf("lockStepBfs(): updated the ancestor to %d and Minimum Distance to: %d " +
-                                            "in normal K block for f: %d f: %d\n", ancestor, minDistance, f, t);
-                                edgeTo[k] = w;
-                            } else if (ancestor != w) {
-                                minDistance = currentDistance;
-                                ancestor = currentAncestor;
-                                return;
-                            }
-                        } /* todo: the forum comments all say not to add nodes with distance greater than the minimum found
-                            so far. Try this tomorrow. This means removing the else block above that two lines below  */
-                        if (print) System.out.printf("added %d to toQueue ", k);
-                        edgeTo[k] = w;
-                        toQueue.enqueue(k);
-                    } else {
-                        if (toDistTo[k] < toDistTo[w] + 1) edgeTo[k] = w;
-                        toDistTo[k] = Math.min(toDistTo[k], toDistTo[w] + 1);
-                    }
-                }
-            }
+        hops++;
+        // now check x's parent to make sure it can get  to the other end
+        for (; y != from && y != to; y = edgeTo[y]) {
+            hops++;
         }
-        if (currentDistance == INFINITY) {
-            // System.out.println("setting minDistance to -1 becuase currentDistance is INFINITY ");
-            minDistance = -1;
-            ancestor = -1;
-            // return minDistance;
-        } else {
-            minDistance = currentDistance;
-            ancestor = currentAncestor;
-        }
-        //return currentDistance;
+        return ((x == from && y == to) || (x == to && y == from));
     }
 
-    // testEdgeTo(ancestor, x) and preAncestor'sNode like v, and w to the other end
-    private boolean testEdgeTo(int ancestor, int destination) {
-        //  System.out.printf("inside testEdge for " + from + " and " + to);
-        if (ancestor == destination) return true;
-        int i = ancestor;
-        int counter = 0;
-        for (; i != destination && counter < n; i = edgeTo[i]) {
-            if (i == -1) break;
-            counter++;
-            //System.out.print(" " + i);
+    private void lockStepBFS() {
+        marked = new boolean[n];
+        edgeTo = new int[n];
+        id = new int[n];
+        for (int i = 0; i < n; i++) {
+            id[i] = i;
+            edgeTo[i] = i;
         }
-        // if (i != -1) System.out.print(" " + i);
+        DistTo = new int[n];
+        fromQueue = new Queue<>();
+        toQueue = new Queue<>();
+        marked[from] = true;
+        marked[to] = true;
+        fromQueue.enqueue(from);
+        toQueue.enqueue(to);
+        DistTo[from] = 0;
+        DistTo[to] = 0;
+        int nodeDistance = 1;
+        int v = 0;
+        int currentDistance = INFINITY;
+        int tempDistance = 0;
+        while (!fromQueue.isEmpty() || !toQueue.isEmpty()) {
+            // take from the one with less distance
+            if (!fromQueue.isEmpty() && !toQueue.isEmpty()) {
+                if (DistTo[fromQueue.peek()] < DistTo[toQueue.peek()] && DistTo[fromQueue.peek()] <= nodeDistance) {
+                    v = fromQueue.dequeue();
+                    for (int i : digraphDFCopy.adj(v)) {
+                        if (!marked[i]) {
+                            marked[i] = true;
+                            fromQueue.enqueue(i);
+                            DistTo[i] = DistTo[v] + 1;
+                            edgeTo[i] = v;
+                            id[i] = id[v];
+                        } else if (checkEdgeTo(i, v)) {
+                            // you found an ancestor
+                            tempDistance = DistTo[i] + DistTo[v] + 1;
+                            if (tempDistance < currentDistance) {
+                                ancestor = i;
+                                currentDistance = tempDistance;
+                                minDistance = tempDistance;
+                            } else {
+                                while (!fromQueue.isEmpty()) fromQueue.dequeue();
+                                while (!toQueue.isEmpty()) toQueue.dequeue();
+                            }
+                        } else if (id[i] == to) {
+                            tempDistance = DistTo[i] + DistTo[v] + 1;
+                            if (tempDistance <= currentDistance) {
+                                ancestor = i;
+                                minDistance = tempDistance;
+                                currentDistance = tempDistance;
+                            } else {
+                                while (!fromQueue.isEmpty()) fromQueue.dequeue();
+                                while (!toQueue.isEmpty()) toQueue.dequeue();
+                            }
+                        }
+                        if (DistTo[v] + 1 <= DistTo[i]) {
+                            DistTo[i] = DistTo[v] + 1;
+                            edgeTo[i] = v;
+                            id[i] = id[v];
+                        }
+                    }
+                } else if (DistTo[toQueue.peek()] < DistTo[fromQueue.peek()] && DistTo[toQueue.peek()] <= nodeDistance) {
+                    v = toQueue.dequeue();
+                    for (int i : digraphDFCopy.adj(v)) {
+                        if (!marked[i]) {
+                            marked[i] = true;
+                            toQueue.enqueue(i);
+                            DistTo[i] = DistTo[v] + 1;
+                            edgeTo[i] = v;
+                            id[i] = id[v];
+                        } else if (checkEdgeTo(i, v)) {
+                            // you found an ancestor
+                            tempDistance = DistTo[i] + DistTo[v] + 1;
+                            if (tempDistance < currentDistance) {
+                                ancestor = i;
+                                currentDistance = tempDistance;
+                                minDistance = tempDistance;
+                            } else {
+                                while (!fromQueue.isEmpty()) fromQueue.dequeue();
+                                while (!toQueue.isEmpty()) toQueue.dequeue();
+                            }
+                        } else if (id[i] == from) {
+                            tempDistance = DistTo[i] + DistTo[v] + 1;
+                            if (tempDistance <= currentDistance) {
+                                ancestor = i;
+                                minDistance = tempDistance;
+                                currentDistance = tempDistance;
+                            } else {
+                                while (!fromQueue.isEmpty()) fromQueue.dequeue();
+                                while (!toQueue.isEmpty()) toQueue.dequeue();
+                            }
+                        }
+                        if (DistTo[v] + 1 <= DistTo[i]) {
+                            DistTo[i] = DistTo[v] + 1;
+                            edgeTo[i] = v;
+                            id[i] = id[v];
+                        }
+                    }
+                }
+            }
+            if (!toQueue.isEmpty() && DistTo[toQueue.peek()] <= nodeDistance) {
+                // if the nodes in toQueue and fromQueue are equal in all the above conditions, just take one
+                v = toQueue.dequeue();
+                for (int i : digraphDFCopy.adj(v)) {
+                    if (!marked[i]) {
+                        marked[i] = true;
+                        toQueue.enqueue(i);
+                        DistTo[i] = DistTo[v] + 1;
+                        edgeTo[i] = v;
+                        id[i] = id[v];
+                    } else if (checkEdgeTo(i, v)) {
+                        // you found an ancestor
+                        tempDistance = DistTo[i] + DistTo[v] + 1;
+                        if (tempDistance < currentDistance) {
+                            ancestor = i;
+                            currentDistance = tempDistance;
+                            minDistance = DistTo[i] + DistTo[v] + 1;
+                        } else {
+                            while (!fromQueue.isEmpty()) fromQueue.dequeue();
+                            while (!toQueue.isEmpty()) toQueue.dequeue();
+                        }
+                    } else if (id[i] == from) {
+                        tempDistance = DistTo[i] + DistTo[v] + 1;
+                        if (tempDistance <= currentDistance) {
+                            ancestor = i;
+                            minDistance = tempDistance;
+                            currentDistance = tempDistance;
+                        } else {
+                            while (!fromQueue.isEmpty()) fromQueue.dequeue();
+                            while (!toQueue.isEmpty()) toQueue.dequeue();
+                        }
+                        if (DistTo[v] + 1 < DistTo[i]) {
+                            edgeTo[i] = v;
+                            id[i] = id[v];
+                        }
+                    }
+                    if (DistTo[v] + 1 <= DistTo[i]) {
+                        DistTo[i] = DistTo[v] + 1;
+                        edgeTo[i] = v;
+                        id[i] = id[v];
+                    }
+                }
+            }
+            if (!fromQueue.isEmpty() && DistTo[fromQueue.peek()] <= nodeDistance) {
+                v = fromQueue.dequeue();
+                for (int i : digraphDFCopy.adj(v)) {
+                    if (!marked[i]) {
+                        marked[i] = true;
+                        fromQueue.enqueue(i);
+                        DistTo[i] = DistTo[v] + 1;
+                        edgeTo[i] = v;
+                        id[i] = id[v];
 
-        return (i == destination);
+                    } else if (checkEdgeTo(i, v)) {
+                        // you found an ancestor - when there is a cycle the real distance is
+                        tempDistance = DistTo[i] + DistTo[v] + 1;
+                        if (tempDistance < currentDistance) {
+                            ancestor = i;
+                            currentDistance = tempDistance;
+                            minDistance = tempDistance;
+                        } else {
+                            while (!fromQueue.isEmpty()) fromQueue.dequeue();
+                            while (!toQueue.isEmpty()) toQueue.dequeue();
+                        }
+                    } else if (id[i] == to) {
+                        tempDistance = DistTo[i] + DistTo[v] + 1;
+                        if (tempDistance <= currentDistance) {
+                            ancestor = i;
+                            minDistance = tempDistance;
+                            currentDistance = tempDistance;
+                        } else {
+                            while (!fromQueue.isEmpty()) fromQueue.dequeue();
+                            while (!toQueue.isEmpty()) toQueue.dequeue();
+                        }
+                    }
+                    if (DistTo[v] + 1 <= DistTo[i]) {
+                        DistTo[i] = DistTo[v] + 1;
+                        edgeTo[i] = v;
+                        id[i] = id[v];
+                    }
+                }
+            }
+            nodeDistance++;
+        }
+        if (currentDistance == INFINITY) {
+            minDistance = -1;
+            ancestor = -1;
+        }
     }
 
     public static void main(String[] args) {
+
+        System.out.printf("****************************************Testing digraph3 \n");
         Digraph digraph = new Digraph(new In("digraph3.txt"));
         SAP sap = new SAP(digraph);
-        System.out.printf("%b\n", sap.testEdgeTo(11, 12));
-        System.out.printf("%b\n", sap.testEdgeTo(11, 8));
+        int minDist = sap.length(13, 14);
+        if (minDist != 1) System.out.printf("Test 1 - (13, 14) expecting 1, getting: %d\n", minDist);
+        else System.out.printf("Test 1 passed.\n");
+
+        System.out.printf("Expected ancestor: 14. Actual ancestor: %d\n", sap.ancestor(13, 14));
+        System.out.printf("Test 2 - (14, 13) expecting 1, getting: %d\n", sap.length(14, 13));
+        System.out.printf("Expected ancestor: 14. Actual ancestor: %d\n", sap.ancestor(14, 13));
+        System.out.printf("Test 3 - (13, 0) expecting 2, getting: %d\n", sap.length(13, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(13, 0));
+        System.out.printf("Test 4 - (0, 13) expecting 2, getting: %d\n", sap.length(0, 13));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 13));
+        System.out.printf("Test 5 - (14, 0) expecting 1, getting: %d\n", sap.length(14, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(14, 0));
+        System.out.printf("Test 6 - (0, 14) expecting 1, getting: %d\n", sap.length(0, 14));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 14));
+        System.out.printf("Test 7 - (13, 11) expecting 3, getting: %d\n", sap.length(13, 11));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(13, 11));
+        System.out.printf("Test 8 - (11, 13) expecting 3, getting: %d\n", sap.length(11, 13));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(11, 13));
+        System.out.printf("Test 9 - (14, 11) expecting 2, getting: %d\n", sap.length(14, 11));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(14, 11));
+        System.out.printf("Test10 - (11, 14) expecting 2, getting: %d\n", sap.length(11, 14));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(11, 14));
+        System.out.printf("Test11 - (14, 12) expecting 3, getting: %d\n", sap.length(14, 12));
+        System.out.printf("Expected ancestor: 12. Actual ancestor: %d\n", sap.ancestor(14, 12));
+        System.out.printf("Test12 - (12, 14) expecting 3, getting: %d\n", sap.length(12, 14));
+        System.out.printf("Expected ancestor: 12. Actual ancestor: %d\n", sap.ancestor(12, 14));
+        System.out.printf("Test13 - (14, 10) expecting 3, getting: %d\n", sap.length(14, 10));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(14, 10));
+        System.out.printf("Test14 - (10, 14) expecting 3, getting: %d\n", sap.length(10, 14));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(10, 14));
+        System.out.printf("Test15 - (14, 9) expecting 4, getting: %d\n", sap.length(14, 9));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(14, 9));
+        System.out.printf("Test16 - (9, 14) expecting 4, getting: %d\n", sap.length(9, 14));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(9, 14));
+        System.out.printf("Test17 - (13, 8) expecting 5, getting: %d\n", sap.length(13, 8));
+        System.out.printf("Expected ancestor: 8. Actual ancestor: %d\n", sap.ancestor(13, 8));
+        System.out.printf("Test18 - (8, 13) expecting 5, getting: %d\n", sap.length(8, 13));
+        System.out.printf("Expected ancestor: 8. Actual ancestor: %d\n", sap.ancestor(8, 13));
+        System.out.printf("Test19 - (14, 8) expecting 4, getting: %d\n", sap.length(14, 8));
+        System.out.printf("Expected ancestor: 8. Actual ancestor: %d\n", sap.ancestor(14, 8));
+        System.out.printf("Test20 - (8, 14) expecting 4, getting: %d\n", sap.length(8, 14));
+        System.out.printf("Expected ancestor: 8. Actual ancestor: %d\n", sap.ancestor(8, 14));
+        System.out.printf("Test21 - (7, 13) expecting 6, getting: %d\n", sap.length(7, 13));
+        System.out.printf("Expected ancestor: 8. Actual ancestor: %d\n", sap.ancestor(7, 13));
+        System.out.printf("Test22 - (13, 7) expecting 6, getting: %d\n", sap.length(13, 7));
+        System.out.printf("Expected ancestor: 8. Actual ancestor: %d\n", sap.ancestor(13, 7));
+        System.out.printf("Test23 - (1, 2) expecting 1, getting: %d\n", sap.length(1, 2));
+        System.out.printf("Expected ancestor: 2. Actual ancestor: %d\n", sap.ancestor(1, 2));
+        System.out.printf("Test24 - (1, 13) expecting -1, getting: %d\n", sap.length(1, 13));
+        System.out.printf("Expected ancestor: -1. Actual ancestor: %d\n", sap.ancestor(1, 13));
+        System.out.printf("Test25 - (9, 13) expecting 5, getting: %d\n", sap.length(9, 13));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(9, 13));
+        System.out.printf("Test26 - (13, 9) expecting 5, getting: %d\n", sap.length(13, 9));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(13, 9));
+        System.out.printf("Test27 - (8, 14) expecting 4, getting: %d\n", sap.length(8, 14));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(8, 14));
+        System.out.printf("Test28 - (14, 8) expecting 4, getting: %d\n", sap.length(14, 8));
+        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(14, 8));
+
+        System.out.printf("****************************************Testing digraph1 \n");
+        digraph = new Digraph(new In("digraph1.txt"));
+        sap = new SAP(digraph);
+        System.out.printf("Test 1 - (0, 2) expecting 1, getting: %d\n", sap.length(0, 2));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 2));
+        System.out.printf("Test 2 - (2, 0) expecting 1, getting: %d\n", sap.length(2, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(2, 0));
+        System.out.printf("Test 3 - (0, 1) expecting 1, getting: %d\n", sap.length(0, 1));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 1));
+        System.out.printf("Test 4 - (1, 0) expecting 1, getting: %d\n", sap.length(1, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(1, 0));
+        System.out.printf("Test 5 - (1, 2) expecting 2, getting: %d\n", sap.length(1, 2));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(1, 2));
+        System.out.printf("Test 6 - (2, 1) expecting 2, getting: %d\n", sap.length(2, 1));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(2, 1));
+        System.out.printf("Test 7 - (4, 0) expecting 2, getting: %d\n", sap.length(4, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(4, 0));
+        System.out.printf("Test 8 - (0, 4) expecting 2, getting: %d\n", sap.length(0, 4));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 4));
+        System.out.printf("Test 9 - (4, 2) expecting 3, getting: %d\n", sap.length(4, 2));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(4, 2));
+        System.out.printf("Test 10 - (2, 4) expecting 3, getting: %d\n", sap.length(2, 4));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(2, 4));
+        System.out.printf("Test 11 - (3, 5) expecting 2, getting: %d\n", sap.length(3, 5));
+        System.out.printf("Expected ancestor: 1. Actual ancestor: %d\n", sap.ancestor(3, 5));
+        System.out.printf("Test 12 - (5, 3) expecting 2, getting: %d\n", sap.length(5, 3));
+        System.out.printf("Expected ancestor: 1. Actual ancestor: %d\n", sap.ancestor(5, 3));
+        System.out.printf("Test 13 - (7, 11) expecting 5, getting: %d\n", sap.length(7, 11));
+        System.out.printf("Expected ancestor: 1. Actual ancestor: %d\n", sap.ancestor(7, 11));
+        System.out.printf("Test 14 - (11, 7) expecting 5, getting: %d\n", sap.length(11, 7));
+        System.out.printf("Expected ancestor: 1. Actual ancestor: %d\n", sap.ancestor(11, 7));
+        System.out.printf("Test 15 - (12, 4) expecting 4, getting: %d\n", sap.length(12, 4));
+        System.out.printf("Expected ancestor: 1. Actual ancestor: %d\n", sap.ancestor(12, 4));
+        System.out.printf("Test 16 - (12, 4) expecting 4, getting: %d\n", sap.length(12, 4));
+        System.out.printf("Expected ancestor: 1. Actual ancestor: %d\n", sap.ancestor(12, 4));
+        System.out.printf("Test 17 - (9, 1) expecting 2, getting: %d\n", sap.length(9, 1));
+        System.out.printf("Expected ancestor: 1. Actual ancestor: %d\n", sap.ancestor(9, 1));
+        System.out.printf("Test 18 - (1, 9) expecting 2, getting: %d\n", sap.length(1, 9));
+        System.out.printf("Expected ancestor: 1. Actual ancestor: %d\n", sap.ancestor(1, 9));
+        System.out.printf("Test 19 - (12, 0) expecting 4, getting: %d\n", sap.length(12, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(12, 0));
+        System.out.printf("Test 20 - (0, 12) expecting 4, getting: %d\n", sap.length(0, 12));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 12));
+        System.out.printf("****************************************Testing digraph2 \n");
+        digraph = new Digraph(new In("digraph2.txt"));
+        sap = new SAP(digraph);
+        System.out.printf("Test 1 - (1, 0) expecting 1, getting: %d\n", sap.length(1, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(1, 0));
+        System.out.printf("Test 2 - (0, 1) expecting 1, getting: %d\n", sap.length(0, 1));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 1));
+        System.out.printf("Test 3 - (5, 0) expecting 1, getting: %d\n", sap.length(5, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(5, 0));
+        System.out.printf("Test 4 - (0, 5) expecting 1, getting: %d\n", sap.length(0, 5));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 5));
+        System.out.printf("Test 5 - (5, 1) expecting 2, getting: %d\n", sap.length(5, 1));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(5, 1));
+        System.out.printf("Test 6 - (1, 5) expecting 2, getting: %d\n", sap.length(1, 5));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(1, 5));
+        System.out.printf("Test 7 - (4, 0) expecting 2, getting: %d\n", sap.length(4, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(4, 0));
+        System.out.printf("Test 8 - (0, 4) expecting 2, getting: %d\n", sap.length(0, 4));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 4));
+        System.out.printf("Test 9 - (4, 1) expecting 3, getting: %d\n", sap.length(4, 1));
+        System.out.printf("Expected ancestor: 4. Actual ancestor: %d\n", sap.ancestor(4, 1));
+        System.out.printf("Test 10 - (2, 0) expecting 4, getting: %d\n", sap.length(2, 0));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(2, 0));
+        System.out.printf("Test 11 - (0, 2) expecting 4, getting: %d\n", sap.length(0, 2));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 2));
     }
 }
