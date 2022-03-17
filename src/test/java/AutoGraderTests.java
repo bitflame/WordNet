@@ -45,7 +45,12 @@ public class AutoGraderTests {
     private void testSubgraphs() {
         StdOut.println("--------------------------- Running AutoGrader Tests for SubGraphs ------------------------------");
         WordNet wordNet = new WordNet("synsets100-subgraph.txt", "hypernyms100-subgraph.txt");
-
+        StdOut.println("Expecting an error after passing a hypernym file that is invalid because it has two roots.");
+        try {
+            wordNet = new WordNet("synsets3.txt", "hypernyms3InvalidTwoRoots.txt");
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     private void testDigraph1() {
@@ -453,7 +458,7 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        // autoGraderTests.troubleShooting();
+        autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
         autoGraderTests.testDigraph1();
         autoGraderTests.testDigraph2();
