@@ -15,12 +15,12 @@ public class SAP {
     private final int n;
     private boolean[] marked;
     private boolean[] onStack;
-    Stack<Integer> cycle;
-    Stack<Integer> reversePost;
-    Queue<Integer> pre;
-    Queue<Integer> postOrder;
-    Queue<Integer> fromQueue;
-    Queue<Integer> toQueue;
+    private Stack<Integer> cycle;
+    private Stack<Integer> reversePost;
+    private Queue<Integer> pre;
+    private Queue<Integer> postOrder;
+    private Queue<Integer> fromQueue;
+    private Queue<Integer> toQueue;
     private int[] edgeTo;
     private int[] DistTo;
     private int[] id;
@@ -28,7 +28,7 @@ public class SAP {
     private int hops = 0;
     private static final int INFINITY = Integer.MAX_VALUE;
     private final boolean print = false;
-    ST<Integer, Integer> st;
+    private ST<Integer, Integer> st;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
