@@ -28,18 +28,28 @@ public class AutoGraderTests {
         shortestDistance = sap.length(64451, 25327);
         if (shortestDistance != 15)
             System.out.printf("shortest distance between 64451, and 25327 should be 15, but it is: %d \n", shortestDistance);
+        ancestor = sap.ancestor(64451, 25327);
+        StdOut.println("ancestor for 64451 and 25327 is: " + ancestor);
         shortestDistance = sap.length(35205, 21385);
         if (shortestDistance != 17)
             System.out.printf("shortest distance between 35205, and 21385 should be 17, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(35205, 21385);
+        StdOut.println("ancestor for 35205 and 21385 is: " + ancestor);
         shortestDistance = sap.length(53712, 61827);
         if (shortestDistance != 10)
             System.out.printf("shortest distance between 53712, and 61827 should be 10, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(53712, 61827);
+        StdOut.println("ancestor for 53712 and 61827 is: " + ancestor);
         shortestDistance = sap.length(45826, 73382);
         if (shortestDistance != 14)
             System.out.printf("shortest distance between 45826, and 73382 should be 14, but it is: %d\n ", shortestDistance);
+        ancestor = sap.ancestor(45826, 73382);
+        StdOut.println("ancestor for 45826 and 73382 is: " + ancestor);
         shortestDistance = sap.length(2657, 55738);
         if (shortestDistance != 15)
             System.out.printf("shortest distance between 2657, and 55738 should be 15, but it is: %d\n ", shortestDistance);
+        ancestor = sap.ancestor(2657, 55738);
+        StdOut.println("ancestor for 2657 and 55738 is: " + ancestor);
     }
 
     private void testSubgraphs() {
@@ -257,6 +267,19 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(10, 14);
         if (ancestor != 11)
             System.out.printf("The ancestor of 10, and 14 should be node 11, but it is: %d\n ", ancestor);
+        v = new ArrayList<>(java.util.Arrays.asList(13, 8));
+        w = new java.util.ArrayList<>(java.util.Arrays.asList(11, 12));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 1)
+            StdOut.println("Expecting the shortest distance for two iterables to be 1, and it is: " + shortestDistance);
+        v = new ArrayList<>(java.util.Arrays.asList(7));
+        w = new java.util.ArrayList<>(java.util.Arrays.asList(4));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != -1)
+            StdOut.println("Expecting the shortest distance for two iterables to be -1, and it is: " + shortestDistance);
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != -1)
+            StdOut.println("Expecting the ancestor for two iterables to be -1, and it is: " + ancestor);
     }
 
     private void testDigraph4() {
@@ -444,6 +467,14 @@ public class AutoGraderTests {
             System.out.printf("IllegalArgumentException for length() was thrown successfully when both v and w are null: %s\n",
                     illegalArgumentException.getMessage());
         }
+        v = new ArrayList<>(java.util.Arrays.asList(64451, 35205, 53712, 45826, 2657));
+        w = new java.util.ArrayList<>(java.util.Arrays.asList(23325, 21385, 61827, 73382, 55738));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 10)
+            StdOut.println("Expecting the shortest distance for two iterables to be 10, and it is: " + shortestDistance);
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 60600)
+            StdOut.println("Expecting the ancestor for the iterables to be 60600, and it is: " + ancestor);
     }
 
     private void troubleShooting() {
@@ -460,7 +491,7 @@ public class AutoGraderTests {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
         autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
-        autoGraderTests.testDigraph1();
+        //autoGraderTests.testDigraph1();
         autoGraderTests.testDigraph2();
         autoGraderTests.testDigraph3();
         autoGraderTests.testDigraph4();

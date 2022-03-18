@@ -24,11 +24,11 @@ public class SAP {
     private int[] edgeTo;
     private int[] DistTo;
     private int[] id;
-    private int count = 0;
     private int hops = 0;
     private static final int INFINITY = Integer.MAX_VALUE;
     private final boolean print = false;
     private ST<Integer, Integer> st;
+
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -48,10 +48,10 @@ public class SAP {
             id[i] = i;
             edgeTo[i] = i;
         }
-        for (int i = 0; i < n; i++) {
-            if (!marked[i]) dfs(digraphDFCopy, i);
-        }
-        reversePostOrder();
+//        for (int i = 0; i < n; i++) {
+//            if (!marked[i]) dfs(digraphDFCopy, i);
+//        }
+//        reversePostOrder();
     }
 
     private void dfs(Digraph digraphDFCopy, int v) {
@@ -213,7 +213,7 @@ public class SAP {
 
         int len = 0;
         int prevLen = INFINITY;
-        int currentAncestor = 0;
+        int currentAncestor = -1;
         Iterator<Integer> i = v.iterator();
         Iterator<Integer> j = w.iterator();
         if ((!i.hasNext()) || (!j.hasNext())) {
@@ -461,7 +461,6 @@ public class SAP {
         int minDist = sap.length(13, 14);
         if (minDist != 1) System.out.printf("Test 1 - (13, 14) expecting 1, getting: %d\n", minDist);
         else System.out.printf("Test 1 passed.\n");
-
         System.out.printf("Expected ancestor: 14. Actual ancestor: %d\n", sap.ancestor(13, 14));
         System.out.printf("Test 2 - (14, 13) expecting 1, getting: %d\n", sap.length(14, 13));
         System.out.printf("Expected ancestor: 14. Actual ancestor: %d\n", sap.ancestor(14, 13));
