@@ -48,10 +48,10 @@ public class SAP {
             id[i] = i;
             edgeTo[i] = i;
         }
-//        for (int i = 0; i < n; i++) {
-//            if (!marked[i]) dfs(digraphDFCopy, i);
-//        }
-//        reversePostOrder();
+        for (int i = 0; i < n; i++) {
+            if (!marked[i]) dfs(digraphDFCopy, i);
+        }
+        reversePostOrder();
     }
 
     private void dfs(Digraph digraphDFCopy, int v) {
@@ -59,7 +59,7 @@ public class SAP {
         onStack[v] = true;
         // pre.enqueue(v);
         for (int w : digraphDFCopy.adj(v)) {
-            if (this.hasCycle()) return;
+            //if (this.hasCycle()) return;
             if (!marked[w]) {
                 id[w] = id[v];
                 edgeTo[w] = v;
@@ -276,6 +276,11 @@ public class SAP {
         toQueue = new Queue<>();
         marked[from] = true;
         marked[to] = true;
+        if (st.get(from) > st.get(to)) {
+            int temp = from;
+            from = to;
+            to = temp;
+        }
         fromQueue.enqueue(from);
         toQueue.enqueue(to);
         DistTo[from] = 0;
@@ -309,7 +314,9 @@ public class SAP {
                             }
                         } else if (id[i] == to) {
                             tempDistance = DistTo[i] + DistTo[v] + 1;
+                            // System.out.printf("Might be in a cycle for %d, %d\n",from, to);
                             if (tempDistance <= currentDistance) {
+                                // System.out.printf("inside id[i]==to for %d, %d\n", from, to);
                                 ancestor = i;
                                 minDistance = tempDistance;
                                 currentDistance = tempDistance;
@@ -346,7 +353,9 @@ public class SAP {
                             }
                         } else if (id[i] == from) {
                             tempDistance = DistTo[i] + DistTo[v] + 1;
+                            // System.out.printf("Might be in a cycle for %d, %d\n",from, to);
                             if (tempDistance <= currentDistance) {
+                                // System.out.printf("inside id[i]==from for %d, %d\n", from, to);
                                 ancestor = i;
                                 minDistance = tempDistance;
                                 currentDistance = tempDistance;
@@ -386,17 +395,15 @@ public class SAP {
                         }
                     } else if (id[i] == from) {
                         tempDistance = DistTo[i] + DistTo[v] + 1;
+                        // System.out.printf("Might be in a cycle for %d, %d\n",from, to);
                         if (tempDistance <= currentDistance) {
+                            // System.out.printf("inside id[i]==from for %d, %d\n", from, to);
                             ancestor = i;
                             minDistance = tempDistance;
                             currentDistance = tempDistance;
                         } else {
                             while (!fromQueue.isEmpty()) fromQueue.dequeue();
                             while (!toQueue.isEmpty()) toQueue.dequeue();
-                        }
-                        if (DistTo[v] + 1 < DistTo[i]) {
-                            edgeTo[i] = v;
-                            id[i] = id[v];
                         }
                     }
                     if (DistTo[v] + 1 <= DistTo[i]) {
@@ -429,7 +436,9 @@ public class SAP {
                         }
                     } else if (id[i] == to) {
                         tempDistance = DistTo[i] + DistTo[v] + 1;
+                        // System.out.printf("Might be in a cycle for %d, %d\n",from, to);
                         if (tempDistance <= currentDistance) {
+                            // System.out.printf("inside id[i]==to for %d %d\n", from, to);
                             ancestor = i;
                             minDistance = tempDistance;
                             currentDistance = tempDistance;
