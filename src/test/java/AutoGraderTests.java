@@ -24,12 +24,13 @@ public class AutoGraderTests {
         in = new edu.princeton.cs.algs4.In("randomDigraph.txt");
         digraph = new edu.princeton.cs.algs4.Digraph(in);
         sap = new SAP(digraph);
-        shortestDistance = sap.length(2, 4);
+        shortestDistance = sap.length(1, 4);
         if (shortestDistance != 2)
-            System.out.printf("shortest distance between 2, and 4 should be 2, but it is: %d \n", shortestDistance);
-        ancestor = sap.ancestor(2, 4);
-        if (ancestor != 1)
-            System.out.printf("The ancestor between 2 and 4 in random Digraphs should be 1, but it is: %d\n", ancestor);
+            System.out.printf("shortest distance between 1, and 4 should be 2, but it is: %d \n", shortestDistance);
+        ancestor = sap.ancestor(1, 4);
+        if (ancestor != 3)
+            System.out.printf("The ancestor between 1 and 4 in random Digraphs should be 3, but it is: %d\n", ancestor);
+
     }
 
     private void testDigraphWordNet() {

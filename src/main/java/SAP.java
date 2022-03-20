@@ -262,7 +262,7 @@ public class SAP {
         }
         return ((x == from && y == to) || (x == to && y == from));
     }
-
+    
     private void lockStepBFS() {
         marked = new boolean[n];
         edgeTo = new int[n];
