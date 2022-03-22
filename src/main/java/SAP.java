@@ -170,12 +170,21 @@ public class SAP {
     private void lockStepBFS(int f, int t) {
         BreadthFirstDirectedPaths fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
         BreadthFirstDirectedPaths toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
+        int currentDistance = INFINITY;
+        int distance = 0;
         for (int node : reversePost) {
             if (fromBFS.hasPathTo(node) && toBFS.hasPathTo(node)) {
-                ancestor = node;
-                minDistance = fromBFS.distTo(node) + toBFS.distTo(node);
-                return; // stop as soon as you find the first one
+                distance = fromBFS.distTo(node) + toBFS.distTo(node);
+                if (distance < currentDistance) {
+                    currentDistance = distance;
+                    ancestor = node;
+                    minDistance = distance;
+                }
             }
+        }
+        if (currentDistance == INFINITY) {
+            ancestor = -1;
+            minDistance = -1;
         }
     }
 
