@@ -2,6 +2,7 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Topological;
 
 public class SAP {
     private final Digraph digraphDFCopy;
@@ -12,27 +13,15 @@ public class SAP {
     private static final int INFINITY = Integer.MAX_VALUE;
     private Stack<Integer> reversePost;
     private boolean[] marked;
-    private int n;
     private BreadthFirstDirectedPaths fromBFS;
     private BreadthFirstDirectedPaths toBFS;
+    private Topological topological;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
         if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
         digraphDFCopy = new Digraph(digraph);
-        n = digraphDFCopy.V();
-        marked = new boolean[n];
-        reversePost = new Stack<>();
-        for (int v = 0; v < n; v++) {
-            if (!marked[v]) dfs(v);
-        }
-    }
-
-    private void dfs(int v) {
-        marked[v] = true;
-        for (int w : digraphDFCopy.adj(v))
-            if (!marked[w]) dfs(w);
-        reversePost.push(v);
+        topological = new Topological(digraphDFCopy);
     }
 
     private Iterable<Integer> reversePost() {
@@ -65,10 +54,32 @@ public class SAP {
         return minDistance;
     }
 
+    private void validateVertices(Iterable<Integer> vertices) {
+        if (vertices == null) {
+            throw new IllegalArgumentException("argument is null");
+        }
+        int count = 0;
+        for (Integer v : vertices) {
+            count++;
+            if (v == null) {
+                throw new IllegalArgumentException("vertex is null");
+            }
+            validateVertex(v);
+        }
+        if (count == 0) {
+            throw new IllegalArgumentException("zero vertices");
+        }
+    }
+
+    private void validateVertex(int v) {
+        if (v < 0 || v >= digraphDFCopy.V())
+            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (digraphDFCopy.V() - 1));
+    }
+
     // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
-        if (v == null || w == null)
-            throw new IllegalArgumentException("Iterable value to SAP.length() can not be null.\n");
+        validateVertices(v);
+        validateVertices(w);
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
         lockStepBFS();
@@ -100,11 +111,10 @@ public class SAP {
         return ancestor;
     }
 
-
     // a common ancestor that participates in the shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
-        if (v == null || w == null)
-            throw new IllegalArgumentException("Iterable value to SAP.ancestor() can not be null.\n");
+        validateVertices(v);
+        validateVertices(w);
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
         lockStepBFS();
@@ -114,7 +124,7 @@ public class SAP {
     private void lockStepBFS() {
         int currentDistance = INFINITY;
         int distance = 0;
-        for (int node : reversePost) {
+        for (int node : topological.order()) {
             if (fromBFS.hasPathTo(node) && toBFS.hasPathTo(node)) {
                 distance = fromBFS.distTo(node) + toBFS.distTo(node);
                 if (distance < currentDistance) {
@@ -129,7 +139,6 @@ public class SAP {
             minDistance = -1;
         }
     }
-
 
     public static void main(String[] args) {
         Digraph digraph = new Digraph(new In("digraph3.txt"));
