@@ -391,14 +391,14 @@ public class AutoGraderTests {
         if (shortestDistance != 3)
             System.out.printf("The distance between 7, and 4 should be 3, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 0);
-        if (shortestDistance != 3)
-            System.out.printf("The distance between 4, and 0 should be 3, but it is: %d\n", shortestDistance);
+        if (shortestDistance != 2)
+            System.out.printf("The distance between 4, and 0 should be 2, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(7, 3);
         if (shortestDistance != 2)
             System.out.printf("The distance between 7, and 3 should be 2, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 0);
-        if (shortestDistance != 3)
-            System.out.printf("The distance between 4 and 0 should be 3, but it is: %d\n", shortestDistance);
+        if (shortestDistance != 2)
+            System.out.printf("The distance between 4 and 0 should be 2, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 3);
         if (shortestDistance != 1)
             System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
@@ -524,6 +524,6 @@ public class AutoGraderTests {
         autoGraderTests.testDigraph6();
         autoGraderTests.testDigraph9();
         autoGraderTests.createTwoObjects();
-        // autoGraderTests.testIterables();
+        autoGraderTests.testIterables();
     }
 }
