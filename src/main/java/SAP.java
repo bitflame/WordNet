@@ -1,5 +1,4 @@
 import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Topological;
@@ -11,11 +10,10 @@ public class SAP {
     private int from;
     private int to;
     private static final int INFINITY = Integer.MAX_VALUE;
-    private Stack<Integer> reversePost;
-    private boolean[] marked;
     private BreadthFirstDirectedPaths fromBFS;
     private BreadthFirstDirectedPaths toBFS;
     private Topological topological;
+    private boolean keepSmallestAncestor = false;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -24,9 +22,6 @@ public class SAP {
         topological = new Topological(digraphDFCopy);
     }
 
-    private Iterable<Integer> reversePost() {
-        return reversePost;
-    }
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
@@ -50,7 +45,7 @@ public class SAP {
         }
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        lockStepBFS();
+        lockStepBFS(v,w);
         return minDistance;
     }
 
@@ -66,9 +61,6 @@ public class SAP {
             }
             validateVertex(v);
         }
-        if (count == 0) {
-            throw new IllegalArgumentException("zero vertices");
-        }
     }
 
     private void validateVertex(int v) {
@@ -78,11 +70,23 @@ public class SAP {
 
     // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
+        if (v == null && w == null) throw new IllegalArgumentException("both lists can not be null");
+        if (!v.iterator().hasNext() || !w.iterator().hasNext()){
+            ancestor=-1;
+            minDistance=-1;
+            return minDistance;
+        }
         validateVertices(v);
         validateVertices(w);
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        lockStepBFS();
+        keepSmallestAncestor = true;
+        for(int i: v){
+            for(int j: w){
+                lockStepBFS(i,j);
+            }
+        }
+        keepSmallestAncestor = false;
         return minDistance;
     }
 
@@ -107,24 +111,49 @@ public class SAP {
         }
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
-        lockStepBFS();
+        lockStepBFS(v, w);
         return ancestor;
     }
 
     // a common ancestor that participates in the shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
+        if (v == null && w == null) throw new IllegalArgumentException("both lists can not be null");
+        if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
+            ancestor = -1;
+            minDistance = -1;
+            return ancestor;
+        }
         validateVertices(v);
         validateVertices(w);
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        lockStepBFS();
+        keepSmallestAncestor = true;
+        for (int i : v) {
+            for (int j : w) {
+                lockStepBFS(i, j);
+            }
+        }
+        keepSmallestAncestor = false;
         return ancestor;
     }
 
-    private void lockStepBFS() {
+    private void lockStepBFS(int v, int w) {
+        int prevAncestor = ancestor;
+        int prevMinDistance = minDistance;
         int currentDistance = INFINITY;
         int distance = 0;
-        for (int node : topological.order()) {
+        if (topological.isDAG()) {
+            for (int node : topological.order()) {
+                if (fromBFS.hasPathTo(node) && toBFS.hasPathTo(node)) {
+                    distance = fromBFS.distTo(node) + toBFS.distTo(node);
+                    if (distance < currentDistance) {
+                        currentDistance = distance;
+                        ancestor = node;
+                        minDistance = distance;
+                    }
+                }
+            }
+        } else for (int node = 0; node < digraphDFCopy.V(); node++) {
             if (fromBFS.hasPathTo(node) && toBFS.hasPathTo(node)) {
                 distance = fromBFS.distTo(node) + toBFS.distTo(node);
                 if (distance < currentDistance) {
@@ -134,9 +163,15 @@ public class SAP {
                 }
             }
         }
+
         if (currentDistance == INFINITY) {
-            ancestor = -1;
-            minDistance = -1;
+            if (keepSmallestAncestor) {
+                ancestor = prevAncestor;
+                minDistance = prevMinDistance;
+            } else {
+                ancestor = -1;
+                minDistance = -1;
+            }
         }
     }
 
