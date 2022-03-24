@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AutoGraderTests {
@@ -499,6 +500,14 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(v, w);
         if (ancestor != 60600)
             StdOut.println("Expecting the ancestor for the iterables to be 60600, and it is: " + ancestor);
+        v = new ArrayList<>(Arrays.asList(29512, 32740, 61319));
+        w = new ArrayList<>(Arrays.asList(15444, 18922, 22643, 29177, 40477, 43377, 45624, 48461, 71821, 73221, 75631));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 3)
+            StdOut.println("Expecting the shortest distance for two iterables to be 3, but it is: " + shortestDistance);
+        ancestor = sap.ancestor(v,w);
+        if (ancestor!=48461) StdOut.println("Expecting the ancestor for two iterables to be 48461, but it is: "+ancestor);
+        // make a set that contains the ancestor of the other set's node
     }
 
     private void troubleShooting() {

@@ -43,9 +43,9 @@ public class SAP {
             ancestor = -1;
             return minDistance = -1;
         }
-        fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
-        toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        lockStepBFS(v,w);
+        fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
+        toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
+        lockStepBFS(from, to);
         return minDistance;
     }
 
@@ -70,10 +70,10 @@ public class SAP {
 
     // length of the shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
-        if (v == null && w == null) throw new IllegalArgumentException("both lists can not be null");
-        if (!v.iterator().hasNext() || !w.iterator().hasNext()){
-            ancestor=-1;
-            minDistance=-1;
+        if (v == null || w == null) throw new IllegalArgumentException("both lists can not be null");
+        if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
+            ancestor = -1;
+            minDistance = -1;
             return minDistance;
         }
         validateVertices(v);
@@ -81,9 +81,11 @@ public class SAP {
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
         keepSmallestAncestor = true;
-        for(int i: v){
-            for(int j: w){
-                lockStepBFS(i,j);
+        for (int i : v) {
+            for (int j : w) {
+                from = i;
+                to = j;
+                lockStepBFS(i, j);
             }
         }
         keepSmallestAncestor = false;
@@ -111,13 +113,13 @@ public class SAP {
         }
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
-        lockStepBFS(v, w);
+        lockStepBFS(from, to);
         return ancestor;
     }
 
     // a common ancestor that participates in the shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
-        if (v == null && w == null) throw new IllegalArgumentException("both lists can not be null");
+        if (v == null || w == null) throw new IllegalArgumentException("both lists can not be null");
         if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
             ancestor = -1;
             minDistance = -1;
@@ -130,7 +132,9 @@ public class SAP {
         keepSmallestAncestor = true;
         for (int i : v) {
             for (int j : w) {
-                lockStepBFS(i, j);
+                from = i;
+                to = j;
+                lockStepBFS(from, to);
             }
         }
         keepSmallestAncestor = false;
@@ -138,6 +142,8 @@ public class SAP {
     }
 
     private void lockStepBFS(int v, int w) {
+        //from = v;
+        //to = w;
         int prevAncestor = ancestor;
         int prevMinDistance = minDistance;
         int currentDistance = INFINITY;
