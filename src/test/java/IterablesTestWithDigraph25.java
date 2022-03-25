@@ -9,7 +9,7 @@ public class IterablesTestWithDigraph25 {
     public static void main(String[] args) {
         In in = new In("digraph25.txt");
         Digraph digraph = new Digraph(in);
-        SAP sap = sap = new SAP(digraph);
+        SAP sap = new SAP(digraph);
         List<Integer> sources = new ArrayList<>();
         sources.add(7);
         List<Integer> destinations = new ArrayList<>();
@@ -23,12 +23,19 @@ public class IterablesTestWithDigraph25 {
         if (result != 1)
             throw new AssertionError("The minimum distance between two sets of values {7,3} {1,4} should be the minimum " +
                     "of each outcome, which in this case should be 1, but it is: " + result);
+        else System.out.printf("Passed the first ancestor test.\n");
         int ancestor = sap.ancestor(sources, destinations);
         if (ancestor != 1)
             throw new AssertionError("The ancestor for two sets of values should be the one with the shortest" +
                     "path, which in this case is 1, but the value calculated is: " + ancestor);
+        else System.out.printf("Passed the 2nd ancestor test. \n");
         sources = new ArrayList<>(Arrays.asList(13, 23, 24));
         destinations = new ArrayList<>(Arrays.asList(6, 16, 17));
+        for(int i: sources){
+            for (int j: destinations){
+                System.out.printf("i: %d j: %d distance between them: %d\n", i, j, sap.length(i, j));
+            }
+        }
         result = sap.length(sources, destinations);
         if (result != 4)
             throw new AssertionError("The shortest ancestral path of digraph25 example should be 4, but " +
@@ -72,6 +79,7 @@ public class IterablesTestWithDigraph25 {
         if (ancestor != 4)
             throw new AssertionError("The last valid ancestor of two sets should persist. In this case it" +
                     "should be 4, but it is:" + ancestor);
+        else System.out.printf("The ancestor for the sets {3, 4} and {4, 8} is correct. \n");
 
         // loaded digraph25 again
         in = new In("digraph25.txt");
@@ -94,6 +102,26 @@ public class IterablesTestWithDigraph25 {
         if (result != -1)
             throw new AssertionError("The shortest distance for Test 4 should be -1, but it is: " + result);
         else System.out.printf("The shortest distance for test number 4 is correct.\n");
-
+        sources = new ArrayList<>(Arrays.asList(0, 4, 14, 15));
+        destinations = new ArrayList<>(Arrays.asList(2, 10, 12, 13, 14));
+        ancestor = sap.ancestor(sources, destinations);
+        System.out.printf("expecting 14 %d\n", ancestor);
+        result = sap.length(sources, destinations);
+        System.out.printf("expecting 0 %d\n", result);
+        for (int i : sources) {
+            for (int j : destinations) {
+                System.out.printf("i: %d j: %d distance between them: %d\n", i, j, sap.length(i, j));
+            }
+        }
+        sources = new ArrayList<>(Arrays.asList(17));
+        destinations = new ArrayList<>(Arrays.asList(10));
+        ancestor = sap.ancestor(sources, destinations);
+        System.out.printf("Expecting 10, %d\n", ancestor);
+        ancestor = sap.ancestor(17, 10);
+        System.out.printf("Expecting 10, %d\n", ancestor);
+        result = sap.length(sources, destinations);
+        System.out.printf("Expecting 1. %d\n", result);
+        result = sap.length(17, 10);
+        System.out.printf("Expecting 1. %d\n", result);
     }
 }

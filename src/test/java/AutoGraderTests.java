@@ -505,8 +505,9 @@ public class AutoGraderTests {
         shortestDistance = sap.length(v, w);
         if (shortestDistance != 3)
             StdOut.println("Expecting the shortest distance for two iterables to be 3, but it is: " + shortestDistance);
-        ancestor = sap.ancestor(v,w);
-        if (ancestor!=48461) StdOut.println("Expecting the ancestor for two iterables to be 48461, but it is: "+ancestor);
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 48461)
+            StdOut.println("Expecting the ancestor for two iterables to be 48461, but it is: " + ancestor);
         // make a set that contains the ancestor of the other set's node
     }
 
@@ -518,6 +519,10 @@ public class AutoGraderTests {
         shortestDistance = sap.length(4, 3);
         if (shortestDistance != 1)
             System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
+    }
+
+    private void randomTests() {
+
     }
 
     public static void main(String[] args) {
