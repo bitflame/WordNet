@@ -82,9 +82,15 @@ public class AutoGraderTests {
         in = new In("digraph1.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+        shortestDistance = sap.length(6, 6);
+        if (shortestDistance != 0)
+            System.out.printf("The distance between nodes 6 and 6 should be 0 in digraph1, but it is: %d\n ", shortestDistance);
+        ancestor = sap.ancestor(6, 6);
+        if (ancestor != 6)
+            System.out.printf("The ancestor for 6, and 6 in graph 1 should be 6, but it is: %d\n", ancestor);
         shortestDistance = sap.length(3, 3);
         if (shortestDistance != 0)
-            System.out.printf("shortest distance between 3, and 3 should be 0, but it is: %d\n" + shortestDistance);
+            System.out.printf("shortest distance between 3, and 3 should be 0, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(3, 3);
         if (ancestor != 3)
             System.out.printf("The value of ancestor between 3 and 3 should be 3, but it is: %d\n", ancestor);
@@ -522,6 +528,9 @@ public class AutoGraderTests {
     }
 
     private void randomTests() {
+        in = new In("hypernyms100-subgraph.txt");
+        String[] a = in.readLine().split(",");
+        int first = Integer.parseInt(a[0]);
 
     }
 

@@ -30,19 +30,19 @@ public class IterablesTestWithDigraph25 {
                     "path, which in this case is 1, but the value calculated is: " + ancestor);
         else System.out.printf("Passed the 2nd ancestor test. \n");
         sources = new ArrayList<>(Arrays.asList(13, 23, 24));
-        destinations = new ArrayList<>(Arrays.asList(6, 16, 17));
-        for(int i: sources){
-            for (int j: destinations){
-                System.out.printf("i: %d j: %d distance between them: %d\n", i, j, sap.length(i, j));
+        destinations = new ArrayList<>(Arrays.asList(6, 16, 17,13));
+        for (int i : sources) {
+            for (int j : destinations) {
+                System.out.printf(" i=%d j=%d distance between them: %d their ancestor is=%d\n", i, j, sap.length(i, j), sap.ancestor(i, j));
             }
         }
         result = sap.length(sources, destinations);
-        if (result != 4)
-            throw new AssertionError("The shortest ancestral path of digraph25 example should be 4, but " +
+        if (result != 0)
+            throw new AssertionError("The shortest ancestral path of digraph25 example should be 0, but " +
                     "it is: " + result);
         ancestor = sap.ancestor(sources, destinations);
-        if (ancestor != 3)
-            throw new AssertionError("The shortest common ancestor for the second set, should be 3, but " +
+        if (ancestor != 13)
+            throw new AssertionError("The shortest common ancestor for the second set, should be 13, but " +
                     "it is: " + ancestor);
         sources = new ArrayList<>(Arrays.asList(3, 12));
         destinations = new ArrayList<>(Arrays.asList(4, 6));
@@ -67,6 +67,10 @@ public class IterablesTestWithDigraph25 {
         if (ancestor != -1)
             throw new AssertionError("The ancestor between 4 and 8 in graph 9 should be -1, but it is:" + ancestor);
         else System.out.printf("Tested 4 and 8 in graph 9 and they are not connected.\n");
+        result = sap.length(0, 3);
+        if (result != 1)
+            throw new AssertionError("In graph 9, the distance between 3 and 0 should be 1, but it is:\n" + result);
+        else System.out.printf("The distance between 0, and 3 is correct. \n");
         ancestor = sap.ancestor(0, 3);
         if (ancestor != 0)
             throw new AssertionError("node 0 and 3 in graph 9 are connected and the ancestor should be 0, but it is" + ancestor);
