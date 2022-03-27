@@ -182,17 +182,15 @@ public class SAP {
         marked[to] = true;
         while (!queue.isEmpty()) {
             int v = queue.dequeue();
+            if (fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) break;
             if (fromBFS.hasPathTo(v) && toBFS.hasPathTo(v)) {
                 distance = fromBFS.distTo(v) + toBFS.distTo(v);
-                if (distance == 0) System.out.printf("Found a zero distance for node=%d from=%d to=%d\n", v, from, to);
-                if (fromBFS.distTo(v) < 0 || toBFS.distTo(v) < 0) {
-                    System.out.printf("Something is less than 0 for %d %d \n", from, to);
-                }
                 if (distance < currentDistance) {
                     currentDistance = distance;
                     ancestor = v;
                 }
             }
+
             Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
             while (var1.hasNext()) {
                 int w = var1.next();

@@ -528,9 +528,7 @@ public class AutoGraderTests {
     }
 
     private void randomTests() {
-        in = new In("hypernyms100-subgraph.txt");
-        String[] a = in.readLine().split(",");
-        int first = Integer.parseInt(a[0]);
+
 
     }
 

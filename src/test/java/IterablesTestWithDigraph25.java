@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class IterablesTestWithDigraph25 {
+    private static final int INFINITY = Integer.MAX_VALUE;
+
     public static void main(String[] args) {
         In in = new In("digraph25.txt");
         Digraph digraph = new Digraph(in);
@@ -30,7 +32,7 @@ public class IterablesTestWithDigraph25 {
                     "path, which in this case is 1, but the value calculated is: " + ancestor);
         else System.out.printf("Passed the 2nd ancestor test. \n");
         sources = new ArrayList<>(Arrays.asList(13, 23, 24));
-        destinations = new ArrayList<>(Arrays.asList(6, 16, 17,13));
+        destinations = new ArrayList<>(Arrays.asList(6, 16, 17, 13));
         for (int i : sources) {
             for (int j : destinations) {
                 System.out.printf(" i=%d j=%d distance between them: %d their ancestor is=%d\n", i, j, sap.length(i, j), sap.ancestor(i, j));
@@ -69,7 +71,7 @@ public class IterablesTestWithDigraph25 {
         else System.out.printf("Tested 4 and 8 in graph 9 and they are not connected.\n");
         result = sap.length(0, 3);
         if (result != 1)
-            throw new AssertionError("In graph 9, the distance between 3 and 0 should be 1, but it is:\n" + result);
+            throw new AssertionError("In graph 9, the distance between 3 and 0 should be 2, but it is:\n" + result);
         else System.out.printf("The distance between 0, and 3 is correct. \n");
         ancestor = sap.ancestor(0, 3);
         if (ancestor != 0)
@@ -127,5 +129,24 @@ public class IterablesTestWithDigraph25 {
         System.out.printf("Expecting 1. %d\n", result);
         result = sap.length(17, 10);
         System.out.printf("Expecting 1. %d\n", result);
+        System.out.printf("Creating iterables of graphs with cycles.\n");
+        in = new In("digraph3.txt");
+        result = sap.length(14, 9);
+        System.out.printf("Expecting 4 as the shortest distance between 9 and 14 in graph 3. %d\n", result);
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        sources = new ArrayList<>(Arrays.asList(7, 14, 12, 0, 5, 10));
+        destinations = new ArrayList<>(Arrays.asList(8, 13, 11, 12, 9, 2));
+        for (int i : sources) {
+            for (int j : destinations) {
+                System.out.printf("i: %d j: %d distance between them: %d\n", i, j, sap.length(i, j));
+            }
+        }
+        ancestor = sap.ancestor(sources, destinations);
+        System.out.printf("expecting -1 %d\n", ancestor);
+        result = sap.length(sources, destinations);
+        System.out.printf("expecting -1 %d\n", result);
+        // System.out.printf("1 + infinity is: %d\n", 1 + INFINITY);
+        // System.out.printf("infinity + infinity is: %d\n", INFINITY + INFINITY);
     }
 }
