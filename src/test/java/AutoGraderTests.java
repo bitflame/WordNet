@@ -65,6 +65,11 @@ public class AutoGraderTests {
             System.out.printf("shortest distance between 2657, and 55738 should be 15, but it is: %d\n ", shortestDistance);
         ancestor = sap.ancestor(2657, 55738);
         StdOut.println("ancestor for 2657 and 55738 is: " + ancestor);
+        List<Integer> sources = new ArrayList<>(Arrays.asList(17798, 19186, 32838, 38602, 46105, 48396, 54151, 61313, 65881, 69296, 81702));
+        List<Integer> destinations = new ArrayList<>(Arrays.asList(14155, 23556, 63400));
+        shortestDistance = sap.length(sources, destinations);
+        if (shortestDistance != 7)
+            System.out.printf("The expected answer for wordnet iterables is 7, but we get: %d\n", shortestDistance);
     }
 
     private void testSubgraphs() {
@@ -404,8 +409,18 @@ public class AutoGraderTests {
         if (shortestDistance != 5)
             System.out.printf("The distance between 7 and 12 should be 5, but it is: %d\n ", shortestDistance);
         ancestor = sap.ancestor(7, 12);
-        if (ancestor != 13)
+        if (ancestor != 10)
             System.out.printf("The ancestor for nodes 7 and 12 in graph 5 should be 13, but it is: %d\n", ancestor);
+        shortestDistance = sap.length(13, 21);
+        if (shortestDistance != 4)
+            System.out.printf("The distance between nodes 13, and 21 should be 4, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(13, 21);
+        if (ancestor != 10)
+            System.out.printf("The ancestor for nodes 13, and 21 in graph 3 should be 10, but it is: %d\n", ancestor);
+        List<Integer> sources = new ArrayList<>(Arrays.asList(13, 7, 21, 10, 9, 14, 17));
+        List<Integer> destinations = new ArrayList<>(Arrays.asList(21, 12, 0, 12, 20));
+        shortestDistance = sap.length(sources, destinations);
+
     }
 
     private void testDigraph6() {

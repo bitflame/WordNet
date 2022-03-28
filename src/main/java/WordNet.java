@@ -5,6 +5,7 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Stopwatch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -129,10 +130,9 @@ public class WordNet {
                 wordNet.distance("group_action", "event"));
         StdOut.println("The distance between the nouns act and group_action should be 1, and it is:" +
                 wordNet.distance("act", "group_action"));
-        /*
-        * wordNet = new WordNet("hypernyms3InvalidCycle.txt", "synsets3.txt");
-        wordNet.sap("a","b");
-        * */
+        List<Integer> sources = new ArrayList<>(Arrays.asList(17798,19186,32838,38602,46105,48396,54151,61313,65881,69296,81702));
+        List<Integer> destinations = new ArrayList<>(Arrays.asList(14155,23556,63400));
+
 
     }
 }

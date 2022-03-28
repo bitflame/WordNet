@@ -113,7 +113,8 @@ public class SAP {
                 to = j;
                 // length(i,j);
                 lockStepBFS(i, j);
-                if (subsetDitance > minDistance) {
+                // System.out.printf("For nodes %d and %d ShortestDistance=%d ",i,j,minDistance);
+                if (subsetDitance > minDistance && minDistance != -1) {
                     subsetDitance = minDistance;
                     subsetAncestor = ancestor;
                 }
@@ -187,7 +188,7 @@ public class SAP {
 //                    minDistance = 0;
 //                } else
                 lockStepBFS(i, j);
-                if (ancestorSetDistance > minDistance) {
+                if (ancestorSetDistance > minDistance && minDistance != -1) {
                     ancestorSetDistance = minDistance;
                     ancestorSetAncestor = ancestor;
                 }
