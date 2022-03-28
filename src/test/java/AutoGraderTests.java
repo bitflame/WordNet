@@ -298,6 +298,12 @@ public class AutoGraderTests {
             System.out.printf("The distance between 2 and 4 should be 2, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(2, 4);
         if (ancestor != 4) System.out.printf("The ancestor of 2 and 4 should be 2, but it is: %d\n", ancestor);
+        ancestor = sap.ancestor(14, 9);
+        if (ancestor != 11)
+            System.out.printf("The ancestor between 14 and 9 for graph 3 should be 11, but it is: %d\n", ancestor);
+        shortestDistance = sap.length(14, 9);
+        if (shortestDistance != 4)
+            System.out.printf("The shortest diestance between nodes 14 and 9 should be 4, but it is: %d\n  ", shortestDistance);
         v = new ArrayList<>(java.util.Arrays.asList(13, 8));
         w = new java.util.ArrayList<>(java.util.Arrays.asList(11, 12));
         shortestDistance = sap.length(v, w);
@@ -358,6 +364,12 @@ public class AutoGraderTests {
         shortestDistance = sap.length(21, 0);
         if (shortestDistance != 1)
             System.out.printf("The distance between 21, and 0 should be 1, and it is: %d\n", shortestDistance);
+        shortestDistance = sap.length(7, 12);
+        if (shortestDistance != 5)
+            System.out.printf("The distance between 7 and 12 should be 5, but it is: %d\n ", shortestDistance);
+        ancestor = sap.ancestor(7, 12);
+        if (ancestor != 13)
+            System.out.printf("The ancestor for nodes 7 and 12 in graph 5 should be 13, but it is: %d\n", ancestor);
     }
 
     private void testDigraph6() {
@@ -527,10 +539,6 @@ public class AutoGraderTests {
             System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
     }
 
-    private void randomTests() {
-
-
-    }
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();

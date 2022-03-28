@@ -5,6 +5,7 @@ import edu.princeton.cs.algs4.Topological;
 import edu.princeton.cs.algs4.Queue;
 
 import java.util.Iterator;
+import java.util.Stack;
 
 public class SAP {
     private final Digraph digraphDFCopy;
@@ -16,7 +17,12 @@ public class SAP {
     private BreadthFirstDirectedPaths fromBFS;
     private BreadthFirstDirectedPaths toBFS;
     private Topological topological;
-    private Queue<Integer> queue;
+    private Queue<Integer> fromQueue;
+    private Queue<Integer> toQueue;
+    private boolean[] onStack;
+    private Stack<Integer> fromStack;
+    private Stack<Integer> toStack;
+    private int n;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -27,6 +33,7 @@ public class SAP {
         ancestor = -1;
         from = 0;
         to = 0;
+        n = digraphDFCopy.V();
     }
 
 
@@ -42,7 +49,11 @@ public class SAP {
         to = w;
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
-        queue = new Queue<>();
+        fromQueue = new Queue<>();
+        toQueue = new Queue<>();
+        fromStack = new Stack<>();
+        toStack = new Stack<>();
+        onStack = new boolean[n];
         lockStepBFS(from, to);
         return minDistance;
     }
@@ -78,28 +89,33 @@ public class SAP {
         validateVertices(w);
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        queue = new Queue<>();
-        int currentDistance = INFINITY;
-        int currentAncestor = -1;
+        fromQueue = new Queue<>();
+        toQueue = new Queue<>();
+        fromStack = new Stack<>();
+        toStack = new Stack<>();
+        onStack = new boolean[n];
+        int subsetDitance = INFINITY;
+        int subsetAncestor = -1;
         int prevDistance = minDistance;
         int prevAncestor = ancestor;
         for (int i : v) {
             for (int j : w) {
                 from = i;
                 to = j;
+                // length(i,j);
                 lockStepBFS(i, j);
-                if (currentDistance > minDistance) {
-                    currentDistance = minDistance;
-                    currentAncestor = ancestor;
+                if (subsetDitance > minDistance) {
+                    subsetDitance = minDistance;
+                    subsetAncestor = ancestor;
                 }
             }
         }
-        if (currentDistance == INFINITY) {
+        if (subsetDitance == INFINITY) {
             ancestor = prevAncestor;
             minDistance = prevDistance;
         } else {
-            ancestor = currentAncestor;
-            minDistance = currentDistance;
+            ancestor = subsetAncestor;
+            minDistance = subsetDitance;
         }
         return minDistance;
     }
@@ -117,7 +133,11 @@ public class SAP {
         to = w;
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
-        queue = new Queue<>();
+        fromQueue = new Queue<>();
+        toQueue = new Queue<>();
+        fromStack = new Stack<>();
+        toStack = new Stack<>();
+        onStack = new boolean[n];
         lockStepBFS(from, to);
         return ancestor;
     }
@@ -134,11 +154,15 @@ public class SAP {
         validateVertices(w);
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        queue = new Queue<>();
-        int currentDistance = INFINITY;
-        int currentAncestor = -1;
-        int prevDistance = minDistance;
-        int prevAncestor = ancestor;
+        fromQueue = new Queue<>();
+        toQueue = new Queue<>();
+        fromStack = new Stack<>();
+        toStack = new Stack<>();
+        onStack = new boolean[n];
+        int ancestorSetDistance = INFINITY;
+        int ancestorSetAncestor = -1;
+        int previousDistance = minDistance;
+        int previousAncestor = ancestor;
         for (int i : v) {
             for (int j : w) {
                 from = i;
@@ -148,59 +172,105 @@ public class SAP {
 //                    minDistance = 0;
 //                } else
                 lockStepBFS(i, j);
-                if (currentDistance > minDistance) {
-                    currentDistance = minDistance;
-                    currentAncestor = ancestor;
+                if (ancestorSetDistance > minDistance) {
+                    ancestorSetDistance = minDistance;
+                    ancestorSetAncestor = ancestor;
                 }
             }
         }
-        if (currentDistance == INFINITY) {
-            ancestor = prevAncestor;
-            minDistance = prevDistance;
+        if (ancestorSetAncestor == INFINITY) {
+            ancestor = previousAncestor;
+            minDistance = previousDistance;
         } else {
-            ancestor = currentAncestor;
-            minDistance = currentDistance;
+            ancestor = ancestorSetAncestor;
+            minDistance = ancestorSetDistance;
         }
         return ancestor;
     }
 
+    private int calculateDistance(int v, int currentDistance) {
+        int distance = 0;
+        if (fromBFS.hasPathTo(v) && toBFS.hasPathTo(v)) {
+
+            distance = fromBFS.distTo(v) + toBFS.distTo(v);
+            if (distance < currentDistance) {
+                currentDistance = distance;
+                ancestor = v;
+            }
+        }
+    }
+
     private void lockStepBFS(int from, int to) {
         boolean[] marked = new boolean[digraphDFCopy.V()];
-        int distance = 0;
         int currentDistance = INFINITY;
-//        if (toBFS.hasPathTo(from)) {
-//            currentDistance = toBFS.distTo(from);
-//            ancestor = from;
-//        }
-//        if (fromBFS.hasPathTo(to)) {
-//            currentDistance = fromBFS.distTo(to);
-//            ancestor = to;
-//        } else { }
-        queue.enqueue(from);
+        fromQueue.enqueue(from);
+        fromStack.push(from);
         marked[from] = true;
-        queue.enqueue(to);
+        toQueue.enqueue(to);
+        toStack.push(to);
         marked[to] = true;
-        while (!queue.isEmpty()) {
-            int v = queue.dequeue();
-            if (fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) break;
-            if (fromBFS.hasPathTo(v) && toBFS.hasPathTo(v)) {
-                distance = fromBFS.distTo(v) + toBFS.distTo(v);
-                if (distance < currentDistance) {
-                    currentDistance = distance;
-                    ancestor = v;
-                }
-            }
-
+        int v = 0;
+        while (!fromQueue.isEmpty() && !toQueue.isEmpty()) {
+            v = fromQueue.dequeue();
+            if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
+                break;
+            currentDistance = calculateDistance(v, currentDistance);
             Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
             while (var1.hasNext()) {
                 int w = var1.next();
                 if (!marked[w]) {
-                    queue.enqueue(w);
+                    fromQueue.enqueue(w);
                     marked[w] = true;
+                } else {
+                    // check the stacks and update the node's distance
+                }
+            }
+            v = toQueue.dequeue();
+            if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
+                break;
+            currentDistance = calculateDistance(v, currentDistance);
+            var1 = digraphDFCopy.adj(v).iterator();
+            while (var1.hasNext()) {
+                int w = var1.next();
+                if (!marked[w]) {
+                    toQueue.enqueue(w);
+                    marked[w] = true;
+                } else {
+                    // check the stacks and update the node's distance
                 }
             }
         }
-
+        if (!fromQueue.isEmpty()) {
+            while (!fromQueue.isEmpty()) {
+                v = fromQueue.dequeue();
+                if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
+                    break;
+                currentDistance = calculateDistance(v, currentDistance);
+                Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
+                while (var1.hasNext()) {
+                    int w = var1.next();
+                    if (!marked[w]) {
+                        fromQueue.enqueue(w);
+                        marked[w] = true;
+                    }
+                }
+            }
+        } else if (!toQueue.isEmpty()) {
+            while (!toQueue.isEmpty()) {
+                v = toQueue.dequeue();
+                if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
+                    break;
+                currentDistance = calculateDistance(v, currentDistance);
+                Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
+                while (var1.hasNext()) {
+                    int w = var1.next();
+                    if (!marked[w]) {
+                        toQueue.enqueue(w);
+                        marked[w] = true;
+                    }
+                }
+            }
+        }
         if (currentDistance == INFINITY) {
             ancestor = -1;
             minDistance = -1;

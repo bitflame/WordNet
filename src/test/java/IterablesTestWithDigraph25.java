@@ -13,12 +13,9 @@ public class IterablesTestWithDigraph25 {
         Digraph digraph = new Digraph(in);
         SAP sap = new SAP(digraph);
         List<Integer> sources = new ArrayList<>();
-        sources.add(7);
         List<Integer> destinations = new ArrayList<>();
+        sources.add(7);
         destinations.add(1);
-        // int result = sap.length(sources, destinations);
-        // if (result != 1)
-        //    throw new AssertionError("The minimum distance between 1 and 0 should be 1, but it is: " + result);
         sources.add(3);
         destinations.add(4);
         int result = sap.length(sources, destinations);
@@ -146,7 +143,6 @@ public class IterablesTestWithDigraph25 {
         System.out.printf("expecting -1 %d\n", ancestor);
         result = sap.length(sources, destinations);
         System.out.printf("expecting -1 %d\n", result);
-        // System.out.printf("1 + infinity is: %d\n", 1 + INFINITY);
-        // System.out.printf("infinity + infinity is: %d\n", INFINITY + INFINITY);
+
     }
 }
