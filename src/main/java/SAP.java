@@ -254,66 +254,73 @@ public class SAP {
         marked[to] = true;
         int v = 0;
         int stackDistance = 0;
+        int distanceFromSourceCounter = 0;
+        Iterator<Integer> var1;
         while (!fromQueue.isEmpty() && !toQueue.isEmpty() && proceed) {
-            v = fromQueue.dequeue();
-            currentDistance = calculateDistance(v, currentDistance);
-            Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
-            while (var1.hasNext()) {
-                int w = var1.next();
-                if (!marked[w]) {
-                    fromQueue.enqueue(w);
-                    fromStack.push(w);
-                    onFromStack[w] = true;
-                    marked[w] = true;
-                } else {
-                    // check the stacks and update the node's distance
-                    if (onFromStack[w] && toBFS.hasPathTo(w)) {
-                        stackDistance = checkStackDistance(w, true, false);
-                        if (fromBFS.distTo(w) > stackDistance) {
-                            // calculate distance again
-                            currentDistance = stackDistance;
-                        }
-                    } else if (onToStack[w] && fromBFS.hasPathTo(w)) {
-                        stackDistance = checkStackDistance(w, false, true);
-                        if (toBFS.distTo(w) > stackDistance) {
-                            currentDistance = stackDistance;
+            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
+                v = fromQueue.dequeue();
+                currentDistance = calculateDistance(v, currentDistance);
+                var1 = digraphDFCopy.adj(v).iterator();
+                while (var1.hasNext()) {
+                    int w = var1.next();
+                    if (!marked[w]) {
+                        fromQueue.enqueue(w);
+                        fromStack.push(w);
+                        onFromStack[w] = true;
+                        marked[w] = true;
+                    } else {
+                        // check the stacks and update the node's distance
+                        if (onFromStack[w] && toBFS.hasPathTo(w)) {
+                            stackDistance = checkStackDistance(w, true, false);
+                            if (fromBFS.distTo(w) > stackDistance) {
+                                // calculate distance again
+                                currentDistance = stackDistance;
+                            }
+                        } else if (onToStack[w] && fromBFS.hasPathTo(w)) {
+                            stackDistance = checkStackDistance(w, false, true);
+                            if (toBFS.distTo(w) > stackDistance) {
+                                currentDistance = stackDistance;
+                            }
                         }
                     }
                 }
             }
             if (!proceed) break;
-            v = toQueue.dequeue();
-            currentDistance = calculateDistance(v, currentDistance);
-            var1 = digraphDFCopy.adj(v).iterator();
-            while (var1.hasNext()) {
-                int w = var1.next();
-                if (!marked[w]) {
-                    toQueue.enqueue(w);
-                    toStack.push(w);
-                    onToStack[w] = true;
-                    marked[w] = true;
-                } else {
-                    // check the stacks and update the node's distance
-                    if (onToStack[w] && fromBFS.hasPathTo(w)) {
-                        stackDistance = checkStackDistance(w, false, true);
-                        if (toBFS.distTo(w) > stackDistance) {
-                            currentDistance = stackDistance;
-                        }
-                    } else if (onFromStack[w] && toBFS.hasPathTo(w)) {
-                        stackDistance = checkStackDistance(w, true, false);
-                        if (fromBFS.distTo(w) > stackDistance) {
-                            currentDistance = stackDistance;
+            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
+                v = toQueue.dequeue();
+                currentDistance = calculateDistance(v, currentDistance);
+                var1 = digraphDFCopy.adj(v).iterator();
+                while (var1.hasNext()) {
+                    int w = var1.next();
+                    if (!marked[w]) {
+                        toQueue.enqueue(w);
+                        toStack.push(w);
+                        onToStack[w] = true;
+                        marked[w] = true;
+                    } else {
+                        // check the stacks and update the node's distance
+                        if (onToStack[w] && fromBFS.hasPathTo(w)) {
+                            stackDistance = checkStackDistance(w, false, true);
+                            if (toBFS.distTo(w) > stackDistance) {
+                                currentDistance = stackDistance;
+                            }
+                        } else if (onFromStack[w] && toBFS.hasPathTo(w)) {
+                            stackDistance = checkStackDistance(w, true, false);
+                            if (fromBFS.distTo(w) > stackDistance) {
+                                currentDistance = stackDistance;
+                            }
                         }
                     }
                 }
             }
+            distanceFromSourceCounter++;
         }
 //todo --when you are in the loop for both queues, add something to only take out from queues if distance to that node
 // is less than a distance counter and increase the counter every time you go through the loop. Also you should be able to stop if from nodes reach to and/or vise versa
         while (!fromQueue.isEmpty() && proceed) {
             v = fromQueue.dequeue();
             currentDistance = calculateDistance(v, currentDistance);
-            Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
+            var1 = digraphDFCopy.adj(v).iterator();
             while (var1.hasNext()) {
                 int w = var1.next();
                 if (!marked[w]) {
@@ -343,7 +350,7 @@ public class SAP {
                 if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
                     break;
                 currentDistance = calculateDistance(v, currentDistance);
-                Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
+                var1 = digraphDFCopy.adj(v).iterator();
                 while (var1.hasNext()) {
                     int w = var1.next();
                     if (!marked[w]) {

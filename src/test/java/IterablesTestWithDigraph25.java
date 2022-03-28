@@ -140,9 +140,9 @@ public class IterablesTestWithDigraph25 {
             }
         }
         ancestor = sap.ancestor(sources, destinations);
-        System.out.printf("expecting -1 %d\n", ancestor);
+        System.out.printf("expecting 12 %d\n", ancestor);
         result = sap.length(sources, destinations);
-        System.out.printf("expecting -1 %d\n", result);
+        System.out.printf("expecting 0 %d\n", result);
 
     }
 }
