@@ -198,6 +198,7 @@ public class SAP {
                 ancestor = v;
             }
         }
+        return currentDistance;
     }
 
     private void lockStepBFS(int from, int to) {
