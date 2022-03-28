@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class WordNet {
-    // this is a hashmap of nouns and ids -todo: Try two arrays of String and Integer
+    // this is a hashmap of nouns and ids - todo: Try two arrays of String and Integer
     private final HashMap<Integer, String> db = new HashMap<>();
     private SAP sap;
     private final Digraph digraphDFCopy;
@@ -29,7 +29,6 @@ public class WordNet {
             String[] a = in.readLine().split(",");
             val = Integer.parseInt(a[0]);
             db.put(val, a[1]);
-            // todo -- you can not read twice. Fix 
         }
     }
 

@@ -315,8 +315,6 @@ public class SAP {
             }
             distanceFromSourceCounter++;
         }
-//todo --when you are in the loop for both queues, add something to only take out from queues if distance to that node
-// is less than a distance counter and increase the counter every time you go through the loop. Also you should be able to stop if from nodes reach to and/or vise versa
         while (!fromQueue.isEmpty() && proceed) {
             v = fromQueue.dequeue();
             currentDistance = calculateDistance(v, currentDistance);
