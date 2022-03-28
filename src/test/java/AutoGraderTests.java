@@ -1,6 +1,7 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import org.w3c.dom.UserDataHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -303,12 +304,47 @@ public class AutoGraderTests {
             System.out.printf("The ancestor between 14 and 9 for graph 3 should be 11, but it is: %d\n", ancestor);
         shortestDistance = sap.length(14, 9);
         if (shortestDistance != 4)
-            System.out.printf("The shortest diestance between nodes 14 and 9 should be 4, but it is: %d\n  ", shortestDistance);
+            System.out.printf("The shortest distance between nodes 14 and 9 should be 4, but it is: %d\n  ", shortestDistance);
+        shortestDistance = sap.length(13, 11);
+        if (shortestDistance != 3)
+            System.out.printf("The distance between nodes 13 and 11 in graph 3 should be 3, but" +
+                    "it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(13, 11);
+        if (ancestor != 11)
+            System.out.printf("The ancestor for nodes 13 and 11 in graph 3 should be 11, but it is: %d\n", ancestor);
+        shortestDistance = sap.length(13, 12);
+        if (shortestDistance != 4)
+            System.out.printf("The distance between the nodes 13 and 12 in graph 3 should be 4, but" +
+                    "it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(13, 12);
+        if (ancestor != 12)
+            System.out.printf("The ancestor for nodes 13 and 12 in graph 3 should be 12, but it is: %d\n", ancestor);
+        // 8,11
+        shortestDistance = sap.length(8, 11);
+        if (shortestDistance != 2) System.out.printf("The distance between the nodes 8 and 11 in graph 3 should be 2," +
+                "but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(8, 11);
+        if (ancestor != 8)
+            System.out.printf("The ancestor between nodes 8, and 11 in graph 3 should be 8, but it is: %d\n", ancestor);
+        // 8,12
+        shortestDistance = sap.length(8, 12);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between the nodes 8 and 12 in graph 3 should be 1, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(8, 12);
+        if (ancestor != 8)
+            System.out.printf("The ancestor for the nodes 8 and 12 in graph 3 should be 8, but it is: %d\n", ancestor);
         v = new ArrayList<>(java.util.Arrays.asList(13, 8));
         w = new java.util.ArrayList<>(java.util.Arrays.asList(11, 12));
         shortestDistance = sap.length(v, w);
         if (shortestDistance != 1)
             StdOut.println("Expecting the shortest distance for two iterables to be 1, and it is: " + shortestDistance);
+        shortestDistance = sap.length(7, 4);
+        if (shortestDistance != -1)
+            System.out.printf("Expecting the shortest distance for nodes from different components " +
+                    "to be -1, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(7, 4);
+        if (ancestor != -1) System.out.printf("Expected the ancestor for nodes from different components in graph 3 " +
+                "to be -1, but it is: %d\n", ancestor);
         v = new ArrayList<>(java.util.Arrays.asList(7));
         w = new java.util.ArrayList<>(java.util.Arrays.asList(4));
         shortestDistance = sap.length(v, w);

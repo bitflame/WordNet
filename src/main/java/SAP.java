@@ -36,6 +36,7 @@ public class SAP {
         from = 0;
         to = 0;
         n = digraphDFCopy.V();
+        proceed = true;
     }
 
 
@@ -47,6 +48,10 @@ public class SAP {
         if (w < 0 || w >= digraphDFCopy.V())
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (this.from == v && this.to == w && v != w) return minDistance;
+        if (v == w) {
+            minDistance = 0;
+            return minDistance;
+        }
         from = v;
         to = w;
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
@@ -132,6 +137,10 @@ public class SAP {
         if (w < 0 || w >= digraphDFCopy.V())
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
+        if (v == w) {
+            ancestor = w;
+            return ancestor;
+        }
         if (this.from == v && this.to == w && v != w) return ancestor;
         from = v;
         to = w;
@@ -197,7 +206,8 @@ public class SAP {
     private int calculateDistance(int v, int currentDistance) {
         int distance = 0;
         if (fromBFS.hasPathTo(v) && toBFS.hasPathTo(v)) {
-            if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance)) {
+            // had to change below expression to && for graph 3 (14,9) using || causes node 10 trigger this too early
+            if ((fromBFS.distTo(v) > currentDistance && toBFS.distTo(v) > currentDistance)) {
                 proceed = false;
                 return currentDistance;
             }
@@ -213,31 +223,34 @@ public class SAP {
     private int checkStackDistance(int w, boolean fromNode, boolean toNode) {
         int k = 0;
         if (fromNode) {
-            while (fromStack.peek() != w) {
+            while (fromStack.peek() != from) {
                 k++;
                 fromStack.pop();
             }
             k++;
-            fromStack.pop();
+            return k + toBFS.distTo(w);
         } else if (toNode) {
-            while (toStack.peek() != w) {
+            while (toStack.peek() != to) {
                 k++;
                 toStack.pop();
             }
             k++;
-            toStack.pop();
+            return k + fromBFS.distTo(w);
         }
-        return k;
+        return INFINITY;
     }
 
     private void lockStepBFS(int from, int to) {
+        proceed = true;
         boolean[] marked = new boolean[digraphDFCopy.V()];
         int currentDistance = INFINITY;
         fromQueue.enqueue(from);
         fromStack.push(from);
         marked[from] = true;
+        onFromStack[from] = true;
         toQueue.enqueue(to);
         toStack.push(to);
+        onToStack[to] = true;
         marked[to] = true;
         int v = 0;
         int stackDistance = 0;
@@ -250,25 +263,25 @@ public class SAP {
                 if (!marked[w]) {
                     fromQueue.enqueue(w);
                     fromStack.push(w);
+                    onFromStack[w] = true;
                     marked[w] = true;
                 } else {
                     // check the stacks and update the node's distance
-                    if (onFromStack[w]) {
+                    if (onFromStack[w] && toBFS.hasPathTo(w)) {
                         stackDistance = checkStackDistance(w, true, false);
                         if (fromBFS.distTo(w) > stackDistance) {
                             // calculate distance again
-                            currentDistance = calculateDistance(w, currentDistance);
+                            currentDistance = stackDistance;
                         }
-                    } else if (onToStack[w]) {
+                    } else if (onToStack[w] && fromBFS.hasPathTo(w)) {
                         stackDistance = checkStackDistance(w, false, true);
                         if (toBFS.distTo(w) > stackDistance) {
-                            currentDistance = calculateDistance(w, currentDistance);
+                            currentDistance = stackDistance;
                         }
                     }
                 }
             }
             if (!proceed) break;
-            ;
             v = toQueue.dequeue();
             currentDistance = calculateDistance(v, currentDistance);
             var1 = digraphDFCopy.adj(v).iterator();
@@ -277,24 +290,26 @@ public class SAP {
                 if (!marked[w]) {
                     toQueue.enqueue(w);
                     toStack.push(w);
+                    onToStack[w] = true;
                     marked[w] = true;
                 } else {
                     // check the stacks and update the node's distance
-                    if (onToStack[w]) {
+                    if (onToStack[w] && fromBFS.hasPathTo(w)) {
                         stackDistance = checkStackDistance(w, false, true);
                         if (toBFS.distTo(w) > stackDistance) {
-                            currentDistance = calculateDistance(w, currentDistance);
+                            currentDistance = stackDistance;
                         }
-                    } else if (onFromStack[w]) {
+                    } else if (onFromStack[w] && toBFS.hasPathTo(w)) {
                         stackDistance = checkStackDistance(w, true, false);
                         if (fromBFS.distTo(w) > stackDistance) {
-                            currentDistance = calculateDistance(w, currentDistance);
+                            currentDistance = stackDistance;
                         }
                     }
                 }
             }
         }
-
+//todo --when you are in the loop for both queues, add something to only take out from queues if distance to that node
+// is less than a distance counter and increase the counter every time you go through the loop. Also you should be able to stop if from nodes reach to and/or vise versa
         while (!fromQueue.isEmpty() && proceed) {
             v = fromQueue.dequeue();
             currentDistance = calculateDistance(v, currentDistance);
@@ -304,18 +319,19 @@ public class SAP {
                 if (!marked[w]) {
                     fromQueue.enqueue(w);
                     fromStack.push(w);
+                    onFromStack[w] = true;
                     marked[w] = true;
                 } else {
-                    if (onFromStack[w]) {
+                    if (onFromStack[w] && toBFS.hasPathTo(w)) {
                         stackDistance = checkStackDistance(w, true, false);
                         if (fromBFS.distTo(w) > stackDistance) {
                             // calculate distance again
-                            currentDistance = calculateDistance(w, currentDistance);
+                            currentDistance = stackDistance;
                         }
-                    } else if (onToStack[w]) {
+                    } else if (onToStack[w] && fromBFS.hasPathTo(w)) {
                         stackDistance = checkStackDistance(w, false, true);
                         if (toBFS.distTo(w) > stackDistance) {
-                            currentDistance = calculateDistance(w, currentDistance);
+                            currentDistance = stackDistance;
                         }
                     }
                 }
@@ -333,17 +349,18 @@ public class SAP {
                     if (!marked[w]) {
                         toQueue.enqueue(w);
                         toStack.push(w);
+                        onToStack[w] = true;
                         marked[w] = true;
                     } else {
-                        if (onToStack[w]) {
+                        if (onToStack[w] && fromBFS.hasPathTo(w)) {
                             stackDistance = checkStackDistance(w, false, true);
                             if (toBFS.distTo(w) > stackDistance) {
-                                currentDistance = calculateDistance(w, currentDistance);
+                                currentDistance = stackDistance;
                             }
-                        } else if (onFromStack[w]) {
+                        } else if (onFromStack[w] && toBFS.hasPathTo(w)) {
                             stackDistance = checkStackDistance(w, true, false);
                             if (fromBFS.distTo(w) > stackDistance) {
-                                currentDistance = calculateDistance(w, currentDistance);
+                                currentDistance = stackDistance;
                             }
                         }
                     }
