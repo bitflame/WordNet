@@ -24,7 +24,7 @@ public class SAP {
     private Stack<Integer> fromStack;
     private Stack<Integer> toStack;
     private int n;
-
+    private boolean proceed;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -197,6 +197,10 @@ public class SAP {
     private int calculateDistance(int v, int currentDistance) {
         int distance = 0;
         if (fromBFS.hasPathTo(v) && toBFS.hasPathTo(v)) {
+            if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance)) {
+                proceed = false;
+                return currentDistance;
+            }
             distance = fromBFS.distTo(v) + toBFS.distTo(v);
             if (distance < currentDistance) {
                 currentDistance = distance;
@@ -237,10 +241,8 @@ public class SAP {
         marked[to] = true;
         int v = 0;
         int stackDistance = 0;
-        while (!fromQueue.isEmpty() && !toQueue.isEmpty()) {
+        while (!fromQueue.isEmpty() && !toQueue.isEmpty() && proceed) {
             v = fromQueue.dequeue();
-            if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
-                break;
             currentDistance = calculateDistance(v, currentDistance);
             Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
             while (var1.hasNext()) {
@@ -265,9 +267,9 @@ public class SAP {
                     }
                 }
             }
+            if (!proceed) break;
+            ;
             v = toQueue.dequeue();
-            if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
-                break;
             currentDistance = calculateDistance(v, currentDistance);
             var1 = digraphDFCopy.adj(v).iterator();
             while (var1.hasNext()) {
@@ -292,60 +294,56 @@ public class SAP {
                 }
             }
         }
-        if (fromBFS.distTo(v) <= currentDistance || toBFS.distTo(v) <= currentDistance) {
-            if (!fromQueue.isEmpty()) {
-                while (!fromQueue.isEmpty()) {
-                    v = fromQueue.dequeue();
-                    if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
-                        break;
-                    currentDistance = calculateDistance(v, currentDistance);
-                    Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
-                    while (var1.hasNext()) {
-                        int w = var1.next();
-                        if (!marked[w]) {
-                            fromQueue.enqueue(w);
-                            fromStack.push(w);
-                            marked[w] = true;
-                        } else {
-                            if (onFromStack[w]) {
-                                stackDistance = checkStackDistance(w, true, false);
-                                if (fromBFS.distTo(w) > stackDistance) {
-                                    // calculate distance again
-                                    currentDistance = calculateDistance(w, currentDistance);
-                                }
-                            } else if (onToStack[w]) {
-                                stackDistance = checkStackDistance(w, false, true);
-                                if (toBFS.distTo(w) > stackDistance) {
-                                    currentDistance = calculateDistance(w, currentDistance);
-                                }
-                            }
+
+        while (!fromQueue.isEmpty() && proceed) {
+            v = fromQueue.dequeue();
+            currentDistance = calculateDistance(v, currentDistance);
+            Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
+            while (var1.hasNext()) {
+                int w = var1.next();
+                if (!marked[w]) {
+                    fromQueue.enqueue(w);
+                    fromStack.push(w);
+                    marked[w] = true;
+                } else {
+                    if (onFromStack[w]) {
+                        stackDistance = checkStackDistance(w, true, false);
+                        if (fromBFS.distTo(w) > stackDistance) {
+                            // calculate distance again
+                            currentDistance = calculateDistance(w, currentDistance);
+                        }
+                    } else if (onToStack[w]) {
+                        stackDistance = checkStackDistance(w, false, true);
+                        if (toBFS.distTo(w) > stackDistance) {
+                            currentDistance = calculateDistance(w, currentDistance);
                         }
                     }
                 }
-            } else if (!toQueue.isEmpty()) {
-                while (!toQueue.isEmpty()) {
-                    v = toQueue.dequeue();
-                    if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
-                        break;
-                    currentDistance = calculateDistance(v, currentDistance);
-                    Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
-                    while (var1.hasNext()) {
-                        int w = var1.next();
-                        if (!marked[w]) {
-                            toQueue.enqueue(w);
-                            toStack.push(w);
-                            marked[w] = true;
-                        } else {
-                            if (onToStack[w]) {
-                                stackDistance = checkStackDistance(w, false, true);
-                                if (toBFS.distTo(w) > stackDistance) {
-                                    currentDistance = calculateDistance(w, currentDistance);
-                                }
-                            } else if (onFromStack[w]) {
-                                stackDistance = checkStackDistance(w, true, false);
-                                if (fromBFS.distTo(w) > stackDistance) {
-                                    currentDistance = calculateDistance(w, currentDistance);
-                                }
+            }
+        }
+        while (!toQueue.isEmpty() && proceed) {
+            while (!toQueue.isEmpty()) {
+                v = toQueue.dequeue();
+                if ((fromBFS.distTo(v) > currentDistance || toBFS.distTo(v) > currentDistance) && (topological.isDAG()))
+                    break;
+                currentDistance = calculateDistance(v, currentDistance);
+                Iterator<Integer> var1 = digraphDFCopy.adj(v).iterator();
+                while (var1.hasNext()) {
+                    int w = var1.next();
+                    if (!marked[w]) {
+                        toQueue.enqueue(w);
+                        toStack.push(w);
+                        marked[w] = true;
+                    } else {
+                        if (onToStack[w]) {
+                            stackDistance = checkStackDistance(w, false, true);
+                            if (toBFS.distTo(w) > stackDistance) {
+                                currentDistance = calculateDistance(w, currentDistance);
+                            }
+                        } else if (onFromStack[w]) {
+                            stackDistance = checkStackDistance(w, true, false);
+                            if (fromBFS.distTo(w) > stackDistance) {
+                                currentDistance = calculateDistance(w, currentDistance);
                             }
                         }
                     }
