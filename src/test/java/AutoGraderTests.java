@@ -417,10 +417,20 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(13, 21);
         if (ancestor != 10)
             System.out.printf("The ancestor for nodes 13, and 21 in graph 3 should be 10, but it is: %d\n", ancestor);
-        List<Integer> sources = new ArrayList<>(Arrays.asList(13, 7, 21, 10, 9, 14, 17));
-        List<Integer> destinations = new ArrayList<>(Arrays.asList(21, 12, 0, 12, 20));
+        shortestDistance = sap.length(7, 8);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ");
+        ancestor = sap.ancestor(7, 8);
+        if (ancestor != 1)
+            System.out.printf("The ancestor for the nodes 7 and 8 in graph 5 should be 8, but it is: %d\n", ancestor);
+        List<Integer> sources = new ArrayList<>(Arrays.asList(7, 7));
+        List<Integer> destinations = new ArrayList<>(Arrays.asList(8, 8));
+        ancestor = sap.ancestor(sources, destinations);
+        if (ancestor != 8)
+            System.out.printf("The ancestor for nodes 7 and 8 in graph 3 should be 8, but it is: %d\n ", ancestor);
         shortestDistance = sap.length(sources, destinations);
-
+        if (shortestDistance != 1)
+            System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ", shortestDistance);
     }
 
     private void testDigraph6() {
@@ -581,29 +591,37 @@ public class AutoGraderTests {
     }
 
     private void troubleShooting() {
-        StdOut.println("------------------ Running the troubleshooting method -------------------");
-        in = new In("digraph9.txt");
+        StdOut.println("--------------- Running the troubleshooting method to test iterables in Graph 5 -------------");
+        in = new In("digraph5.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-        shortestDistance = sap.length(4, 3);
-        if (shortestDistance != 1)
-            System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
+//        shortestDistance = sap.length(4, 3);
+//        if (shortestDistance != 1)
+//            System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
+        System.out.printf("Printing the shortest distance iterables for graph 5.\n");
+        Iterable<Integer> sources = new ArrayList<>(Arrays.asList(13, 7, 21, 10, 9, 14, 17));
+        Iterable<Integer> destinations = new ArrayList<>(Arrays.asList(21, 12, 0, 12, 20));
+        shortestDistance = sap.length(sources, destinations);
+        System.out.printf("Printing the shortest distance iterables for graph 5 in reverse.\n");
+        sources = new ArrayList<>(Arrays.asList(21, 12, 0, 12, 20));
+        destinations = new ArrayList<>(Arrays.asList(13, 7, 21, 10, 9, 14, 17));
+        shortestDistance = sap.length(sources, destinations);
     }
 
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.createTwoObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.testDigraph1();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.createTwoObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
         autoGraderTests.troubleShooting();
-        autoGraderTests.testDigraphWordNet();
+//        autoGraderTests.testDigraphWordNet();
     }
 }
