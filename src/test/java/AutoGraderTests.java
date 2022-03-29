@@ -610,6 +610,7 @@ public class AutoGraderTests {
 
     private void testMyGraphs() {
         StdOut.println("--------------- Testing my own Graphs -------------");
+        System.out.printf("My Graph1 Tests\n");
         in = new In("myGraph1.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
@@ -629,6 +630,43 @@ public class AutoGraderTests {
         if (ancestor != 1)
             System.out.printf("The ancestor between 1, 0 with 0 pointing towards 1 should be 1, but it is: %d\n ", ancestor);
         else System.out.printf("Test 2 ancestor passed. \n");
+        shortestDistance = sap.length(2, 0);
+        if (shortestDistance != 2)
+            System.out.printf("The distance between 2 and 0 with both pointing away should be 2, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 3 length passed.\n");
+        ancestor = sap.ancestor(2, 0);
+        if (ancestor != 1)
+            System.out.printf("The ancestor for 2, and 0 nodes both pointing away should be 1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 3 ancestor passed.\n");
+        System.out.printf("\n");
+        System.out.printf("My Graph2 Tests\n");
+        in = new In("myGraph2.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        shortestDistance = sap.length(0, 1);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between 0 and 1 with 1 pointing towards 0 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 4 length passed. \n");
+        ancestor = sap.ancestor(0, 1);
+        if (ancestor != 0)
+            System.out.printf("The ancestor between nodes 0 and 1 with 1 pointing towards 0 should be 0, but it is: %d\n", ancestor);
+        else System.out.printf("Test 4 ancestor passed. \n");
+        shortestDistance = sap.length(1, 0);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between 1 and 0 with 1 pointing towards 0 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 5 length passed. \n");
+        ancestor = sap.ancestor(1, 0);
+        if (ancestor != 0)
+            System.out.printf("The ancestor between 1, 0 with 1 pointing towards 0 should be 0, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 5 ancestor passed. \n");
+        shortestDistance = sap.length(0, 2);
+        if (shortestDistance != 2)
+            System.out.printf("The distance between 0 and 2 both pointing away from ancestor should be 2, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 6 length passed.\n");
+        ancestor = sap.ancestor(0, 2);
+        if (ancestor != 1)
+            System.out.printf("The ancestor of nodes 0 and 2 when both are pointing away from a common ancestor should be 1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 6 ancestor passed.");
     }
 
     public static void main(String[] args) {
@@ -643,7 +681,7 @@ public class AutoGraderTests {
 //        autoGraderTests.createTwoObjects();
 //        autoGraderTests.testIterables();
 //        autoGraderTests.testRandomDigraph();
-        // autoGraderTests.troubleShooting();
+//        autoGraderTests.troubleShooting();
         autoGraderTests.testMyGraphs();
 //        autoGraderTests.testDigraphWordNet();
     }

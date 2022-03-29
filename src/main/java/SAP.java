@@ -232,12 +232,10 @@ public class SAP {
         fromStack.push(from);
         marked[from] = true;
         onFromStack[from] = true;
-        id[from] = from;
         toQueue.enqueue(to);
         toStack.push(to);
         marked[to] = true;
         onToStack[to] = true;
-        id[to] = to;
         int v = 0;
         int distanceFromSourceCounter = 1;
         Iterator<Integer> var1;
@@ -248,16 +246,20 @@ public class SAP {
                 while (var1.hasNext()) {
                     int w = var1.next();
                     union(v, w);
+                    if (connected(from, to)) {
+                        ancestor = w;
+                        // currentDistance = sz[v] - 1;
+                        // size of larger - 1
+                        currentDistance = sz[from] > sz[to] ? sz[from] - 1 : sz[to] - 1;
+                        // currentDistance = sz[v] > sz[w] ? sz[v] - 1 : sz[w] - 1;
+                        // currentDistance = fromBFS.distTo(ancestor)+toBFS.distTo(ancestor);
+                        //currentDistance =   sz[ancestor];
+                    }
                     if (!marked[w]) {
                         fromQueue.enqueue(w);
                         fromStack.push(w);
                         onFromStack[w] = true;
                         marked[w] = true;
-                    } else {
-                        if (connected(from, to)) {
-                            ancestor = w;
-                            currentDistance = sz[v] - 1;
-                        }
                     }
                 }
             }
@@ -268,16 +270,19 @@ public class SAP {
                 while (var1.hasNext()) {
                     int w = var1.next();
                     union(v, w);
+                    if (connected(from, to)) {
+                        ancestor = w;
+                        // currentDistance = sz[v] - 1;
+                        currentDistance = sz[from] > sz[to] ? sz[from] - 1 : sz[to] - 1;
+                        // currentDistance = sz[v] > sz[w] ? sz[v] - 1 : sz[w] - 1;
+                        // currentDistance = fromBFS.distTo(ancestor)+toBFS.distTo(ancestor);
+                        // currentDistance = sz[ancestor];
+                    }
                     if (!marked[w]) {
                         toQueue.enqueue(w);
                         toStack.push(w);
                         onToStack[w] = true;
                         marked[w] = true;
-                    } else {
-                        if (connected(from, to)) {
-                            ancestor = w;
-                            currentDistance = sz[v] - 1;
-                        }
                     }
                 }
             }
