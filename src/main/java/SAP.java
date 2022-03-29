@@ -27,9 +27,8 @@ public class SAP {
     private int n;
     private boolean proceed;
     private boolean[] marked;
-    private int idCounter = 0; // nodes that ids were modified - may have traverse the id[] if there is a loop
-    private int fromIdCounter = 0; // nodes with id of from side - may have traverse the id[] if there is a loop
-    private int toIdCounter = 0; // nodes with id of to side - may have traverse the id[] if there is a loop
+    private int[] sz;
+    private int count;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -42,15 +41,16 @@ public class SAP {
         to = 0;
         n = digraphDFCopy.V();
         proceed = true;
+
     }
 
 
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
-        if (v < 0 || v >= digraphDFCopy.V())
+        if (v < 0 || v > digraphDFCopy.V())
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (w < 0 || w >= digraphDFCopy.V())
+        if (w < 0 || w > digraphDFCopy.V())
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (this.from == v && this.to == w && v != w) return minDistance;
         if (v == w) {
@@ -184,42 +184,6 @@ public class SAP {
         return ancestor;
     }
 
-    private int calculateDistance(int v, int currentDistance) {
-        int distance = 0;
-        if (fromBFS.hasPathTo(v) && toBFS.hasPathTo(v)) {
-            // had to change below expression to && for graph 3 (14,9) using || causes node 10 trigger this too early
-            if ((fromBFS.distTo(v) > currentDistance && toBFS.distTo(v) > currentDistance)) {
-                proceed = false;
-                return currentDistance;
-            }
-            distance = fromBFS.distTo(v) + toBFS.distTo(v);
-            if (distance < currentDistance) {
-                currentDistance = distance;
-                ancestor = v;
-            }
-        }
-        return currentDistance;
-    }
-
-    private int checkStackDistance(int w, boolean fromNode, boolean toNode) {
-        int k = 0;
-        if (fromNode) {
-            while (fromStack.peek() != from) {
-                k++;
-                fromStack.pop();
-            }
-            k++;
-            return k + toBFS.distTo(w);
-        } else if (toNode) {
-            while (toStack.peek() != to) {
-                k++;
-                toStack.pop();
-            }
-            k++;
-            return k + fromBFS.distTo(w);
-        }
-        return INFINITY;
-    }
 
     private void setupDefaultDataStructures() {
         fromQueue = new Queue<>();
@@ -229,9 +193,36 @@ public class SAP {
         onFromStack = new boolean[n];
         onToStack = new boolean[n];
         id = new int[n];
-        for (int i : id) id[i] = -1;
+        sz = new int[n];
+        for (int i = 0; i < n; i++) {
+            sz[i] = 1;
+            id[i] = i;
+        }
         marked = new boolean[n];
-        idCounter = 0;
+        count = n;
+    }
+
+    private int find(int p) {
+        while (p != id[p]) p = id[p];
+        return p;
+    }
+
+    private boolean connected(int p, int q) {
+        return find(p) == find(q);
+    }
+
+    private void union(int p, int q) {
+        int i = find(p);
+        int j = find(q);
+        if (i == j) return;
+        if (sz[i] < sz[j]) {
+            id[i] = j;
+            sz[j] += sz[i];
+        } else {
+            id[j] = i;
+            sz[i] += sz[j];
+        }
+        count--;
     }
 
     private void lockStepBFS() {
@@ -242,48 +233,51 @@ public class SAP {
         marked[from] = true;
         onFromStack[from] = true;
         id[from] = from;
-        idCounter++;
         toQueue.enqueue(to);
         toStack.push(to);
         marked[to] = true;
         onToStack[to] = true;
         id[to] = to;
-        idCounter++;
         int v = 0;
-        int stackDistance = 0;
         int distanceFromSourceCounter = 1;
         Iterator<Integer> var1;
         while (!fromQueue.isEmpty() && !toQueue.isEmpty() && proceed) {
             while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
-                if (id[v] == to) currentDistance = calculateDistance(v, currentDistance);
                 var1 = digraphDFCopy.adj(v).iterator();
                 while (var1.hasNext()) {
                     int w = var1.next();
+                    union(v, w);
                     if (!marked[w]) {
                         fromQueue.enqueue(w);
                         fromStack.push(w);
                         onFromStack[w] = true;
                         marked[w] = true;
-                        id[w] = v;
-                        idCounter++;
+                    } else {
+                        if (connected(from, to)) {
+                            ancestor = w;
+                            currentDistance = sz[v] - 1;
+                        }
                     }
                 }
             }
             if (!proceed) break;
             while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
-                if (id[v] == from) currentDistance = calculateDistance(v, currentDistance);
                 var1 = digraphDFCopy.adj(v).iterator();
                 while (var1.hasNext()) {
                     int w = var1.next();
+                    union(v, w);
                     if (!marked[w]) {
                         toQueue.enqueue(w);
                         toStack.push(w);
                         onToStack[w] = true;
                         marked[w] = true;
-                        id[w] = to;
-                        idCounter++;
+                    } else {
+                        if (connected(from, to)) {
+                            ancestor = w;
+                            currentDistance = sz[v] - 1;
+                        }
                     }
                 }
             }
@@ -291,7 +285,6 @@ public class SAP {
         }
         while (!fromQueue.isEmpty() && proceed) {
             v = fromQueue.dequeue();
-            if (id[v] == to) currentDistance = calculateDistance(v, currentDistance);
             var1 = digraphDFCopy.adj(v).iterator();
             while (var1.hasNext()) {
                 int w = var1.next();
@@ -301,14 +294,12 @@ public class SAP {
                     onFromStack[w] = true;
                     marked[w] = true;
                     id[w] = from;
-                    idCounter++;
                 }
             }
         }
         while (!toQueue.isEmpty() && proceed) {
             while (!toQueue.isEmpty()) {
                 v = toQueue.dequeue();
-                if (id[v] == from) currentDistance = calculateDistance(v, currentDistance);
                 var1 = digraphDFCopy.adj(v).iterator();
                 while (var1.hasNext()) {
                     int w = var1.next();
@@ -318,7 +309,6 @@ public class SAP {
                         onToStack[w] = true;
                         marked[w] = true;
                         id[w] = v;
-                        idCounter++;
                     }
                 }
             }

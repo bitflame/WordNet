@@ -608,6 +608,28 @@ public class AutoGraderTests {
         shortestDistance = sap.length(sources, destinations);
     }
 
+    private void testMyGraphs() {
+        StdOut.println("--------------- Testing my own Graphs -------------");
+        in = new In("myGraph1.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        shortestDistance = sap.length(0, 1);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between 0 and 1 iwith 0 pointing towards 1 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 1 length passed. \n");
+        ancestor = sap.ancestor(0, 1);
+        if (ancestor != 1)
+            System.out.printf("The ancestor between nodes 0 and 1 with 0 pointing towards 1 should be 1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 1 ancestor passed. \n");
+        shortestDistance = sap.length(1, 0);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between 1 and 0 with 0 pointing towards 1 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 2 length passed. \n");
+        ancestor = sap.ancestor(1, 0);
+        if (ancestor != 1)
+            System.out.printf("The ancestor between 1, 0 with 0 pointing towards 1 should be 1, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 2 ancestor passed. \n");
+    }
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
@@ -621,7 +643,8 @@ public class AutoGraderTests {
 //        autoGraderTests.createTwoObjects();
 //        autoGraderTests.testIterables();
 //        autoGraderTests.testRandomDigraph();
-        autoGraderTests.troubleShooting();
+        // autoGraderTests.troubleShooting();
+        autoGraderTests.testMyGraphs();
 //        autoGraderTests.testDigraphWordNet();
     }
 }
