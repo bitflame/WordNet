@@ -614,6 +614,7 @@ public class AutoGraderTests {
         in = new In("myGraph1.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+
         shortestDistance = sap.length(0, 1);
         if (shortestDistance != 1)
             System.out.printf("The distance between 0 and 1 iwith 0 pointing towards 1 should be 1, but it is: %d\n", shortestDistance);
@@ -660,13 +661,118 @@ public class AutoGraderTests {
             System.out.printf("The ancestor between 1, 0 with 1 pointing towards 0 should be 0, but it is: %d\n ", ancestor);
         else System.out.printf("Test 5 ancestor passed. \n");
         shortestDistance = sap.length(0, 2);
-        if (shortestDistance != 2)
-            System.out.printf("The distance between 0 and 2 both pointing away from ancestor should be 2, but it is: %d\n", shortestDistance);
+        if (shortestDistance != -1)
+            System.out.printf("The distance between 0 and 2 both pointing away from ancestor should be -1, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 6 length passed.\n");
         ancestor = sap.ancestor(0, 2);
+        if (ancestor != -1)
+            System.out.printf("The ancestor of nodes 0 and 2 when both are pointing away from a common ancestor should be -1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 6 ancestor passed.\n");
+        System.out.printf("\n");
+        System.out.printf(" myGraph3 tests\n ");
+        in = new In("myGraph3.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        ancestor = sap.ancestor(2, 0);
         if (ancestor != 1)
-            System.out.printf("The ancestor of nodes 0 and 2 when both are pointing away from a common ancestor should be 1, but it is: %d\n", ancestor);
-        else System.out.printf("Test 6 ancestor passed.");
+            System.out.printf("The ancestor between nodes 2 and 0 in myGraph3 should be 1, but is: %d\n", ancestor);
+        else System.out.printf("Test 7 ancestor passed.\n");
+        shortestDistance = sap.length(2, 0);
+        if (shortestDistance != 2)
+            System.out.printf("shortest distance value between nodes 2 and 0 should be 2, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 7 length passed\n");
+        ancestor = sap.ancestor(2, 3);
+        if (ancestor != 3)
+            System.out.printf("The ancestor between nodes 2 and 3 in myGraph3 should be 3, but it is: %d\n", ancestor);
+        else System.out.printf("Test 8 ancestor passed.\n");
+        shortestDistance = sap.length(2, 3);
+        if (shortestDistance != 2)
+            System.out.printf("The shortest distance value between nodes 2 and 3 in myGraph3 should be 2, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 8 shortest distance passed.\n");
+        ancestor = sap.ancestor(0, 3);
+        if (ancestor != 3)
+            System.out.printf("The ancestor between nodes 0 and 3 in myGraph3 should be 3, but it is: %d\n", ancestor);
+        else System.out.printf("Test 9 ancestor passed.\n");
+        if (shortestDistance != 2)
+            System.out.printf("The shortest distance value between the nodes 0, and 3 should be 2, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 9 shortest distance passed.\n");
+        ancestor = sap.ancestor(0, 1);
+        if (ancestor != 1)
+            System.out.printf("The ancestor value between 0, and 1 in myGraph3 should be 1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 10 ancestor passed.\n");
+        shortestDistance = sap.length(0, 1);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance value between nodes 0 and 1 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 10 shortest distance passed.\n");
+        ancestor = sap.ancestor(2, 1);
+        if (ancestor != 1)
+            System.out.printf("The ancestor value between 2, and 1 in myGraph3 should be 1, but is: %d\n", ancestor);
+        else System.out.printf("Test 11 ancestor passed.\n");
+        shortestDistance = sap.length(2, 1);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance value between the nodes 2 and 1 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 11 shortest distance passed.\n");
+        System.out.printf("\n");
+        System.out.printf(" myGraph4 tests - testing cycles \n ");
+        in = new In("myGraph4.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        ancestor = sap.ancestor(0, 1);
+        if (ancestor != 1)
+            System.out.printf("Ancestor between 0 and 1 in myGraph4 should be 1, but it is:%d\n", ancestor);
+        else System.out.printf("Test 12 ancestor passed.\n");
+        shortestDistance = sap.length(0, 1);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between nodes 0 and 1 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 12 shortest distance passed.\n");
+        ancestor = sap.ancestor(1, 2);
+        if (ancestor != 2)
+            System.out.printf("Ancestor between nodes 1 and 2 in myGraph4 should be 2, but it is: %d\n", ancestor);
+        else System.out.printf("Test 13 ancestor passed.\n");
+        shortestDistance = sap.length(1, 2);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between nodes 1 and 2 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 13 shortest distance passed.\n");
+        ancestor = sap.ancestor(2, 0);
+        if (ancestor != 0)
+            System.out.printf("Ancestor value between 2, and 0 in myGraph4 should be 0, but it is: %d\n", ancestor);
+        else System.out.printf("Test 14 ancestor passed.\n");
+        shortestDistance = sap.length(2, 0);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between nodes 2 and 0 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 14 shortest distance passed.\n");
+        ancestor = sap.ancestor(0, 2);
+        if (ancestor != 0)
+            System.out.printf("ancestor for nodes 0, 2 in myGraph4 should be 0, but it is: %d\n", ancestor);
+        else System.out.printf("Test 15 ancestor passed.\n");
+        shortestDistance = sap.length(0, 2);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between nodes 0 and 2 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 15 shortest distance passed.\n");
+        ancestor = sap.ancestor(1, 0);
+        if (ancestor != 1) System.out.printf("ancestor for 1,0 in myGraph4 should be 1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 16 ancestor passed.\n");
+        shortestDistance = sap.length(1, 0);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between nodes 1 and 0 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 16 shortest distance passed.\n");
+        ancestor = sap.ancestor(2, 1);
+        if (ancestor != 2)
+            System.out.printf("ancestor between nodes 2 and 1 in myGraph4 should be 2, but it is: %d\n", ancestor);
+        else System.out.printf("Test 17 ancestor passed\n");
+        shortestDistance = sap.length(2, 1);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between 2, and 1 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 17 shortest distance passed.\n");
+        // 0,3
+        ancestor = sap.ancestor(0, 3);
+        if (ancestor != 3)
+            System.out.printf("ancestor for nodes 0 and 3 in myGraph4 should be 3, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 18 ancestor passed.\n");
+        shortestDistance = sap.length(0, 3);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between nodes 0 and 3 in myGraph4 should be 2, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 18 shortest distance passed.\n");
     }
 
     public static void main(String[] args) {

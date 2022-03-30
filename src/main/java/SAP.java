@@ -16,32 +16,26 @@ public class SAP {
     private static final int INFINITY = Integer.MAX_VALUE;
     private BreadthFirstDirectedPaths fromBFS;
     private BreadthFirstDirectedPaths toBFS;
-    private Topological topological;
     private Queue<Integer> fromQueue;
     private Queue<Integer> toQueue;
     private boolean[] onFromStack;
     private boolean[] onToStack;
-    private int[] id;
     private Stack<Integer> fromStack;
     private Stack<Integer> toStack;
     private int n;
     private boolean proceed;
     private boolean[] marked;
-    private int[] sz;
-    private int count;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
         if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
         digraphDFCopy = new Digraph(digraph);
-        topological = new Topological(digraphDFCopy);
         minDistance = -1;
         ancestor = -1;
         from = 0;
         to = 0;
         n = digraphDFCopy.V();
         proceed = true;
-
     }
 
 
@@ -192,37 +186,40 @@ public class SAP {
         toStack = new Stack<>();
         onFromStack = new boolean[n];
         onToStack = new boolean[n];
-        id = new int[n];
-        sz = new int[n];
-        for (int i = 0; i < n; i++) {
-            sz[i] = 1;
-            id[i] = i;
-        }
         marked = new boolean[n];
-        count = n;
     }
 
-    private int find(int p) {
-        while (p != id[p]) p = id[p];
-        return p;
-    }
-
-    private boolean connected(int p, int q) {
-        return find(p) == find(q);
-    }
-
-    private void union(int p, int q) {
-        int i = find(p);
-        int j = find(q);
-        if (i == j) return;
-        if (sz[i] < sz[j]) {
-            id[i] = j;
-            sz[j] += sz[i];
+    private int updateCurrentDistance(int v, int currentDistance, int deduct) {
+        if (fromBFS.distTo(v) > currentDistance && toBFS.distTo(v) > currentDistance) {
+            proceed = false;
+            return currentDistance;
         } else {
-            id[j] = i;
-            sz[i] += sz[j];
+            int distance = fromBFS.distTo(v) + toBFS.distTo(v) - deduct;
+            if (distance < currentDistance) {
+                currentDistance = distance;
+                ancestor = v;
+            }
         }
-        count--;
+        return currentDistance;
+    }
+
+    // counts the number of cycle nodes on fromStack or toStack
+    private int countCycleNodes(int w, boolean fStack, boolean tStack) {
+        int tempCounter = 0;
+        if (fStack) {
+            while (fromStack.peek() != w) {
+                fromStack.pop();
+                tempCounter++;
+            }
+            tempCounter++;
+        } else if (tStack) {
+            while (toStack.peek() != w) {
+                toStack.pop();
+                tempCounter++;
+            }
+            tempCounter++;
+        }
+        return tempCounter;
     }
 
     private void lockStepBFS() {
@@ -237,86 +234,62 @@ public class SAP {
         marked[to] = true;
         onToStack[to] = true;
         int v = 0;
+        int deduct = 0;
         int distanceFromSourceCounter = 1;
         Iterator<Integer> var1;
-        while (!fromQueue.isEmpty() && !toQueue.isEmpty() && proceed) {
+        while (proceed) {
             while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
+                // 1 - does it connect to destination?
+                if (toBFS.hasPathTo(v)) currentDistance = updateCurrentDistance(v, currentDistance, deduct);
                 var1 = digraphDFCopy.adj(v).iterator();
                 while (var1.hasNext()) {
                     int w = var1.next();
-                    union(v, w);
-                    if (connected(from, to)) {
-                        ancestor = w;
-                        // currentDistance = sz[v] - 1;
-                        // size of larger - 1
-                        currentDistance = sz[from] > sz[to] ? sz[from] - 1 : sz[to] - 1;
-                        // currentDistance = sz[v] > sz[w] ? sz[v] - 1 : sz[w] - 1;
-                        // currentDistance = fromBFS.distTo(ancestor)+toBFS.distTo(ancestor);
-                        //currentDistance =   sz[ancestor];
-                    }
                     if (!marked[w]) {
                         fromQueue.enqueue(w);
                         fromStack.push(w);
                         onFromStack[w] = true;
                         marked[w] = true;
                     }
+                    // 2 - is there a cycle ?
+                    if (onFromStack[w] && distanceFromSourceCounter > 1) {
+                        // flags indicate which stack to process
+                        deduct = countCycleNodes(w, true, false);
+                    }
+                    // if it is marked, and it isn't on from stack it is a potential ancestor
+                    if (toBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance, deduct);
+                    if (onToStack[w] && onFromStack[w] && w != ancestor) {
+                        // if the other side has seen this node also, but you are not at destination yet, like 13, 8
+                        // Graph 3 example, count each step only once not twice
+                        deduct++;
+                    }
                 }
             }
             if (!proceed) break;
             while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
+                if (fromBFS.hasPathTo(v)) currentDistance = updateCurrentDistance(v, currentDistance, deduct);
                 var1 = digraphDFCopy.adj(v).iterator();
                 while (var1.hasNext()) {
                     int w = var1.next();
-                    union(v, w);
-                    if (connected(from, to)) {
-                        ancestor = w;
-                        // currentDistance = sz[v] - 1;
-                        currentDistance = sz[from] > sz[to] ? sz[from] - 1 : sz[to] - 1;
-                        // currentDistance = sz[v] > sz[w] ? sz[v] - 1 : sz[w] - 1;
-                        // currentDistance = fromBFS.distTo(ancestor)+toBFS.distTo(ancestor);
-                        // currentDistance = sz[ancestor];
-                    }
                     if (!marked[w]) {
                         toQueue.enqueue(w);
                         toStack.push(w);
                         onToStack[w] = true;
                         marked[w] = true;
                     }
+                    if (onToStack[w] && distanceFromSourceCounter > 1) {
+                        // flags indicate which stack to process
+                        deduct = countCycleNodes(w, false, true);
+                    }
+                    if (fromBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance, deduct);
+                    if (onToStack[w] && onFromStack[w] && w != ancestor) {
+                        deduct++;
+                    }
                 }
             }
+            if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
             distanceFromSourceCounter++;
-        }
-        while (!fromQueue.isEmpty() && proceed) {
-            v = fromQueue.dequeue();
-            var1 = digraphDFCopy.adj(v).iterator();
-            while (var1.hasNext()) {
-                int w = var1.next();
-                if (!marked[w]) {
-                    fromQueue.enqueue(w);
-                    fromStack.push(w);
-                    onFromStack[w] = true;
-                    marked[w] = true;
-                    id[w] = from;
-                }
-            }
-        }
-        while (!toQueue.isEmpty() && proceed) {
-            while (!toQueue.isEmpty()) {
-                v = toQueue.dequeue();
-                var1 = digraphDFCopy.adj(v).iterator();
-                while (var1.hasNext()) {
-                    int w = var1.next();
-                    if (!marked[w]) {
-                        toQueue.enqueue(w);
-                        toStack.push(w);
-                        onToStack[w] = true;
-                        marked[w] = true;
-                        id[w] = v;
-                    }
-                }
-            }
         }
         if (currentDistance == INFINITY) {
             ancestor = -1;
@@ -324,6 +297,7 @@ public class SAP {
         } else {
             minDistance = currentDistance;
         }
+        proceed = true;
     }
 
 
