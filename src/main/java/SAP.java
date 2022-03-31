@@ -101,7 +101,7 @@ public class SAP {
                 from = i;
                 to = j;
                 lockStepBFS();
-                System.out.printf("message from inside SAP: For nodes %d and %d ShortestDistance=%d \n", i, j, minDistance);
+                // System.out.printf("message from inside SAP: For nodes %d and %d ShortestDistance=%d \n", i, j, minDistance);
                 if (subsetDitance > minDistance && minDistance != -1) {
                     subsetDitance = minDistance;
                     subsetAncestor = ancestor;
@@ -190,15 +190,13 @@ public class SAP {
     }
 
     private int updateCurrentDistance(int v, int currentDistance) {
-        if (fromBFS.distTo(v) > currentDistance && toBFS.distTo(v) > currentDistance) {
+        int distance = fromBFS.distTo(v) + toBFS.distTo(v);
+        if (distance < currentDistance) {
+            currentDistance = distance;
+            ancestor = v;
+        }
+        if ((fromBFS.distTo(v) > currentDistance && toBFS.distTo(v) > currentDistance) || (distance == 1)) {
             proceed = false;
-            return currentDistance;
-        } else {
-            int distance = fromBFS.distTo(v) + toBFS.distTo(v);
-            if (distance < currentDistance) {
-                currentDistance = distance;
-                ancestor = v;
-            }
         }
         return currentDistance;
     }
@@ -261,7 +259,7 @@ public class SAP {
                     // 2 - is there a cycle ?
                     if (onFromStack[w] && distanceFromSourceCounter > 1) {
                         // flags indicate which stack to process
-                        deduct = countCycleNodes(w, true, false);
+                        // deduct = countCycleNodes(w, true, false);
                     }
                     // if it is marked, and it isn't on from stack it is a potential ancestor
                     if (toBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance);
@@ -294,7 +292,7 @@ public class SAP {
                     }
                     if (onToStack[w] && distanceFromSourceCounter > 1) {
                         // flags indicate which stack to process
-                        deduct = countCycleNodes(w, false, true);
+                        // deduct = countCycleNodes(w, false, true);
                     }
                     if (fromBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance);
                     if (onToStack[w] && onFromStack[w] && w != ancestor) {
@@ -374,9 +372,9 @@ public class SAP {
         System.out.printf("Test26 - (13, 9) expecting 5, getting: %d\n", sap.length(13, 9));
         System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(13, 9));
         System.out.printf("Test27 - (8, 14) expecting 4, getting: %d\n", sap.length(8, 14));
-        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(8, 14));
+        System.out.printf("Expected ancestor: 8. Actual ancestor: %d\n", sap.ancestor(8, 14));
         System.out.printf("Test28 - (14, 8) expecting 4, getting: %d\n", sap.length(14, 8));
-        System.out.printf("Expected ancestor: 11. Actual ancestor: %d\n", sap.ancestor(14, 8));
+        System.out.printf("Expected ancestor: 8. Actual ancestor: %d\n", sap.ancestor(14, 8));
 
         System.out.printf("****************************************Testing digraph1 \n");
         digraph = new Digraph(new In("digraph1.txt"));
@@ -441,7 +439,7 @@ public class SAP {
         System.out.printf("Test 8 - (0, 4) expecting 2, getting: %d\n", sap.length(0, 4));
         System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(0, 4));
         System.out.printf("Test 9 - (4, 1) expecting 3, getting: %d\n", sap.length(4, 1));
-        System.out.printf("Expected ancestor: 4. Actual ancestor: %d\n", sap.ancestor(4, 1));
+        System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(4, 1));
         System.out.printf("Test 10 - (2, 0) expecting 4, getting: %d\n", sap.length(2, 0));
         System.out.printf("Expected ancestor: 0. Actual ancestor: %d\n", sap.ancestor(2, 0));
         System.out.printf("Test 11 - (0, 2) expecting 4, getting: %d\n", sap.length(0, 2));

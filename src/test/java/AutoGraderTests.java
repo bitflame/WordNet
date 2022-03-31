@@ -27,10 +27,10 @@ public class AutoGraderTests {
         digraph = new edu.princeton.cs.algs4.Digraph(in);
         sap = new SAP(digraph);
         shortestDistance = sap.length(1, 4);
-        if (shortestDistance != 2)
+        if (shortestDistance != 3)
             System.out.printf("shortest distance between 1, and 4 should be 2, but it is: %d \n", shortestDistance);
         ancestor = sap.ancestor(1, 4);
-        if (ancestor != 3)
+        if (ancestor != 4)
             System.out.printf("The ancestor between 1 and 4 in random Digraphs should be 3, but it is: %d\n", ancestor);
 
     }
@@ -391,38 +391,68 @@ public class AutoGraderTests {
         shortestDistance = sap.length(17, 21);
         if (shortestDistance != 5)
             System.out.printf("The distance between 17 and 21 should be 5, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 1 of Graph5 shortest distance passed. \n");
+        ancestor = sap.ancestor(17, 21);
+        if (ancestor != 21)
+            System.out.printf("ancestor between 17, and 21 ing Graph5 should be 21, but it is : %d\n", ancestor);
+        else System.out.printf("Test 1 of Graph5 ancestor passed.\n");
+
         shortestDistance = sap.length(14, 21);
         if (shortestDistance != 8)
             System.out.printf("The distance between 14 and 21 should be 8, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 2 of Graph5 shortest distance passed.\n");
+        ancestor = sap.ancestor(14, 21);
+        if (ancestor != 21)
+            System.out.printf("The distance between 14 and 21 in Graph5 should be 21, but it is: %d\n", ancestor);
+        else System.out.printf("Test 2 of Graph5 ancestor passed.\n");
+
         shortestDistance = sap.length(9, 20);
         if (shortestDistance != 3)
             System.out.printf("The distance between 9 and 20 should be 3, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 3 of Graph5 shortest distance passed.\n");
+        ancestor = sap.ancestor(9, 20);
+        if (ancestor != 9)
+            System.out.printf("The ancestor between 9, and 20 in graph5 should be 20, but it is: %d\n", ancestor);
+        else System.out.printf("Test 3 of Graph5 ancestor passed.\n");
+
         ancestor = sap.ancestor(10, 12);
         if (ancestor != 10) System.out.printf("The value of ancestor should be 10, and it is: %d\n ", ancestor);
+        else System.out.printf("Test 4 of Graph5 ancestor passed.\n");
         shortestDistance = sap.length(10, 12);
         if (shortestDistance != 2)
             System.out.printf("The distance between 10 and 12 should be 2, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 4 of Graph5 shortest distance passed.\n");
         shortestDistance = sap.length(21, 0);
         if (shortestDistance != 1)
             System.out.printf("The distance between 21, and 0 should be 1, and it is: %d\n", shortestDistance);
+        else System.out.printf("Test 5 of Graph5 shortest distance passed.\n");
+        ancestor = sap.ancestor(21,0);
+        if (ancestor!=0) System.out.printf("ancestor between 21 and 0 in Graph5 should be 0, but it is: %d\n", ancestor);
+        else System.out.printf("Test 5 of Graph5 ancestor passed.\n");
         shortestDistance = sap.length(7, 12);
         if (shortestDistance != 5)
             System.out.printf("The distance between 7 and 12 should be 5, but it is: %d\n ", shortestDistance);
+        else System.out.printf("Test 6 of Graph5 shortest distance passed.\n");
         ancestor = sap.ancestor(7, 12);
         if (ancestor != 10)
             System.out.printf("The ancestor for nodes 7 and 12 in graph 5 should be 13, but it is: %d\n", ancestor);
+        else System.out.printf("Test 6 of Graph5 ancestor passed.\n");
         shortestDistance = sap.length(13, 21);
         if (shortestDistance != 4)
             System.out.printf("The distance between nodes 13, and 21 should be 4, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 7 of Graph5 shortest distance passed.\n");
         ancestor = sap.ancestor(13, 21);
         if (ancestor != 10)
             System.out.printf("The ancestor for nodes 13, and 21 in graph 3 should be 10, but it is: %d\n", ancestor);
+        else System.out.printf("Test 7 of Graph5 ancestor passed.\n");
         shortestDistance = sap.length(7, 8);
         if (shortestDistance != 1)
             System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ");
+        else System.out.printf("Test 8 of Graph5 shortest distance passed.\n");
         ancestor = sap.ancestor(7, 8);
-        if (ancestor != 1)
+        if (ancestor != 8)
             System.out.printf("The ancestor for the nodes 7 and 8 in graph 5 should be 8, but it is: %d\n", ancestor);
+        else System.out.printf("Test 8 of Graph5 ancestor passed.\n");
         List<Integer> sources = new ArrayList<>(Arrays.asList(7, 7));
         List<Integer> destinations = new ArrayList<>(Arrays.asList(8, 8));
         ancestor = sap.ancestor(sources, destinations);
@@ -431,6 +461,7 @@ public class AutoGraderTests {
         shortestDistance = sap.length(sources, destinations);
         if (shortestDistance != 1)
             System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ", shortestDistance);
+        //
     }
 
     private void testDigraph6() {
@@ -471,14 +502,14 @@ public class AutoGraderTests {
         if (shortestDistance != 3)
             System.out.printf("The distance between 7, and 4 should be 3, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 0);
-        if (shortestDistance != 2)
-            System.out.printf("The distance between 4, and 0 should be 2, but it is: %d\n", shortestDistance);
+        if (shortestDistance != 3)
+            System.out.printf("The distance between 4, and 0 should be 3, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(7, 3);
         if (shortestDistance != 2)
             System.out.printf("The distance between 7, and 3 should be 2, but it is: %d\n", shortestDistance);
-        shortestDistance = sap.length(4, 0);
-        if (shortestDistance != 2)
-            System.out.printf("The distance between 4 and 0 should be 2, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(4, 0);
+        if (ancestor != 4)
+            System.out.printf("The ancestor between 4 and 0 should be 4, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 3);
         if (shortestDistance != 1)
             System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
@@ -780,23 +811,40 @@ public class AutoGraderTests {
         shortestDistance = sap.length(3, 0);
         if (shortestDistance != 1)
             System.out.printf("shortest distance between 3 and 0 in myGraph4 should be 2, but it is: %d\n  ", shortestDistance);
-        else System.out.printf("Test 19 shortest distance passed.");
+        else System.out.printf("Test 19 shortest distance passed.\n");
+        // (2, 4) (4, 2) (0, 4) (4, 0) (1, 4) (4, 1)
+        ancestor = sap.ancestor(2, 4);
+        if (ancestor != 4) System.out.printf("ancestor for 2,4 in myGraph4 should be 4, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 20 ancestor passed.\n");
+        shortestDistance = sap.length(2, 4);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between 2, and 4 should be 1 but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 20 shortest distance passed.\n");
+        ancestor = sap.ancestor(4, 2);
+        if (ancestor != 4)
+            System.out.printf("ancestor between 4,and 2 in myGraph4 should be 4, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 21 ancestor passed.\n");
+        shortestDistance = sap.length(4, 2);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between 4, and 2 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 21 shortest distance passed.\n");
+
     }
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-//        autoGraderTests.testDigraph1();
-//        autoGraderTests.testDigraph2();
-//        autoGraderTests.testDigraph3();
-//        autoGraderTests.testDigraph4();
-//        autoGraderTests.testDigraph5();
-//        autoGraderTests.testDigraph6();
-//        autoGraderTests.testDigraph9();
-//        autoGraderTests.createTwoObjects();
-//        autoGraderTests.testIterables();
-//        autoGraderTests.testRandomDigraph();
-//        autoGraderTests.troubleShooting();
+        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph3();
+        autoGraderTests.testDigraph4();
+        autoGraderTests.testDigraph5();
+        autoGraderTests.testDigraph6();
         autoGraderTests.testMyGraphs();
-//        autoGraderTests.testDigraphWordNet();
+        autoGraderTests.testDigraph9();
+        autoGraderTests.createTwoObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
+        autoGraderTests.troubleShooting();
+        autoGraderTests.testDigraphWordNet();
     }
 }
