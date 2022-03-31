@@ -12,14 +12,13 @@ import java.util.List;
 public class WordNet {
     // this is a hashmap of nouns and ids - todo: Try two arrays of String and Integer
     private final HashMap<Integer, String> db = new HashMap<>();
-    private SAP sap;
-    private final Digraph digraphDFCopy;
+    private final SAP sap;
 
 
     // constructor takes the name of two input files
     public WordNet(String synsets, String hypernyms) {
         createDb(synsets);
-        digraphDFCopy = createGraph(hypernyms);
+        Digraph digraphDFCopy = createGraph(hypernyms);
         sap = new SAP(digraphDFCopy);
     }
 
@@ -130,9 +129,5 @@ public class WordNet {
                 wordNet.distance("group_action", "event"));
         StdOut.println("The distance between the nouns act and group_action should be 1, and it is:" +
                 wordNet.distance("act", "group_action"));
-        List<Integer> sources = new ArrayList<>(Arrays.asList(17798,19186,32838,38602,46105,48396,54151,61313,65881,69296,81702));
-        List<Integer> destinations = new ArrayList<>(Arrays.asList(14155,23556,63400));
-
-
     }
 }

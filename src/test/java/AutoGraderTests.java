@@ -16,8 +16,6 @@ public class AutoGraderTests {
     SAP sap1;
     SAP sap2;
     int shortestDistance;
-    int shortestDistance1;
-    int shortestDistance2;
     int ancestor;
     List<Integer> v;
     List<Integer> w;
@@ -853,6 +851,25 @@ public class AutoGraderTests {
 
     }
 
+    private void repeatedTests() {
+        in = new In("digraph-wordnet.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+
+        System.out.printf(" %d\n", sap.ancestor(12, 1));
+        System.out.printf(" %d\n", sap.length(12, 1));
+        List<Integer> sources = new ArrayList<>(Arrays.asList(12));
+        List<Integer> destinations = new ArrayList<>(Arrays.asList(1));
+        System.out.printf(" %d\n", sap.ancestor(sources, destinations));
+        System.out.printf(" %d\n", sap.length(sources, destinations));
+        for (int i = 0; i < 5000; i++) {
+            if ((sap.ancestor(sources, destinations) != 34093) || (sap.length(sources, destinations) != 2))
+                System.out.printf(" Got a different value");
+            sap.length(12, 1);
+            sap.ancestor(12, 1);
+        }
+    }
+
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
         // autoGraderTests.testDigraph1();
@@ -868,5 +885,6 @@ public class AutoGraderTests {
         autoGraderTests.testRandomDigraph();
         autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
+        // autoGraderTests.repeatedTests();
     }
 }

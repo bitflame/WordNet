@@ -2,17 +2,18 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Stack;
 
 import java.util.Iterator;
-import java.util.Stack;
+
 
 public class SAP {
+    private static final int INFINITY = Integer.MAX_VALUE;
     private final Digraph digraphDFCopy;
     private int ancestor;
     private int minDistance;
     private int from;
     private int to;
-    private static final int INFINITY = Integer.MAX_VALUE;
     private BreadthFirstDirectedPaths fromBFS;
     private BreadthFirstDirectedPaths toBFS;
     private Queue<Integer> fromQueue;
@@ -21,7 +22,7 @@ public class SAP {
     private boolean[] onToStack;
     private Stack<Integer> fromStack;
     private Stack<Integer> toStack;
-    private int n;
+    private final int n;
     private boolean proceed;
     private boolean[] marked;
 
@@ -42,21 +43,24 @@ public class SAP {
     // length of the shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
-        if (v < 0 || v > digraphDFCopy.V())
+        if ((v < 0) || (v >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (w < 0 || w > digraphDFCopy.V())
+        if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (this.from == v && this.to == w && v != w) return minDistance;
         if (v == w) {
             minDistance = 0;
+            ancestor = v;
             return minDistance;
+        } else if ((this.from == v && this.to == w) || (this.from == w && this.to == v)) {
+            return minDistance;
+        } else {
+            from = v;
+            to = w;
+            fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
+            toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
+            setupDefaultDataStructures();
+            lockStepBFS();
         }
-        from = v;
-        to = w;
-        fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
-        toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
-        setupDefaultDataStructures();
-        lockStepBFS();
         return minDistance;
     }
 
@@ -102,18 +106,18 @@ public class SAP {
                 setupDefaultDataStructures();
                 lockStepBFS();
                 // System.out.printf("message from inside SAP: For nodes %d and %d ShortestDistance=%d \n", i, j, minDistance);
-                if (subsetDitance > minDistance  ) {
+                if (subsetDitance > minDistance) {
                     subsetDitance = minDistance;
                     subsetAncestor = ancestor;
                 }
             }
         }
         //if (subsetDitance == INFINITY) {
-            //ancestor = prevAncestor;
-            //minDistance = prevDistance;
+        //ancestor = prevAncestor;
+        //minDistance = prevDistance;
         //} else {
-            ancestor = subsetAncestor;
-            minDistance = subsetDitance;
+        ancestor = subsetAncestor;
+        minDistance = subsetDitance;
         //}
 
         return minDistance;
@@ -122,22 +126,24 @@ public class SAP {
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
         // System.out.println("Calculating the ancestor between : " + v + " " + w);
-        if (v < 0 || v >= digraphDFCopy.V())
+        if ((v < 0) || (v >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (w < 0 || w >= digraphDFCopy.V())
+        if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (v < 0 || w < 0) throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (v == w) {
             ancestor = w;
+            minDistance = 0;
             return ancestor;
+        } else if ((this.from == v && this.to == w) || (this.from == w && this.to == v)) {
+            return ancestor;
+        } else {
+            from = v;
+            to = w;
+            fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
+            toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
+            setupDefaultDataStructures();
+            lockStepBFS();
         }
-        if (this.from == v && this.to == w && v != w) return ancestor;
-        from = v;
-        to = w;
-        fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
-        toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
-        setupDefaultDataStructures();
-        lockStepBFS();
         return ancestor;
     }
 
@@ -163,18 +169,18 @@ public class SAP {
                 to = j;
                 setupDefaultDataStructures();
                 lockStepBFS();
-                if (ancestorSetDistance > minDistance ) {
+                if (ancestorSetDistance > minDistance) {
                     ancestorSetDistance = minDistance;
                     ancestorSetAncestor = ancestor;
                 }
             }
         }
         //if (ancestorSetAncestor == INFINITY) {
-            //ancestor = previousAncestor;
-            //minDistance = previousDistance;
+        //ancestor = previousAncestor;
+        //minDistance = previousDistance;
         //} else {
-            ancestor = ancestorSetAncestor;
-            minDistance = ancestorSetDistance;
+        ancestor = ancestorSetAncestor;
+        minDistance = ancestorSetDistance;
         //}
         return ancestor;
     }
@@ -192,7 +198,7 @@ public class SAP {
 
     private int updateCurrentDistance(int v, int currentDistance) {
         int distance = fromBFS.distTo(v) + toBFS.distTo(v);
-        if (distance < currentDistance) {
+        if (distance > 0 && distance < currentDistance) {
             currentDistance = distance;
             ancestor = v;
         }
@@ -258,17 +264,17 @@ public class SAP {
                         marked[w] = true;
                     }
                     // 2 - is there a cycle ?
-                    if (onFromStack[w] && distanceFromSourceCounter > 1) {
-                        // flags indicate which stack to process
-                        // deduct = countCycleNodes(w, true, false);
-                    }
+                    //if (onFromStack[w] && distanceFromSourceCounter > 1) {
+                    // flags indicate which stack to process
+                    // deduct = countCycleNodes(w, true, false);
+                    //}
                     // if it is marked, and it isn't on from stack it is a potential ancestor
-                    if (toBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance);
-                    if (onToStack[w] && onFromStack[w] && w != ancestor) {
-                        // if the other side has seen this node also, but you are not at destination yet, like 13, 8
-                        // Graph 3 example, count each step only once not twice
-                        deduct++;
-                    }
+                    else if (toBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance);
+                    //if (onToStack[w] && onFromStack[w] && w != ancestor) {
+                    // if the other side has seen this node also, but you are not at destination yet, like 13, 8
+                    // Graph 3 example, count each step only once not twice
+                    //  deduct++;
+                    //}
                 }
             }
             if (!proceed) break;
@@ -291,14 +297,15 @@ public class SAP {
                         onToStack[w] = true;
                         marked[w] = true;
                     }
-                    if (onToStack[w] && distanceFromSourceCounter > 1) {
-                        // flags indicate which stack to process
-                        // deduct = countCycleNodes(w, false, true);
-                    }
-                    if (fromBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance);
-                    if (onToStack[w] && onFromStack[w] && w != ancestor) {
-                        deduct++;
-                    }
+                    //if (onToStack[w] && distanceFromSourceCounter > 1) {
+                    // flags indicate which stack to process
+                    // deduct = countCycleNodes(w, false, true);
+                    //}
+                    else if (fromBFS.hasPathTo(w))
+                        currentDistance = updateCurrentDistance(w, currentDistance);
+//                    if (onToStack[w] && onFromStack[w] && w != ancestor) {
+//                        deduct++;
+//                    }
                 }
             }
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
@@ -309,6 +316,8 @@ public class SAP {
             minDistance = -1;
         } else {
             minDistance = currentDistance;
+            if (minDistance == 0)
+                System.out.printf("*****zero distance from lockstep from= %d to=%d ******\n", from, to);
         }
         proceed = true;
     }
