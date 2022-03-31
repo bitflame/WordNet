@@ -773,6 +773,14 @@ public class AutoGraderTests {
         if (shortestDistance != 1)
             System.out.printf("shortest distance between nodes 0 and 3 in myGraph4 should be 2, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 18 shortest distance passed.\n");
+        ancestor = sap.ancestor(3, 0);
+        if (ancestor != 3)
+            System.out.printf("ancestor for nodes 3 and 0 in myGraph4 should be 3, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 19 ancestor passed.\n");
+        shortestDistance = sap.length(3, 0);
+        if (shortestDistance != 1)
+            System.out.printf("shortest distance between 3 and 0 in myGraph4 should be 2, but it is: %d\n  ", shortestDistance);
+        else System.out.printf("Test 19 shortest distance passed.");
     }
 
     public static void main(String[] args) {

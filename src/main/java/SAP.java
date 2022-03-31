@@ -189,12 +189,12 @@ public class SAP {
         marked = new boolean[n];
     }
 
-    private int updateCurrentDistance(int v, int currentDistance, int deduct) {
+    private int updateCurrentDistance(int v, int currentDistance) {
         if (fromBFS.distTo(v) > currentDistance && toBFS.distTo(v) > currentDistance) {
             proceed = false;
             return currentDistance;
         } else {
-            int distance = fromBFS.distTo(v) + toBFS.distTo(v) - deduct;
+            int distance = fromBFS.distTo(v) + toBFS.distTo(v);
             if (distance < currentDistance) {
                 currentDistance = distance;
                 ancestor = v;
@@ -240,8 +240,15 @@ public class SAP {
         while (proceed) {
             while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
+                if (v == to) {
+                    int temp = fromBFS.distTo(v);
+                    if (temp < currentDistance) {
+                        currentDistance = temp;
+                        ancestor = v;
+                    }
+                }
                 // 1 - does it connect to destination?
-                if (toBFS.hasPathTo(v)) currentDistance = updateCurrentDistance(v, currentDistance, deduct);
+                // if (toBFS.hasPathTo(v)) currentDistance = updateCurrentDistance(v, currentDistance, deduct);
                 var1 = digraphDFCopy.adj(v).iterator();
                 while (var1.hasNext()) {
                     int w = var1.next();
@@ -257,7 +264,7 @@ public class SAP {
                         deduct = countCycleNodes(w, true, false);
                     }
                     // if it is marked, and it isn't on from stack it is a potential ancestor
-                    if (toBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance, deduct);
+                    if (toBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance);
                     if (onToStack[w] && onFromStack[w] && w != ancestor) {
                         // if the other side has seen this node also, but you are not at destination yet, like 13, 8
                         // Graph 3 example, count each step only once not twice
@@ -268,7 +275,14 @@ public class SAP {
             if (!proceed) break;
             while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
-                if (fromBFS.hasPathTo(v)) currentDistance = updateCurrentDistance(v, currentDistance, deduct);
+                if (v == from) {
+                    int temp = toBFS.distTo(v);
+                    if (temp < currentDistance) {
+                        currentDistance = temp;
+                        ancestor = v;
+                    }
+                }
+                // if (fromBFS.hasPathTo(v)) currentDistance = updateCurrentDistance(v, currentDistance, deduct);
                 var1 = digraphDFCopy.adj(v).iterator();
                 while (var1.hasNext()) {
                     int w = var1.next();
@@ -282,7 +296,7 @@ public class SAP {
                         // flags indicate which stack to process
                         deduct = countCycleNodes(w, false, true);
                     }
-                    if (fromBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance, deduct);
+                    if (fromBFS.hasPathTo(w)) currentDistance = updateCurrentDistance(w, currentDistance);
                     if (onToStack[w] && onFromStack[w] && w != ancestor) {
                         deduct++;
                     }
