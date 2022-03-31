@@ -1,7 +1,6 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Topological;
 import edu.princeton.cs.algs4.Queue;
 
 import java.util.Iterator;
@@ -36,6 +35,7 @@ public class SAP {
         to = 0;
         n = digraphDFCopy.V();
         proceed = true;
+        setupDefaultDataStructures();
     }
 
 
@@ -91,30 +91,31 @@ public class SAP {
         validateVertices(w);
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        setupDefaultDataStructures();
         int subsetDitance = INFINITY;
         int subsetAncestor = -1;
-        int prevDistance = minDistance;
-        int prevAncestor = ancestor;
+        //int prevDistance = minDistance;
+        //int prevAncestor = ancestor;
         for (int i : v) {
             for (int j : w) {
                 from = i;
                 to = j;
+                setupDefaultDataStructures();
                 lockStepBFS();
                 // System.out.printf("message from inside SAP: For nodes %d and %d ShortestDistance=%d \n", i, j, minDistance);
-                if (subsetDitance > minDistance && minDistance != -1) {
+                if (subsetDitance > minDistance  ) {
                     subsetDitance = minDistance;
                     subsetAncestor = ancestor;
                 }
             }
         }
-        if (subsetDitance == INFINITY) {
-            ancestor = prevAncestor;
-            minDistance = prevDistance;
-        } else {
+        //if (subsetDitance == INFINITY) {
+            //ancestor = prevAncestor;
+            //minDistance = prevDistance;
+        //} else {
             ancestor = subsetAncestor;
             minDistance = subsetDitance;
-        }
+        //}
+
         return minDistance;
     }
 
@@ -152,29 +153,29 @@ public class SAP {
         validateVertices(w);
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        setupDefaultDataStructures();
         int ancestorSetDistance = INFINITY;
         int ancestorSetAncestor = -1;
-        int previousDistance = minDistance;
-        int previousAncestor = ancestor;
+        //int previousDistance = minDistance;
+        //int previousAncestor = ancestor;
         for (int i : v) {
             for (int j : w) {
                 from = i;
                 to = j;
+                setupDefaultDataStructures();
                 lockStepBFS();
-                if (ancestorSetDistance > minDistance && minDistance != -1) {
+                if (ancestorSetDistance > minDistance ) {
                     ancestorSetDistance = minDistance;
                     ancestorSetAncestor = ancestor;
                 }
             }
         }
-        if (ancestorSetAncestor == INFINITY) {
-            ancestor = previousAncestor;
-            minDistance = previousDistance;
-        } else {
+        //if (ancestorSetAncestor == INFINITY) {
+            //ancestor = previousAncestor;
+            //minDistance = previousDistance;
+        //} else {
             ancestor = ancestorSetAncestor;
             minDistance = ancestorSetDistance;
-        }
+        //}
         return ancestor;
     }
 

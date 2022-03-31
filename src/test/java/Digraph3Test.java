@@ -61,5 +61,12 @@ public class Digraph3Test {
         ancestor = sap.ancestor(5, 11);
         if (ancestor != -1)
             throw new AssertionError("The value of ancestor between 5 and 11 should be -1 since they are not connected, but it is: " + ancestor);
+        ancestor = sap.ancestor(12, 7);
+        if (ancestor != 8)
+            System.out.printf("Ancestor for 12, and 7 in Graph3 should be 8, but it is: %d \n", ancestor);
+        else System.out.printf("Test 1 ancestor for Graph3 passed.");
+        distance = sap.length(12,7) ;
+        if (distance!=2) System.out.printf("Shortest distance between 12, and 7 in Graph3 should be 2, but it is: %d\n", distance);
+        else System.out.printf("Test 1 shortest distance for Graph3 passed.");
     }
 }
