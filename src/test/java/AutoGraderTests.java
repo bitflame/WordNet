@@ -46,7 +46,7 @@ public class AutoGraderTests {
             counter++;
             if (counter % 10 == 0) if (sap1.length(13, 21) != 4) break;
         }
-        System.out.printf("Random Test completed without any issues.");
+        System.out.printf("Random Test completed without any issues.\n");
     }
 
     private void testDigraphWordNet() {

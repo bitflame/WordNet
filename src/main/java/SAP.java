@@ -104,10 +104,10 @@ public class SAP {
         //int prevAncestor = ancestor;
         for (int i : v) {
             for (int j : w) {
-                if (i==from && j==to){
+                if (i == from && j == to) {
                     continue;
-                }else if (j==from && i==to){
-                    from=i;
+                } else if (j == from && i == to) {
+                    from = i;
                     to = j;
                     continue;
                 } else if (i == j) {
@@ -129,8 +129,11 @@ public class SAP {
                 }
             }
         }
-        ancestor = subsetAncestor;
-        minDistance = subsetDitance;
+        if (subsetDitance != INFINITY) {
+            ancestor = subsetAncestor;
+            minDistance = subsetDitance;
+        }
+
         return minDistance;
     }
 
@@ -177,9 +180,9 @@ public class SAP {
         int ancestorSetAncestor = -1;
         for (int i : v) {
             for (int j : w) {
-                if (i==from && j==to) {
+                if (i == from && j == to) {
                     continue;
-                } else if (j==from && i==to){
+                } else if (j == from && i == to) {
                     from = i;
                     to = j;
                     continue;
@@ -201,8 +204,10 @@ public class SAP {
                 }
             }
         }
-        ancestor = ancestorSetAncestor;
-        minDistance = ancestorSetDistance;
+        if (ancestorSetDistance!=INFINITY){
+            ancestor = ancestorSetAncestor;
+            minDistance = ancestorSetDistance;
+        }
         return ancestor;
     }
 
