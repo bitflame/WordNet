@@ -1,11 +1,14 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+
 
 public class AutoGraderTests {
     In in;
@@ -21,16 +24,29 @@ public class AutoGraderTests {
     List<Integer> w;
 
     private void testRandomDigraph() {
-        in = new edu.princeton.cs.algs4.In("randomDigraph.txt");
+        in = new edu.princeton.cs.algs4.In("digraph-wordnet.txt");
         digraph = new edu.princeton.cs.algs4.Digraph(in);
         sap = new SAP(digraph);
-        shortestDistance = sap.length(1, 4);
-        if (shortestDistance != 3)
-            System.out.printf("shortest distance between 1, and 4 should be 2, but it is: %d \n", shortestDistance);
-        ancestor = sap.ancestor(1, 4);
-        if (ancestor != 4)
-            System.out.printf("The ancestor between 1 and 4 in random Digraphs should be 3, but it is: %d\n", ancestor);
-
+        in = new In("digraph5.txt");
+        digraph = new Digraph(in);
+        sap1 = new SAP(digraph);
+        List<Iterable> sources = new ArrayList<>();
+        List<Iterable> destinations = new ArrayList<>();
+        for (int i = 0; i < 10000; i++) {
+            sources.add(List.of(StdRandom.uniform(0, 82191)));
+            destinations.add(List.of(StdRandom.uniform(0, 82191)));
+        }
+        Iterator<Iterable> var1 = sources.iterator();
+        Iterator<Iterable> var2 = destinations.iterator();
+        int counter = 0;
+        while (var1.hasNext()) {
+            //System.out.printf(" %s", var1.next());
+            //System.out.printf(" %s", var2.next());
+            sap.length(var1.next(), var2.next());
+            counter++;
+            if (counter % 10 == 0) if (sap1.length(13, 21) != 4) break;
+        }
+        System.out.printf("Random Test completed without any issues.");
     }
 
     private void testDigraphWordNet() {
@@ -81,11 +97,11 @@ public class AutoGraderTests {
         }
     }
 
-    private void testDigraph1(SAP sap) {
+    private void testDigraph1() {
         StdOut.println("---------------------------------- Running AutoGrader Tests for Digraph 1 ----------------------------------");
-//        in = new In("digraph1.txt");
-//        digraph = new Digraph(in);
-//        sap = new SAP(digraph);
+        in = new In("digraph1.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
         shortestDistance = sap.length(6, 6);
         if (shortestDistance != 0)
             System.out.printf("The distance between nodes 6 and 6 should be 0 in digraph1, but it is: %d\n ", shortestDistance);
@@ -175,11 +191,11 @@ public class AutoGraderTests {
         }
     }
 
-    private void testDigraph2(SAP sap) {
+    private void testDigraph2() {
         StdOut.println("---------------------------------- Running AutoGrader Tests for Digraph 2 ----------------------------------");
-//        in = new In("digraph2.txt");
-//        digraph = new Digraph(in);
-//        sap = new SAP(digraph);
+        in = new In("digraph2.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
         shortestDistance = sap.length(4, 1);
         if (shortestDistance != 3)
             System.out.printf("Distance between 4, and 1 should be 3, but it is: %d\n", shortestDistance);
@@ -548,8 +564,8 @@ public class AutoGraderTests {
         digraph2 = new Digraph(in);
         sap1 = new SAP(digraph1);
         sap2 = new SAP(digraph2);
-        testDigraph1(sap1);
-        testDigraph2(sap2);
+        //testDigraph1(sap1);
+        //testDigraph2(sap2);
     }
 
     private void testIterables() {
@@ -665,7 +681,6 @@ public class AutoGraderTests {
         in = new In("myGraph1.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-
         shortestDistance = sap.length(0, 1);
         if (shortestDistance != 1)
             System.out.printf("The distance between 0 and 1 iwith 0 pointing towards 1 should be 1, but it is: %d\n", shortestDistance);
@@ -855,7 +870,6 @@ public class AutoGraderTests {
         in = new In("digraph-wordnet.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-
         System.out.printf(" %d\n", sap.ancestor(12, 1));
         System.out.printf(" %d\n", sap.length(12, 1));
         List<Integer> sources = new ArrayList<>(Arrays.asList(12));
@@ -863,8 +877,10 @@ public class AutoGraderTests {
         System.out.printf(" %d\n", sap.ancestor(sources, destinations));
         System.out.printf(" %d\n", sap.length(sources, destinations));
         for (int i = 0; i < 5000; i++) {
-            if ((sap.ancestor(sources, destinations) != 34093) || (sap.length(sources, destinations) != 2))
+            if ((sap.ancestor(sources, destinations) != 34093) || (sap.length(sources, destinations) != 2)) {
                 System.out.printf(" Got a different value");
+                break;
+            }
             sap.length(12, 1);
             sap.ancestor(12, 1);
         }
@@ -872,19 +888,19 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        // autoGraderTests.testDigraph1();
-        // autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph2();
         autoGraderTests.testDigraph3();
         autoGraderTests.testDigraph4();
         autoGraderTests.testDigraph5();
         autoGraderTests.testDigraph6();
         autoGraderTests.testDigraph9();
         autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
+        // autoGraderTests.createMultipleObjects();
         autoGraderTests.testIterables();
         autoGraderTests.testRandomDigraph();
         autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
-        // autoGraderTests.repeatedTests();
+        autoGraderTests.repeatedTests();
     }
 }
