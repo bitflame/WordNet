@@ -10,10 +10,10 @@ import java.util.Iterator;
 public class SAP {
     private static final int INFINITY = Integer.MAX_VALUE;
     private final Digraph digraphDFCopy;
-    private int ancestor;
-    private int minDistance;
-    private int from;
-    private int to;
+    // private int ancestor = -1;
+    // private int minDistance = -1;
+    private int from = 0;
+    private int to = 0;
     private BreadthFirstDirectedPaths fromBFS;
     private BreadthFirstDirectedPaths toBFS;
     private Queue<Integer> fromQueue;
@@ -23,13 +23,13 @@ public class SAP {
     private Stack<Integer> fromStack;
     private Stack<Integer> toStack;
     private final int n;
-    private boolean proceed;
+    private boolean proceed = true;
     private boolean[] marked;
     result r;
 
     private class result {
-        int ancestor;
-        int minDistance;
+        int ancestor = -1;
+        int minDistance = -1;
 
         public result(int ancestor, int minDistance) {
             this.ancestor = ancestor;
@@ -61,14 +61,14 @@ public class SAP {
     public SAP(Digraph digraph) {
         if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
         digraphDFCopy = new Digraph(digraph);
-        minDistance = -1;
-        ancestor = -1;
+        // minDistance = -1;
+        // ancestor = -1;
         from = 0;
         to = 0;
         this.r = new result(-1, -1);
         n = digraphDFCopy.V();
         proceed = true;
-        setupDefaultDataStructures();
+        // setupDefaultDataStructures();
     }
 
 
@@ -81,24 +81,25 @@ public class SAP {
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
 
         if (v == w) {
-            minDistance = 0;
-            ancestor = v;
-            return minDistance;
+            this.r.setMinDistance(0);
+            this.r.setAncestor(v);
+            return this.r.getMinDistance();
         } else if (this.from == v && this.to == w) {
-            return minDistance;
+            return this.r.getMinDistance();
         } else if (this.from == w && this.to == v) {
             from = w;
             to = v;
-            return minDistance;
+            return this.r.getMinDistance();
         } else {
             from = v;
             to = w;
             fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
             toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
             setupDefaultDataStructures();
-            lockStepBFS();
+            this.r = sfLockStepBFS(v, w, fromBFS, toBFS);
+            // lockStepBFS();
         }
-        return minDistance;
+        return this.r.getMinDistance();
     }
 
     private void validateVertices(Iterable<Integer> vertices) {
@@ -123,11 +124,11 @@ public class SAP {
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         validateVertices(v);
         validateVertices(w);
-        if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
-            ancestor = -1;
-            minDistance = -1;
-            return minDistance;
-        }
+//        if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
+//            ancestor = -1;
+//            minDistance = -1;
+//            return minDistance;
+//        }
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
         int subsetDitance = INFINITY;
@@ -137,10 +138,16 @@ public class SAP {
         for (int i : v) {
             for (int j : w) {
                 if (i == from && j == to) {
+                    /* not updating the object's ancestor / minDistance. Just keeping track for no
+                     * I may have to */
+                    subsetAncestor = this.r.getAncestor();
+                    subsetDitance = this.r.getMinDistance();
                     continue;
                 } else if (j == from && i == to) {
                     from = i;
                     to = j;
+                    subsetAncestor = this.r.getAncestor();
+                    subsetDitance = this.r.getMinDistance();
                     continue;
                 } else if (i == j) {
                     subsetAncestor = j;
@@ -148,25 +155,18 @@ public class SAP {
                     from = i;
                     to = j;
                     continue;
-                } else {
+                } else if (subsetDitance == INFINITY || subsetDitance > sfLockStepBFS(i, j, fromBFS, toBFS).getMinDistance()) {
                     from = i;
                     to = j;
-                    setupDefaultDataStructures();
-                    lockStepBFS();
-                    // System.out.printf("message from inside SAP: For nodes %d and %d ShortestDistance=%d \n", i, j, minDistance);
-                    if (subsetDitance > minDistance) {
-                        subsetDitance = minDistance;
-                        subsetAncestor = ancestor;
-                    }
+                    subsetDitance = sfLockStepBFS(i, j, fromBFS, toBFS).getMinDistance();
+                    subsetAncestor = sfLockStepBFS(i, j, fromBFS, toBFS).getAncestor();
                 }
             }
         }
-        if (subsetDitance != INFINITY) {
-            ancestor = subsetAncestor;
-            minDistance = subsetDitance;
-        }
 
-        return minDistance;
+        this.r.setMinDistance(subsetDitance);
+        this.r.setAncestor(subsetAncestor);
+        return subsetDitance;
     }
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
@@ -177,47 +177,64 @@ public class SAP {
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (v == w) {
-            ancestor = w;
-            minDistance = 0;
-            return ancestor;
+            this.r.setMinDistance(0);
+            this.r.setAncestor(v);
+            return v;
         } else if (this.from == v && this.to == w) {
-            return ancestor;
+            return this.r.getAncestor();
         } else if (this.from == w && this.to == v) {
             from = w;
             to = v;
-            return ancestor;
+            return this.r.getAncestor();
         } else {
             from = v;
             to = w;
             fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, from);
             toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, to);
-            setupDefaultDataStructures();
-            lockStepBFS();
+            //setupDefaultDataStructures();
+            this.r = sfLockStepBFS(v, w, fromBFS, toBFS);
+            //lockStepBFS();
         }
-        return ancestor;
+        return this.r.getAncestor();
     }
 
     // a common ancestor that participates in the shortest ancestral path; -1 if no such path
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         validateVertices(v);
         validateVertices(w);
-        if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
-            ancestor = -1;
-            minDistance = -1;
-            return ancestor;
-        }
+//        if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
+//            this.r.setAncestor(-1);
+//            this.r.setMinDistance(-1);
+//            return this.r.getMinDistance();
+//        }
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
         int ancestorSetDistance = INFINITY;
         int ancestorSetAncestor = -1;
         for (int i : v) {
             for (int j : w) {
-                if (ancestorSetDistance == INFINITY || ancestorSetDistance > sfLockStepBFS(i, j).getMinDistance()) {
-                    ancestorSetDistance = sfLockStepBFS(i, j).getMinDistance();
-                    ancestorSetAncestor = sfLockStepBFS(i, j).getAncestor();
+                if (i == from && j == to) {
+                    ancestorSetDistance = this.r.getMinDistance();
+                    ancestorSetAncestor = this.r.getAncestor();
+                    continue;
+                } else if (j == from && i == to) {
+                    from = i;
+                    to = j;
+                    ancestorSetAncestor = this.r.getAncestor();
+                    ancestorSetDistance = this.r.getMinDistance();
+                    continue;
+                } else if (i == j) {
+ancestorSetAncestor=i;
+ancestorSetDistance=0;
+continue;
+                } else if (ancestorSetDistance == INFINITY || ancestorSetDistance > sfLockStepBFS(i, j, fromBFS, toBFS).getMinDistance()) {
+                    ancestorSetDistance = sfLockStepBFS(i, j, fromBFS, toBFS).getMinDistance();
+                    ancestorSetAncestor = sfLockStepBFS(i, j, fromBFS, toBFS).getAncestor();
                 }
             }
         }
+        this.r.setAncestor(ancestorSetAncestor);
+        this.r.setMinDistance(ancestorSetDistance);
         return ancestorSetAncestor;
     }
 
@@ -232,7 +249,7 @@ public class SAP {
         marked = new boolean[n];
     }
 
-    private int updateCurrentDistance(int v, int currentDistance) {
+    /*private int updateCurrentDistance(int v, int currentDistance) {
         int distance = fromBFS.distTo(v) + toBFS.distTo(v);
         if (distance > 0 && distance < currentDistance) {
             currentDistance = distance;
@@ -242,15 +259,16 @@ public class SAP {
             proceed = false;
         }
         return currentDistance;
-    }
+    }*/
 
-    private result sfUpdateCurrentDistance(int v, result r, BreadthFirstDirectedPaths fmBFS, BreadthFirstDirectedPaths tBFS) {
-        int distance = fmBFS.distTo(v) + tBFS.distTo(v);
+    private result sfUpdateCurrentDistance(int v, result r, BreadthFirstDirectedPaths fBS, BreadthFirstDirectedPaths tBS) {
+        setupDefaultDataStructures();
+        int distance = fBS.distTo(v) + tBS.distTo(v);
         if (distance > 0 && distance < r.getMinDistance()) {
             r.setMinDistance(distance);
             r.setAncestor(v);
         }
-        if (fmBFS.distTo(v) > r.getMinDistance() && tBFS.distTo(v) > r.getMinDistance()) {
+        if (fBS.distTo(v) > r.getMinDistance() && tBS.distTo(v) > r.getMinDistance()) {
             proceed = false;
 
         }
@@ -290,7 +308,7 @@ public class SAP {
                         fromStack.push(w);
                         onFromStack[w] = true;
                         marked[w] = true;
-                    } else if (tBFS.hasPathTo(w)) result = sfUpdateCurrentDistance(w, result,fBFS,tBFS);
+                    } else if (tBFS.hasPathTo(w)) result = sfUpdateCurrentDistance(w, result, fBFS, tBFS);
                 }
             }
             if (!proceed) break;
@@ -310,7 +328,7 @@ public class SAP {
                         onToStack[w] = true;
                         marked[w] = true;
                     } else if (fBFS.hasPathTo(w))
-                        result = sfUpdateCurrentDistance(w, result,fBFS,tBFS);
+                        result = sfUpdateCurrentDistance(w, result, fBFS, tBFS);
                 }
             }
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
@@ -320,7 +338,7 @@ public class SAP {
         return result;
     }
 
-    private void lockStepBFS() {
+    /*private void lockStepBFS() {
         proceed = true;
         int currentDistance = INFINITY;
         fromQueue.enqueue(from);
@@ -388,7 +406,7 @@ public class SAP {
             minDistance = currentDistance;
         }
         proceed = true;
-    }
+    }*/
 
 
     public static void main(String[] args) {
