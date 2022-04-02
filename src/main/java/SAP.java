@@ -25,6 +25,37 @@ public class SAP {
     private final int n;
     private boolean proceed;
     private boolean[] marked;
+    result r;
+
+    private class result {
+        int ancestor;
+        int minDistance;
+
+        public result(int ancestor, int minDistance) {
+            this.ancestor = ancestor;
+            this.minDistance = minDistance;
+        }
+
+        public result(int ancestor) {
+            this.ancestor = ancestor;
+        }
+
+        public int getAncestor() {
+            return ancestor;
+        }
+
+        public void setAncestor(int ancestor) {
+            this.ancestor = ancestor;
+        }
+
+        public void setMinDistance(int minDistance) {
+            this.minDistance = minDistance;
+        }
+
+        public int getMinDistance() {
+            return minDistance;
+        }
+    }
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -34,6 +65,7 @@ public class SAP {
         ancestor = -1;
         from = 0;
         to = 0;
+        this.r = new result(-1, -1);
         n = digraphDFCopy.V();
         proceed = true;
         setupDefaultDataStructures();
@@ -204,7 +236,7 @@ public class SAP {
                 }
             }
         }
-        if (ancestorSetDistance!=INFINITY){
+        if (ancestorSetDistance != INFINITY) {
             ancestor = ancestorSetAncestor;
             minDistance = ancestorSetDistance;
         }
