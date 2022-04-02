@@ -212,35 +212,13 @@ public class SAP {
         int ancestorSetAncestor = -1;
         for (int i : v) {
             for (int j : w) {
-                if (i == from && j == to) {
-                    continue;
-                } else if (j == from && i == to) {
-                    from = i;
-                    to = j;
-                    continue;
-                } else if (i == j) {
-                    ancestorSetAncestor = j;
-                    ancestorSetDistance = 0;
-                    from = i;
-                    to = j;
-                    continue;
-                } else {
-                    from = i;
-                    to = j;
-                    setupDefaultDataStructures();
-                    lockStepBFS();
-                    if (ancestorSetDistance > minDistance) {
-                        ancestorSetDistance = minDistance;
-                        ancestorSetAncestor = ancestor;
-                    }
+                if (ancestorSetDistance == INFINITY || ancestorSetDistance > sfLockStepBFS(i, j).getMinDistance()) {
+                    ancestorSetDistance = sfLockStepBFS(i, j).getMinDistance();
+                    ancestorSetAncestor = sfLockStepBFS(i, j).getAncestor();
                 }
             }
         }
-        if (ancestorSetDistance != INFINITY) {
-            ancestor = ancestorSetAncestor;
-            minDistance = ancestorSetDistance;
-        }
-        return ancestor;
+        return ancestorSetAncestor;
     }
 
 
@@ -266,23 +244,80 @@ public class SAP {
         return currentDistance;
     }
 
-    // counts the number of cycle nodes on fromStack or toStack
-    private int countCycleNodes(int w, boolean fStack, boolean tStack) {
-        int tempCounter = 0;
-        if (fStack) {
-            while (fromStack.peek() != w) {
-                fromStack.pop();
-                tempCounter++;
-            }
-            tempCounter++;
-        } else if (tStack) {
-            while (toStack.peek() != w) {
-                toStack.pop();
-                tempCounter++;
-            }
-            tempCounter++;
+    private result sfUpdateCurrentDistance(int v, result r, BreadthFirstDirectedPaths fmBFS, BreadthFirstDirectedPaths tBFS) {
+        int distance = fmBFS.distTo(v) + tBFS.distTo(v);
+        if (distance > 0 && distance < r.getMinDistance()) {
+            r.setMinDistance(distance);
+            r.setAncestor(v);
         }
-        return tempCounter;
+        if (fmBFS.distTo(v) > r.getMinDistance() && tBFS.distTo(v) > r.getMinDistance()) {
+            proceed = false;
+
+        }
+        return r;
+    }
+
+    private result sfLockStepBFS(int f, int t, BreadthFirstDirectedPaths fBFS, BreadthFirstDirectedPaths tBFS) {
+        proceed = true;
+        int currentDistance = INFINITY;
+        int currentAncestor = -1;
+        result result = new result(currentAncestor, currentDistance);
+        fromQueue.enqueue(f);
+        fromStack.push(f);
+        marked[f] = true;
+        onFromStack[f] = true;
+        toQueue.enqueue(t);
+        toStack.push(t);
+        marked[t] = true;
+        onToStack[t] = true;
+        int v = 0;
+
+        int distanceFromSourceCounter = 1;
+
+        while (proceed) {
+            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
+                v = fromQueue.dequeue();
+                if (v == t) {
+                    int temp = fBFS.distTo(v);
+                    if (temp < result.getMinDistance()) {
+                        result.setAncestor(v);
+                        result.setMinDistance(temp);
+                    }
+                }
+                for (int w : digraphDFCopy.adj(v)) {
+                    if (!marked[w]) {
+                        fromQueue.enqueue(w);
+                        fromStack.push(w);
+                        onFromStack[w] = true;
+                        marked[w] = true;
+                    } else if (tBFS.hasPathTo(w)) result = sfUpdateCurrentDistance(w, result,fBFS,tBFS);
+                }
+            }
+            if (!proceed) break;
+            while (!toQueue.isEmpty() && tBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
+                v = toQueue.dequeue();
+                if (v == f) {
+                    int temp = tBFS.distTo(v);
+                    if (temp < result.getMinDistance()) {
+                        result.setAncestor(v);
+                        result.setMinDistance(temp);
+                    }
+                }
+                for (int w : digraphDFCopy.adj(v)) {
+                    if (!marked[w]) {
+                        toQueue.enqueue(w);
+                        toStack.push(w);
+                        onToStack[w] = true;
+                        marked[w] = true;
+                    } else if (fBFS.hasPathTo(w))
+                        result = sfUpdateCurrentDistance(w, result,fBFS,tBFS);
+                }
+            }
+            if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
+            distanceFromSourceCounter++;
+        }
+        proceed = true;
+        return result;
     }
 
     private void lockStepBFS() {
