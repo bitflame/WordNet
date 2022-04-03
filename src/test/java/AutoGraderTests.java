@@ -651,30 +651,24 @@ public class AutoGraderTests {
         in = new In("digraph5.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-//        shortestDistance = sap.length(4, 3);
-//        if (shortestDistance != 1)
-//            System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
-//        System.out.printf("Printing the shortest distance iterables for graph 5.\n");
         Iterable<Integer> sources = new ArrayList<>(Arrays.asList(13, 7, 21, 10, 9, 14, 17));
         Iterable<Integer> destinations = new ArrayList<>(Arrays.asList(21, 12, 0, 12, 20));
-//        shortestDistance = sap.length(sources, destinations);
-//        for (int i : sources) {
-//            for (int j : destinations) {
-//                System.out.printf("i=%d j=%d ancestor= %d shortest distance: %d\n", i, j, sap.ancestor(i, j), sap.length(i, j));
-//            }
-//        }
-        //System.out.printf("Iterables shortest distance = %d ancestor = %d\n", sap.length(sources, destinations), sap.ancestor(sources, destinations));
-        //System.out.printf("Printing the shortest distance iterables for graph 5 in reverse.\n");
-        sources = new ArrayList<>(Arrays.asList(21, 12, 0, 12, 20));
-        destinations = new ArrayList<>(Arrays.asList(13, 7, 21, 10, 9, 14, 17));
-//        for (int i : sources) {
-//            for (int j : destinations) {
-//                System.out.printf("i=%d j=%d ancestor= %d shortest distance: %d\n", i, j, sap.ancestor(i, j), sap.length(i, j));
-//            }
-//        }
-        sap.length(sources,destinations);
-        // sap.ancestor(sources,destinations);
-        // System.out.printf("result of Iterables in reverse: shortest distance = %d ancestor = %d\n", sap.length(sources, destinations), sap.ancestor(sources, destinations));
+        System.out.printf("Test #1 results; Expected Iterables ancestor is 21; actual value = %d Expected Iterables " +
+                "minimum distance is 0 actual value = %d\n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
+        sources = new ArrayList<>(Arrays.asList(9, 14, 17));
+        destinations = new ArrayList<>(Arrays.asList(12, 20, 21));
+        System.out.printf("Test #2 results; Expected Iterables ancestor is 12, or 9; actual value = %d Expected Iterables minimum distance is 2; " +
+                "actual value = %d\n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
+        ancestor = sap.ancestor(13, 21);
+        if (ancestor != 10)
+            System.out.printf("Ancestor for nodes 13, and 21 in graph 5 should be 10, but it is: %d\n", ancestor);
+        else
+            System.out.printf("Tested the single pair version of ancestor, right after the iterables version, and it passed for Graph5 nodes 13 and 21\n");
+        shortestDistance = sap.length(13, 21);
+        if (shortestDistance != 4)
+            System.out.printf("shortest distance for nodes 13, and 21 in graph 5 should be 4, but it is: %d\n", shortestDistance);
+        else
+            System.out.printf("Test the single pair version of length, right after the iterables version, and it passed for Graph5 nodes 13 and 21\n");
     }
 
     private void testMyGraphs() {
@@ -890,19 +884,19 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        // autoGraderTests.testDigraph1();
-        // autoGraderTests.testDigraph2();
-        // autoGraderTests.testDigraph3();
-        // autoGraderTests.testDigraph4();
-        // autoGraderTests.testDigraph5();
-        // autoGraderTests.testDigraph6();
-        // autoGraderTests.testDigraph9();
-        // autoGraderTests.testMyGraphs();
-        // autoGraderTests.createMultipleObjects();
-        // autoGraderTests.testIterables();
-        // autoGraderTests.testRandomDigraph();
+        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph3();
+        autoGraderTests.testDigraph4();
+        autoGraderTests.testDigraph5();
+        autoGraderTests.testDigraph6();
+        autoGraderTests.testDigraph9();
+        autoGraderTests.testMyGraphs();
+        autoGraderTests.createMultipleObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
         autoGraderTests.troubleShooting();
-        // autoGraderTests.testDigraphWordNet();
-        // autoGraderTests.repeatedTests();
+        autoGraderTests.testDigraphWordNet();
+        autoGraderTests.repeatedTests();
     }
 }
