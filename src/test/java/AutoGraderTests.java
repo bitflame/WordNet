@@ -640,9 +640,9 @@ public class AutoGraderTests {
         shortestDistance = sap.length(v, w);
         if (shortestDistance != 3)
             StdOut.println("Expecting the shortest distance for two iterables to be 3, but it is: " + shortestDistance);
-        ancestor = sap.ancestor(v, w);
-        if (ancestor != 48461)
-            StdOut.println("Expecting the ancestor for two iterables to be 48461, but it is: " + ancestor);
+        // ancestor = sap.ancestor(v, w);
+        // if (ancestor != 48461)
+            // StdOut.println("Expecting the ancestor for two iterables to be 48461, but it is: " + ancestor);
         // make a set that contains the ancestor of the other set's node
     }
 
@@ -669,6 +669,10 @@ public class AutoGraderTests {
             System.out.printf("shortest distance for nodes 13, and 21 in graph 5 should be 4, but it is: %d\n", shortestDistance);
         else
             System.out.printf("Test the single pair version of length, right after the iterables version, and it passed for Graph5 nodes 13 and 21\n");
+        destinations = new ArrayList<>(Arrays.asList(9, 14, 17));
+        sources = new ArrayList<>(Arrays.asList(12, 20, 21, 9,15,7));
+        System.out.printf("Test #3 results; Expected Iterables ancestor is 9; actual value = %d Expected Iterables minimum distance is 0; " +
+                "actual value = %d\n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
     }
 
     private void testMyGraphs() {

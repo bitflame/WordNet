@@ -102,15 +102,13 @@ public class SAP {
         int subsetDitance = INFINITY;
         int currentDistance = -1;
         int subsetAncestor = -1;
-        //int prevDistance = minDistance;
-        //int prevAncestor = ancestor;
         // System.out.printf("before the run ancestor = %d, minDistance = %d\n", ancestor, minDistance);
         for (int i : v) {
             for (int j : w) {
                 // System.out.printf("i= %d, j= %d ", i, j);
                 setupDefaultDataStructures();
                 currentDistance = lockstepBFS(i, j, fromBFS, toBFS);
-                if (subsetDitance > currentDistance) {
+                if (subsetDitance > currentDistance && currentDistance!= -1 ) {
                     subsetAncestor = iterablesAncestor;
                     subsetDitance = currentDistance;
                     // System.out.printf("message from inside SAP: For nodes %d and %d ShortestDistance=%d \n", i, j, minDistance);
@@ -229,7 +227,7 @@ public class SAP {
 
                 setupDefaultDataStructures();
                 currentDistance = lockstepBFS(i, j, fromBFS, toBFS);
-                if (ancestorSetDistance > currentDistance) {
+                if (ancestorSetDistance > currentDistance && currentDistance!= -1) {
                     ancestorSetDistance = currentDistance;
                     ancestorSetAncestor = iterablesAncestor;
                 }
