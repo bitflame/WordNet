@@ -56,8 +56,8 @@ public class SAP {
         } else if (this.from == v && this.to == w) {
             return minDistance;
         } else if (this.from == w && this.to == v) {
-            from = w;
-            to = v;
+            from = v;
+            to = w;
             return minDistance;
         } else {
             from = v;
@@ -196,8 +196,8 @@ public class SAP {
         } else if (this.from == v && this.to == w) {
             return ancestor;
         } else if (this.from == w && this.to == v) {
-            from = w;
-            to = v;
+            from = v;
+            to = w;
             return ancestor;
         } else {
             from = v;
