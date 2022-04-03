@@ -137,6 +137,7 @@ public class SAP {
                         subsetAncestor = ancestor;
                     }
                 }
+                System.out.printf(" SubsetAncestor= %d, SbsetDistance= %d\n", subsetAncestor, subsetDitance);
             }
         }
         System.out.printf("after the run ancestor = %d, minDistance = %d\n", ancestor, minDistance);
