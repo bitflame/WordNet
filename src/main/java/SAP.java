@@ -136,32 +136,29 @@ public class SAP {
         toQueue.enqueue(j);
         marked[j] = true;
         int v = 0;
-        int distanceFromSourceCounter = 1;
+        int distanceFromSourceCounter = 0;
         Iterator<Integer> var1;
         while (proceed) {
-            while (!fromQueue.isEmpty() && fBS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
+            if (!fromQueue.isEmpty() && fBS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
-                var1 = digraphDFCopy.adj(v).iterator();
-                while (var1.hasNext()) {
-                    int w = var1.next();
+                for(int w: digraphDFCopy.adj(v)){
                     if (!marked[w]) {
                         fromQueue.enqueue(w);
-
                         marked[w] = true;
-                    } else if (tBS.hasPathTo(w))
+                    }
+                    if (tBS.hasPathTo(w))
                         currentDistance = updateCurrentIterablesDistance(w, currentDistance, fBS, tBS);
                 }
             }
             if (!proceed) break;
-            while (!toQueue.isEmpty() && tBS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
+            if (!toQueue.isEmpty() && tBS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
-                var1 = digraphDFCopy.adj(v).iterator();
-                while (var1.hasNext()) {
-                    int w = var1.next();
+                for(int w: digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
                         toQueue.enqueue(w);
                         marked[w] = true;
-                    } else if (fBS.hasPathTo(w))
+                    }
+                    if (fBS.hasPathTo(w))
                         currentDistance = updateCurrentIterablesDistance(w, currentDistance, fBS, tBS);
                 }
             }
@@ -227,7 +224,7 @@ public class SAP {
 
                 setupDefaultDataStructures();
                 currentDistance = lockstepBFS(i, j, fromBFS, toBFS);
-                if (ancestorSetDistance > currentDistance && currentDistance != -1) {
+                if (ancestorSetDistance > currentDistance) {
                     ancestorSetDistance = currentDistance;
                     ancestorSetAncestor = iterablesAncestor;
                 }
@@ -287,7 +284,7 @@ public class SAP {
 
         int v = 0;
 
-        int distanceFromSourceCounter = 1;
+        int distanceFromSourceCounter = 0;
         Iterator<Integer> var1;
         while (proceed) {
             while (!fromQueue.isEmpty() && sBFs.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
