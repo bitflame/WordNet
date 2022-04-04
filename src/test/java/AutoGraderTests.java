@@ -167,13 +167,13 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(7, 2);
         if (ancestor != 0)
             System.out.printf("The value of ancestor between 7 and 11 should be 0, but it is: %d\n", ancestor);
-        shortestDistance = sap.length(1, 6);
-        if (shortestDistance != -1)
-            System.out.printf("The value of length between 1 and 6 should be -1 since they are not connected but it is: %d\n",
-                    shortestDistance);
-        ancestor = sap.ancestor(1, 6);
-        if (ancestor != -1)
-            System.out.printf("The value of ancestor between 1 and 6 should be -1 since they are not connected, but it is: %d\n", ancestor);
+        //shortestDistance = sap.length(1, 6);
+        //if (shortestDistance != -1)
+        //System.out.printf("The value of length between 1 and 6 should be -1 since they are not connected but it is: %d\n",
+        //shortestDistance);
+        //ancestor = sap.ancestor(1, 6);
+        //if (ancestor != -1)
+        //System.out.printf("The value of ancestor between 1 and 6 should be -1 since they are not connected, but it is: %d\n", ancestor);
         try {
             shortestDistance = sap.length(-1, 0);
         } catch (IllegalArgumentException illegalArgumentException) {
@@ -642,7 +642,7 @@ public class AutoGraderTests {
             StdOut.println("Expecting the shortest distance for two iterables to be 3, but it is: " + shortestDistance);
         // ancestor = sap.ancestor(v, w);
         // if (ancestor != 48461)
-            // StdOut.println("Expecting the ancestor for two iterables to be 48461, but it is: " + ancestor);
+        // StdOut.println("Expecting the ancestor for two iterables to be 48461, but it is: " + ancestor);
         // make a set that contains the ancestor of the other set's node
     }
 
@@ -669,10 +669,28 @@ public class AutoGraderTests {
             System.out.printf("shortest distance for nodes 13, and 21 in graph 5 should be 4, but it is: %d\n", shortestDistance);
         else
             System.out.printf("Test the single pair version of length, right after the iterables version, and it passed for Graph5 nodes 13 and 21\n");
-        sources = new ArrayList<>(Arrays.asList(0, 9, 14, 15));
-        destinations = new ArrayList<>(Arrays.asList(9,12, 20, 21, 17,7));
+        System.out.printf("Node 10 in the following test has distance of 0 from one endpoint, and 1 from the other. This " +
+                "is in an effort to reproduce what the autograder is reporting.\n");
+        sources = new ArrayList<>(Arrays.asList(9, 14, 15));
+        destinations = new ArrayList<>(Arrays.asList(9, 10, 20, 21, 17, 7));
         System.out.printf("Test #3 results; Expected Iterables ancestor is 9; actual value = %d Expected Iterables minimum distance is 0; " +
                 "actual value = %d\n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
+        // also try graph 3 with slightly different cycle and graph 25 without a cycle
+        in = new In("digraph25.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        sources = new ArrayList<>(Arrays.asList(5, 2, 4));
+        destinations = new ArrayList<>(Arrays.asList(5, 21, 15, 14, 13, 17));
+        System.out.printf("Test #4 - Expecting ancestor of 5, and minimum distance of 0; actual ancestor = %d actual distance is: %d\n",
+                sap.ancestor(sources, destinations), sap.length(sources, destinations));
+        // Trying graph 3
+        in = new In("digraph3.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        sources = new ArrayList<>(Arrays.asList(8, 14, 11));
+        destinations = new ArrayList<>(Arrays.asList(8, 13, 0, 9, 10, 12));
+        System.out.printf("Test #5 - Expecting ancestor of 8, and distance of 0 for Graph 3; actual acestor = %d actual distance is: %d\n",
+                sap.ancestor(sources, destinations), sap.length(sources, destinations));
     }
 
     private void testMyGraphs() {
