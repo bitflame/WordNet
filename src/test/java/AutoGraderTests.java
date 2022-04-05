@@ -493,21 +493,23 @@ public class AutoGraderTests {
         if (shortestDistance != 4)
             System.out.printf("shortest distance between 13, and 21 in Graph5 should be 4, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 9 for Graph5 shortest distance passed.\n");
-        sources = new ArrayList<>(Arrays.asList(7));
-        destinations = new ArrayList<>(Arrays.asList(8));
-        for (int i = 0; i < 100; i++) {
-            if (sap.length(13, 13) != 0) throw new AssertionError("Distance between the same nodes isn't zero.");
-            System.out.printf(" length = %d ancestor = %d \n", sap.length(7, 8), sap.ancestor(7, 8));
-            System.out.printf(" Iterables ancestor = %d Iterables length = %d \n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
-        }
+//        sources = new ArrayList<>(Arrays.asList(7));
+//        destinations = new ArrayList<>(Arrays.asList(8));
+//        for (int i = 0; i < 100; i++) {
+//            if (sap.length(13, 13) != 0) throw new AssertionError("Distance between the same nodes isn't zero.");
+//            System.out.printf(" length = %d ancestor = %d \n", sap.length(7, 8), sap.ancestor(7, 8));
+//            System.out.printf(" Iterables ancestor = %d Iterables length = %d \n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
+//        }
         in = new In("digraph3.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-        sources = new ArrayList<>(Arrays.asList(3,5,2));
-        destinations = new ArrayList<>(Arrays.asList(3,12,4,12,9));
-        ancestor = sap.ancestor(sources,destinations);
-        if (ancestor!=0) System.out.printf("Expecting ancestor value of 3 for Graph3's Iterables set with at least one pair not connected, " +
+        sources = new ArrayList<>(Arrays.asList(10,12,4,3,9));
+        destinations = new ArrayList<>(Arrays.asList(5,3,2));
+        shortestDistance = sap.length(sources,destinations);
+        if (shortestDistance!=0) System.out.printf("Expecting shortest distance value of 0 for Graph3's Iterables set with at least one pair not connected, " +
                 "but the actual value we get = %d\n", ancestor);
+
+
     }
 
     private void testDigraph6() {
@@ -924,19 +926,19 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph1();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
         autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
-        autoGraderTests.troubleShooting();
-        autoGraderTests.testDigraphWordNet();
-        autoGraderTests.repeatedTests();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.testMyGraphs();
+//        autoGraderTests.createMultipleObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.troubleShooting();
+//        autoGraderTests.testDigraphWordNet();
+//        autoGraderTests.repeatedTests();
     }
 }

@@ -84,10 +84,10 @@ public class SAP {
         validateVertices(v);
         validateVertices(w);
         if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
-            throw new IllegalArgumentException("Both lists should contain at least one value.");
-//            ancestor = -1;
-//            minDistance = -1;
-//            return minDistance;
+            //throw new IllegalArgumentException("Both lists should contain at least one value.");
+            ancestor = -1;
+            minDistance = -1;
+            return minDistance;
         }
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
@@ -163,10 +163,10 @@ public class SAP {
         validateVertices(v);
         validateVertices(w);
         if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
-//            ancestor = -1;
-//            minDistance = -1;
-//            return minDistance;
-            throw new IllegalArgumentException("Both lists should contain at least one value.");
+            ancestor = -1;
+            minDistance = -1;
+            return minDistance;
+            //throw new IllegalArgumentException("Both lists should contain at least one value.");
         }
         fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
