@@ -481,7 +481,7 @@ public class AutoGraderTests {
         List<Integer> destinations = new ArrayList<>(Arrays.asList(8, 8));
         ancestor = sap.ancestor(sources, destinations);
         if (ancestor != 8)
-            System.out.printf("The ancestor for nodes 7 and 8 in graph 3 should be 8, but it is: %d\n ", ancestor);
+            System.out.printf("The ancestor for nodes 7 and 8 in graph 5 should be 8, but it is: %d\n ", ancestor);
         shortestDistance = sap.length(sources, destinations);
         if (shortestDistance != 1)
             System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ", shortestDistance);
@@ -493,6 +493,21 @@ public class AutoGraderTests {
         if (shortestDistance != 4)
             System.out.printf("shortest distance between 13, and 21 in Graph5 should be 4, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 9 for Graph5 shortest distance passed.\n");
+        sources = new ArrayList<>(Arrays.asList(7));
+        destinations = new ArrayList<>(Arrays.asList(8));
+        for (int i = 0; i < 100; i++) {
+            if (sap.length(13, 13) != 0) throw new AssertionError("Distance between the same nodes isn't zero.");
+            System.out.printf(" length = %d ancestor = %d \n", sap.length(7, 8), sap.ancestor(7, 8));
+            System.out.printf(" Iterables ancestor = %d Iterables length = %d \n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
+        }
+        in = new In("digraph3.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        sources = new ArrayList<>(Arrays.asList(3,5,2));
+        destinations = new ArrayList<>(Arrays.asList(3,12,4,12,9));
+        ancestor = sap.ancestor(sources,destinations);
+        if (ancestor!=0) System.out.printf("Expecting ancestor value of 3 for Graph3's Iterables set with at least one pair not connected, " +
+                "but the actual value we get = %d\n", ancestor);
     }
 
     private void testDigraph6() {
@@ -688,9 +703,12 @@ public class AutoGraderTests {
         digraph = new Digraph(in);
         sap = new SAP(digraph);
         sources = new ArrayList<>(Arrays.asList(8, 14, 11));
-        destinations = new ArrayList<>(Arrays.asList(8, 13, 0, 9, 10, 12));
+        destinations = new ArrayList<>(Arrays.asList(0, 13, 8, 9, 10, 12));
         System.out.printf("Test #5 - Expecting ancestor of 8, and distance of 0 for Graph 3; actual acestor = %d actual distance is: %d\n",
                 sap.ancestor(sources, destinations), sap.length(sources, destinations));
+//        sources = new ArrayList<>(Arrays.asList(-1,8,14,11));
+//        destinations = new ArrayList<>(Arrays.asList(8,13,0,9,10,12));
+//        System.out.printf("Passed -1 - %d\n",sap.ancestor(sources,destinations));
     }
 
     private void testMyGraphs() {
