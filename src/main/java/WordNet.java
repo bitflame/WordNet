@@ -108,6 +108,7 @@ public class WordNet {
         System.out.println("The distance expected between worm and bird is 5, the result: " +
                 wordNet.distance("worm", "bird"));
         System.out.println(wordNet.isNoun("entity"));
+        System.out.printf("Is CRP a wordnet noun? %b\n",wordNet.isNoun("CRP"));
         StdOut.println("The common ancestor for quadrangle and mountain_devil is:" +
                 wordNet.sap("quadrangle", "mountain_devil"));
         StdOut.println("The distance expected between mountain_devil and quadrangle should be 11, the result: " +

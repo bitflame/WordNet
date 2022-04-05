@@ -2,12 +2,10 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
+import org.junit.jupiter.api.Disabled;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 public class AutoGraderTests {
@@ -503,11 +501,12 @@ public class AutoGraderTests {
         in = new In("digraph3.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-        sources = new ArrayList<>(Arrays.asList(10,12,4,3,9));
-        destinations = new ArrayList<>(Arrays.asList(5,3,2));
-        shortestDistance = sap.length(sources,destinations);
-        if (shortestDistance!=0) System.out.printf("Expecting shortest distance value of 0 for Graph3's Iterables set with at least one pair not connected, " +
-                "but the actual value we get = %d\n", ancestor);
+        sources = new ArrayList<>(Arrays.asList(10, 12, 4, 3, 9));
+        destinations = new ArrayList<>(Arrays.asList(5, 3, 2));
+        shortestDistance = sap.length(sources, destinations);
+        if (shortestDistance != 0)
+            System.out.printf("Expecting shortest distance value of 0 for Graph3's Iterables set with at least one pair not connected, " +
+                    "but the actual value we get = %d\n", ancestor);
 
 
     }
@@ -543,6 +542,7 @@ public class AutoGraderTests {
         in = new In("digraph9.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+
         shortestDistance = sap.length(7, 8);
         if (shortestDistance != -1)
             System.out.printf("The distance between 7 and 8 should be -1, but it is: %d\n", shortestDistance);
@@ -743,6 +743,25 @@ public class AutoGraderTests {
         if (ancestor != 1)
             System.out.printf("The ancestor for 2, and 0 nodes both pointing away should be 1, but it is: %d\n", ancestor);
         else System.out.printf("Test 3 ancestor passed.\n");
+        shortestDistance = sap.length(0, 1);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between 0 and 1 iwith 0 pointing towards 1 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 1 length passed. \n");
+        ancestor = sap.ancestor(0, 1);
+        if (ancestor != 1)
+            System.out.printf("The ancestor between nodes 0 and 1 with 0 pointing towards 1 should be 1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 1 ancestor passed. \n");
+        shortestDistance = sap.length(1, 0);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between 1 and 0 with 0 pointing towards 1 should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 2 length passed. \n");
+        ancestor = sap.ancestor(1, 0);
+        if (ancestor != 1)
+            System.out.printf("The ancestor between 1, 0 with 0 pointing towards 1 should be 1, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 2 ancestor passed. \n");
+
+
+
         System.out.printf("\n");
         System.out.printf("My Graph2 Tests\n");
         in = new In("myGraph2.txt");
@@ -924,16 +943,81 @@ public class AutoGraderTests {
         }
     }
 
+    private class State {
+        public int getSource() {
+            return source;
+        }
+
+        public int getDestination() {
+            return destination;
+        }
+
+        public int getMinDis() {
+            return minDis;
+        }
+
+        public int getAncestor() {
+            return ancestor;
+        }
+
+        int source;
+        int destination;
+        int minDis;
+        int ancestor;
+
+        public State(int source, int destination, int minDis, int ancestor) {
+
+        }
+    }
+
+    private void iterativeTests() {
+        In in = new In("digraph-wordnet.txt");
+        Digraph digraph = new Digraph(in);
+        SAP sap = new SAP(digraph);
+        List<Integer> sources = new ArrayList<>();
+        List<Integer> destinations = new ArrayList<>();
+        //
+        HashMap<Integer, State> map = new HashMap<>();
+        in = new In("digraph1.txt");
+        digraph = new Digraph(in);
+        State state;
+        int source;
+        int destination;
+        int n = digraph.V();
+        for (int i = 0; i < n; i++) {
+            destination = StdRandom.uniform(0, digraph.V());
+            state = new State(i, destination, sap.length(i, destination), sap.ancestor(i, destination));
+            map.put(i, state);
+        }
+        for (int i = 0; i < n; i++) {
+            source = StdRandom.uniform(0, n);
+            destination = StdRandom.uniform(0, n);
+            sources.add(source);
+            destinations.add(destination);
+        }
+        State currentState;
+        for (int i : map.keySet()) {
+            currentState = map.get(i);
+            if (currentState.ancestor != sap.ancestor(i, currentState.destination))
+                System.out.printf("should be source= %d destination = %d ancestor = %d minDistance = %d", currentState.source,
+                        currentState.destination, currentState.ancestor, currentState.minDis);
+        }
+
+        // or you can pick a random value
+        int randomNumber = StdRandom.uniform(0, n);
+        // todo - what happens if a graph does not have 0 value, and you try to get minDistance and or ancestor for it?
+    }
+
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
 //        autoGraderTests.testDigraph1();
 //        autoGraderTests.testDigraph2();
 //        autoGraderTests.testDigraph3();
 //        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph5();
 //        autoGraderTests.testDigraph6();
-//        autoGraderTests.testDigraph9();
-//        autoGraderTests.testMyGraphs();
+ //       autoGraderTests.testDigraph9();
+        autoGraderTests.testMyGraphs();
 //        autoGraderTests.createMultipleObjects();
 //        autoGraderTests.testIterables();
 //        autoGraderTests.testRandomDigraph();

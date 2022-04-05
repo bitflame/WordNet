@@ -94,6 +94,8 @@ public class SAP {
         int subsetDitance = INFINITY;
         int currentDistance = INFINITY;
         int subsetAncestor = -1;
+        int subsetF = from;
+        int subsetD = to;
         // System.out.printf("before the run ancestor = %d, minDistance = %d\n", ancestor, minDistance);
         for (int i : v) {
             for (int j : w) {
@@ -107,14 +109,15 @@ public class SAP {
 //                    continue;
 //                } else { }
                 // System.out.printf("i= %d, j= %d ", i, j);
-                from = i;
-                to = j;
+//                from = i;
+//                to = j;
                 setupDefaultDataStructures();
                 currentDistance = lockStepBFS(i, j, fromBFS, toBFS);
                 minDistance = currentDistance;
                 if ((subsetDitance > currentDistance)) {
                     subsetDitance = currentDistance;
-
+                    subsetD = j;
+                    subsetF = i;
                     // System.out.printf("message from inside SAP: For nodes %d and %d ShortestDistance=%d \n", i, j, minDistance);
 
                     // System.out.printf(" SubsetAncestor= %d, SbsetDistance= %d\n", subsetAncestor, subsetDitance);
@@ -123,8 +126,12 @@ public class SAP {
         }
         // System.out.printf("after the run ancestor = %d, minDistance = %d\n", ancestor, minDistance);
         if (subsetDitance != INFINITY) {
+            from = subsetF;
+            to = subsetD;
             return subsetDitance;
         } else {
+            from = subsetF;
+            to = subsetD;
             return -1;
         }
     }
@@ -173,6 +180,8 @@ public class SAP {
         int ancestorSetDistance = INFINITY;
         int ancestorSetAncestor = -1;
         int currentDistance = -1;
+        int subsetF = from;
+        int subsetT = to;
         for (int i : v) {
             for (int j : w) {
 //                if (i==j){
@@ -186,20 +195,26 @@ public class SAP {
 //                }else { }
                 setupDefaultDataStructures();
                 currentDistance = lockStepBFS(i, j, fromBFS, toBFS);
-                from = i;
-                to = j;
-                minDistance = currentDistance;
+//                from = i;
+//                to = j;
+//                minDistance = currentDistance;
                 if (ancestorSetDistance > currentDistance) {
                     ancestorSetDistance = currentDistance;
                     ancestorSetAncestor = ancestor;
+                    subsetF = i;
+                    subsetT = j;
                 }
 
             }
         }
 
         if (ancestorSetDistance != INFINITY) {
+            from = subsetF;
+            to = subsetT;
             return ancestorSetAncestor;
         } else {
+            from = subsetF;
+            to = subsetT;
             return -1;
         }
 
