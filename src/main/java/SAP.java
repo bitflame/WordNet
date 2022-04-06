@@ -1,7 +1,4 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.*;
 
 public class SAP {
     private static final int INFINITY = Integer.MAX_VALUE;
@@ -10,6 +7,10 @@ public class SAP {
     private int minDistance;
     private int from;
     private int to;
+    private Stack<Integer> fromStack;
+    private Stack<Integer> toStack;
+    private boolean[] onFromStack;
+    private boolean[] onToStack;
     private BreadthFirstDirectedPaths fromBFS;
     private BreadthFirstDirectedPaths toBFS;
     private Queue<Integer> fromQueue;
@@ -114,7 +115,7 @@ public class SAP {
                 setupDefaultDataStructures();
                 currentDistance = lockStepBFS(i, j, fromBFS, toBFS);
                 minDistance = currentDistance;
-                if ((subsetDitance > currentDistance)) {
+                if ((subsetDitance > currentDistance && currentDistance!=-1)) {
                     subsetDitance = currentDistance;
                     subsetD = j;
                     subsetF = i;
@@ -198,7 +199,7 @@ public class SAP {
 //                from = i;
 //                to = j;
 //                minDistance = currentDistance;
-                if (ancestorSetDistance > currentDistance) {
+                if (ancestorSetDistance > currentDistance && currentDistance!=-1) {
                     ancestorSetDistance = currentDistance;
                     ancestorSetAncestor = ancestor;
                     subsetF = i;
@@ -225,6 +226,10 @@ public class SAP {
         fromQueue = new Queue<>();
         toQueue = new Queue<>();
         marked = new boolean[n];
+        fromStack = new Stack<>();
+        toStack = new Stack<>();
+        onFromStack = new boolean[n];
+        onToStack = new boolean[n];
     }
 
     private int updateCurrentDistance(int v, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
@@ -234,9 +239,9 @@ public class SAP {
             currentDistance = distance;
             ancestor = v;
         }
-        if ((sBS.distTo(v) > currentDistance && dBS.distTo(v) > currentDistance)) {
-            proceed = false;
-        }
+//        if ((sBS.distTo(v) > currentDistance && dBS.distTo(v) > currentDistance)) {
+//            proceed = false;
+//        }
         return currentDistance;
     }
 
@@ -248,19 +253,24 @@ public class SAP {
         int currentDistance = INFINITY;
         fromQueue.enqueue(s);
         marked[s] = true;
+        fromStack.push(s);
+        onFromStack[s] = true;
         toQueue.enqueue(d);
+        toStack.push(d);
+        onToStack[d] = true;
         marked[d] = true;
         int v;
-        int distanceFromSourceCounter = 0;
+        int distanceFromSourceCounter = 1;
         while (proceed) {
             while (!fromQueue.isEmpty() && sBFs.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
                         fromQueue.enqueue(w);
-
+                        fromStack.push(w);
+                        onFromStack[w] = true;
                         marked[w] = true;
-                    } else if (dBFs.hasPathTo(w))
+                    } else if (dBFs.hasPathTo(w) && onToStack[w])
                         currentDistance = updateCurrentDistance(w, currentDistance, sBFs, dBFs);
                 }
             }
@@ -270,8 +280,10 @@ public class SAP {
                 for (int w : digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
                         toQueue.enqueue(w);
+                        toStack.push(w);
+                        onToStack[w] = true;
                         marked[w] = true;
-                    } else if (sBFs.hasPathTo(w))
+                    } else if (sBFs.hasPathTo(w) && onFromStack[w])
                         currentDistance = updateCurrentDistance(w, currentDistance, sBFs, dBFs);
                 }
             }

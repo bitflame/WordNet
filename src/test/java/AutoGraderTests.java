@@ -475,6 +475,7 @@ public class AutoGraderTests {
         if (ancestor != 8)
             System.out.printf("The ancestor for the nodes 7 and 8 in graph 5 should be 8, but it is: %d\n", ancestor);
         else System.out.printf("Test 8 of Graph5 ancestor passed.\n");
+        System.out.printf("Testing Iterables in Graph5");
         List<Integer> sources = new ArrayList<>(Arrays.asList(7, 7));
         List<Integer> destinations = new ArrayList<>(Arrays.asList(8, 8));
         ancestor = sap.ancestor(sources, destinations);
@@ -501,13 +502,16 @@ public class AutoGraderTests {
         in = new In("digraph3.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-        sources = new ArrayList<>(Arrays.asList(10, 12, 4, 3, 9));
-        destinations = new ArrayList<>(Arrays.asList(5, 3, 2));
+        // sources = new ArrayList<>(Arrays.asList(10, 12, 4, 3, 9));
+        // destinations = new ArrayList<>(Arrays.asList(5, 3, 2));
+        sources = new ArrayList<>(Arrays.asList(0, 2, 3, 7, 10));
+        destinations = new ArrayList<>(Arrays.asList(1, 7, 12));
         shortestDistance = sap.length(sources, destinations);
-        if (shortestDistance != 0)
-            System.out.printf("Expecting shortest distance value of 0 for Graph3's Iterables set with at least one pair not connected, " +
+        ancestor = sap.ancestor(sources, destinations);
+        if (ancestor != 7)
+            System.out.printf("Expecting ancestor value of 7 for Graph3's Iterables set with at least one pair not connected, " +
                     "but the actual value we get = %d\n", ancestor);
-
+        else System.out.printf("Used Autograder's numbers in graph 3 and it seems to pass.");
 
     }
 
@@ -761,7 +765,6 @@ public class AutoGraderTests {
         else System.out.printf("Test 2 ancestor passed. \n");
 
 
-
         System.out.printf("\n");
         System.out.printf("My Graph2 Tests\n");
         in = new In("myGraph2.txt");
@@ -1010,19 +1013,19 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-//        autoGraderTests.testDigraph1();
-//        autoGraderTests.testDigraph2();
-//        autoGraderTests.testDigraph3();
-//        autoGraderTests.testDigraph4();
-//        autoGraderTests.testDigraph5();
-//        autoGraderTests.testDigraph6();
- //       autoGraderTests.testDigraph9();
+        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph3();
+        autoGraderTests.testDigraph4();
+        autoGraderTests.testDigraph5();
+        autoGraderTests.testDigraph6();
+        autoGraderTests.testDigraph9();
         autoGraderTests.testMyGraphs();
-//        autoGraderTests.createMultipleObjects();
-//        autoGraderTests.testIterables();
-//        autoGraderTests.testRandomDigraph();
-//        autoGraderTests.troubleShooting();
-//        autoGraderTests.testDigraphWordNet();
-//        autoGraderTests.repeatedTests();
+        autoGraderTests.createMultipleObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
+        autoGraderTests.troubleShooting();
+        autoGraderTests.testDigraphWordNet();
+        autoGraderTests.repeatedTests();
     }
 }
