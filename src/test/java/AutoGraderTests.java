@@ -2,7 +2,7 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
-import org.junit.jupiter.api.Disabled;
+
 
 
 import java.util.*;
@@ -417,7 +417,6 @@ public class AutoGraderTests {
         if (ancestor != 21)
             System.out.printf("ancestor between 17, and 21 ing Graph5 should be 21, but it is : %d\n", ancestor);
         else System.out.printf("Test 1 of Graph5 ancestor passed.\n");
-
         shortestDistance = sap.length(14, 21);
         if (shortestDistance != 8)
             System.out.printf("The distance between 14 and 21 should be 8, but it is: %d\n", shortestDistance);
@@ -426,7 +425,6 @@ public class AutoGraderTests {
         if (ancestor != 21)
             System.out.printf("The distance between 14 and 21 in Graph5 should be 21, but it is: %d\n", ancestor);
         else System.out.printf("Test 2 of Graph5 ancestor passed.\n");
-
         shortestDistance = sap.length(9, 20);
         if (shortestDistance != 3)
             System.out.printf("The distance between 9 and 20 should be 3, but it is: %d\n", shortestDistance);
@@ -435,7 +433,6 @@ public class AutoGraderTests {
         if (ancestor != 9)
             System.out.printf("The ancestor between 9, and 20 in graph5 should be 20, but it is: %d\n", ancestor);
         else System.out.printf("Test 3 of Graph5 ancestor passed.\n");
-
         ancestor = sap.ancestor(10, 12);
         if (ancestor != 10) System.out.printf("The value of ancestor should be 10, and it is: %d\n ", ancestor);
         else System.out.printf("Test 4 of Graph5 ancestor passed.\n");
@@ -511,7 +508,7 @@ public class AutoGraderTests {
         if (ancestor != 7)
             System.out.printf("Expecting ancestor value of 7 for Graph3's Iterables set with at least one pair not connected, " +
                     "but the actual value we get = %d\n", ancestor);
-        else System.out.printf("Used Autograder's numbers in graph 3 and it seems to pass.");
+        else System.out.printf("Used Autograder's numbers in graph 3 and it seems to pass.\n");
 
     }
 
@@ -546,7 +543,6 @@ public class AutoGraderTests {
         in = new In("digraph9.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-
         shortestDistance = sap.length(7, 8);
         if (shortestDistance != -1)
             System.out.printf("The distance between 7 and 8 should be -1, but it is: %d\n", shortestDistance);
@@ -907,7 +903,6 @@ public class AutoGraderTests {
         if (shortestDistance != 1)
             System.out.printf("shortest distance between 3 and 0 in myGraph4 should be 2, but it is: %d\n  ", shortestDistance);
         else System.out.printf("Test 19 shortest distance passed.\n");
-        // (2, 4) (4, 2) (0, 4) (4, 0) (1, 4) (4, 1)
         ancestor = sap.ancestor(2, 4);
         if (ancestor != 4) System.out.printf("ancestor for 2,4 in myGraph4 should be 4, but it is: %d\n ", ancestor);
         else System.out.printf("Test 20 ancestor passed.\n");
@@ -923,7 +918,6 @@ public class AutoGraderTests {
         if (shortestDistance != 1)
             System.out.printf("shortest distance between 4, and 2 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 21 shortest distance passed.\n");
-
     }
 
     private void repeatedTests() {
@@ -1010,7 +1004,11 @@ public class AutoGraderTests {
         int randomNumber = StdRandom.uniform(0, n);
         // todo - what happens if a graph does not have 0 value, and you try to get minDistance and or ancestor for it?
     }
+private void testDigraph25(){
+        in = new In("digraph25.txt");
+        digraph = new Digraph(in);
 
+}
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
         autoGraderTests.testDigraph1();

@@ -100,27 +100,15 @@ public class SAP {
         // System.out.printf("before the run ancestor = %d, minDistance = %d\n", ancestor, minDistance);
         for (int i : v) {
             for (int j : w) {
-//                if (i==j)   {
-//                    subsetAncestor=i;
-//                    subsetDitance=0;
-//                    minDistance=0;
-//                    ancestor = i;
-//                    from = i;
-//                    to = j;
-//                    continue;
-//                } else { }
-                // System.out.printf("i= %d, j= %d ", i, j);
-//                from = i;
-//                to = j;
                 setupDefaultDataStructures();
                 currentDistance = lockStepBFS(i, j, fromBFS, toBFS);
+                // currentDistance = testMethod(i, j, fromBFS, toBFS);
                 minDistance = currentDistance;
-                if ((subsetDitance > currentDistance && currentDistance!=-1)) {
+                if ((subsetDitance > currentDistance && currentDistance != -1)) {
                     subsetDitance = currentDistance;
                     subsetD = j;
                     subsetF = i;
                     // System.out.printf("message from inside SAP: For nodes %d and %d ShortestDistance=%d \n", i, j, minDistance);
-
                     // System.out.printf(" SubsetAncestor= %d, SbsetDistance= %d\n", subsetAncestor, subsetDitance);
                 }
             }
@@ -185,30 +173,17 @@ public class SAP {
         int subsetT = to;
         for (int i : v) {
             for (int j : w) {
-//                if (i==j){
-//                    ancestorSetAncestor=i;
-//                    ancestorSetDistance=0;
-//                    minDistance=0;
-//                    ancestor=i;
-//                    from=i;
-//                    to = j;
-//                    continue;
-//                }else { }
                 setupDefaultDataStructures();
                 currentDistance = lockStepBFS(i, j, fromBFS, toBFS);
-//                from = i;
-//                to = j;
-//                minDistance = currentDistance;
-                if (ancestorSetDistance > currentDistance && currentDistance!=-1) {
+                //currentDistance = testMethod(i, j, fromBFS, toBFS);
+                if (ancestorSetDistance > currentDistance && currentDistance != -1) {
                     ancestorSetDistance = currentDistance;
                     ancestorSetAncestor = ancestor;
                     subsetF = i;
                     subsetT = j;
                 }
-
             }
         }
-
         if (ancestorSetDistance != INFINITY) {
             from = subsetF;
             to = subsetT;
@@ -234,15 +209,66 @@ public class SAP {
 
     private int updateCurrentDistance(int v, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
         int distance = sBS.distTo(v) + dBS.distTo(v);
-        // if (distance > 0 && distance < currentDistance) {
         if (distance < currentDistance) {
             currentDistance = distance;
             ancestor = v;
         }
-//        if ((sBS.distTo(v) > currentDistance && dBS.distTo(v) > currentDistance)) {
-//            proceed = false;
-//        }
         return currentDistance;
+    }
+
+    private int testMethod(int s, int d, BreadthFirstDirectedPaths sBFS, BreadthFirstDirectedPaths dBFS) {
+        from = s;
+        to = d;
+        proceed = true;
+        int currentDistance = INFINITY;
+        fromQueue.enqueue(s);
+        marked[s] = true;
+        fromStack.push(s);
+        onFromStack[s] = true;
+        toQueue.enqueue(d);
+        toStack.push(d);
+        onToStack[d] = true;
+        marked[d] = true;
+        int v;
+        int distanceFromSourceCounter = 1;
+        while (proceed) {
+            while (!fromQueue.isEmpty() && sBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
+                v = fromQueue.dequeue();
+                for (int w : sBFS.pathTo(v)) {
+                    if (!marked[w]) {
+                        fromQueue.enqueue(w);
+                        fromStack.push(w);
+                        onFromStack[w] = true;
+                        marked[w] = true;
+                    } else if (dBFS.hasPathTo(w))
+                        currentDistance = updateCurrentDistance(w, currentDistance, sBFS, dBFS);
+
+                }
+            }
+            if (!proceed) break;
+            while (!toQueue.isEmpty() && dBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
+                v = toQueue.dequeue();
+                for (int w : dBFS.pathTo(v)) {
+                    if (!marked[w]) {
+                        toQueue.enqueue(w);
+                        toStack.push(w);
+                        onToStack[w] = true;
+                        marked[w] = true;
+                    } else if (sBFS.hasPathTo(w))
+                        currentDistance = updateCurrentDistance(w, currentDistance, sBFS, dBFS);
+                }
+            }
+            if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
+            distanceFromSourceCounter++;
+        }
+        if (currentDistance != INFINITY) {
+            minDistance = currentDistance;
+        } else {
+            minDistance = -1;
+            ancestor = -1;
+        }
+        proceed = true;
+        return minDistance;
     }
 
     // source, destination, source breadth-first search, destination breadth-first search - return minimum distance
@@ -270,8 +296,9 @@ public class SAP {
                         fromStack.push(w);
                         onFromStack[w] = true;
                         marked[w] = true;
-                    } else if (dBFs.hasPathTo(w) && onToStack[w])
+                    } else if (dBFs.hasPathTo(w))
                         currentDistance = updateCurrentDistance(w, currentDistance, sBFs, dBFs);
+
                 }
             }
             if (!proceed) break;
@@ -283,7 +310,7 @@ public class SAP {
                         toStack.push(w);
                         onToStack[w] = true;
                         marked[w] = true;
-                    } else if (sBFs.hasPathTo(w) && onFromStack[w])
+                    } else if (sBFs.hasPathTo(w))
                         currentDistance = updateCurrentDistance(w, currentDistance, sBFs, dBFs);
                 }
             }
