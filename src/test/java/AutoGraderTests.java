@@ -736,12 +736,12 @@ public class AutoGraderTests {
             System.out.printf("The ancestor between 1, 0 with 0 pointing towards 1 should be 1, but it is: %d\n ", ancestor);
         else System.out.printf("Test 2 ancestor passed. \n");
         shortestDistance = sap.length(2, 0);
-        if (shortestDistance != 2)
-            System.out.printf("The distance between 2 and 0 with both pointing away should be 2, but it is: %d\n", shortestDistance);
+        if (shortestDistance != -1)
+            System.out.printf("The distance between 2 and 0 when 2 is not connected to any other nodes should be -1, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 3 length passed.\n");
         ancestor = sap.ancestor(2, 0);
-        if (ancestor != 1)
-            System.out.printf("The ancestor for 2, and 0 nodes both pointing away should be 1, but it is: %d\n", ancestor);
+        if (ancestor != -1)
+            System.out.printf("The ancestor for 2, and 0 when 2 is not connected to any other nodes should be -1, but it is: %d\n", ancestor);
         else System.out.printf("Test 3 ancestor passed.\n");
         shortestDistance = sap.length(0, 1);
         if (shortestDistance != 1)

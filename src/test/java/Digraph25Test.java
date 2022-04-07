@@ -19,6 +19,7 @@ public class Digraph25Test {
     static boolean proceed;
     static In in = new In("digraph25.txt");
     static Digraph digraph = new Digraph(in);
+
     private static void setupDefaultDataStructures() {
 
         fromQueue = new Queue<>();
@@ -30,6 +31,7 @@ public class Digraph25Test {
         onFromStack = new boolean[n];
         onToStack = new boolean[n];
     }
+
     private static int updateCurrentDistance(int v, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
         int distance = sBS.distTo(v) + dBS.distTo(v);
         if (distance < currentDistance) {
@@ -38,11 +40,12 @@ public class Digraph25Test {
         }
         return currentDistance;
     }
+
     private static int testMethod(int s, int d, BreadthFirstDirectedPaths sBFS, BreadthFirstDirectedPaths dBFS) {
         int currentDistance = INFINITY;
-        if (s==d){
-            minDistance=0;
-            ancestor=s;
+        if (s == d) {
+            minDistance = 0;
+            ancestor = s;
             return minDistance;
         }
         proceed = true;
@@ -70,7 +73,7 @@ public class Digraph25Test {
                     } else if (onFromStack[w] && w == d) {
                         currentDistance = sBFS.distTo(v) + 1;
                         ancestor = w;
-                    } else if (dBFS.hasPathTo(w) && !onFromStack[w]) {
+                    } else if (dBFS.hasPathTo(w)) {
                         currentDistance = updateCurrentDistance(w, currentDistance, sBFS, dBFS);
                     }
                 }
@@ -87,7 +90,7 @@ public class Digraph25Test {
                     } else if (onToStack[w] && w == s) {
                         currentDistance = dBFS.distTo(v) + 1;
                         ancestor = w;
-                    } else if (sBFS.hasPathTo(w) && !onToStack[w]) {
+                    } else if (sBFS.hasPathTo(w)) {
                         currentDistance = updateCurrentDistance(w, currentDistance, sBFS, dBFS);
                     }
 
@@ -116,8 +119,8 @@ public class Digraph25Test {
         result = sap.length(13, 6);
         if (result != 6) throw new AssertionError("The length of the minimum distance between 13 and 6 " +
                 "should be 6, but is: " + result);
-        List<Integer> sources = new ArrayList<>(Arrays.asList(13,23,24));
-        List<Integer> destinations = new ArrayList<>(Arrays.asList(6,16,17));
+        List<Integer> sources = new ArrayList<>(Arrays.asList(13, 23, 24));
+        List<Integer> destinations = new ArrayList<>(Arrays.asList(6, 16, 17));
         BreadthFirstDirectedPaths vBFDS = new BreadthFirstDirectedPaths(digraph, sources);
         BreadthFirstDirectedPaths wBFDS = new BreadthFirstDirectedPaths(digraph, destinations);
         int distance = INFINITY;

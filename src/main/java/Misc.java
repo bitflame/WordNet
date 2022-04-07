@@ -48,9 +48,9 @@ public class Misc {
 
     private int testMethod(int s, int d, BreadthFirstDirectedPaths sBFS, BreadthFirstDirectedPaths dBFS) {
         int currentDistance = INFINITY;
-        if (s==d){
-            minDistance=0;
-            ancestor=s;
+        if (s == d) {
+            minDistance = 0;
+            ancestor = s;
             return minDistance;
         }
         proceed = true;
@@ -65,7 +65,6 @@ public class Misc {
         int v;
         int distanceFromSourceCounter = 1;
         while (proceed) {
-
             // if both have routes to it and distance is minimum
             while (!fromQueue.isEmpty() && sBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
@@ -78,7 +77,7 @@ public class Misc {
                     } else if (onFromStack[w] && w == d) {
                         currentDistance = sBFS.distTo(v) + 1;
                         ancestor = w;
-                    } else if (dBFS.hasPathTo(w) && !onFromStack[w]) {
+                    } else if (dBFS.hasPathTo(w)) {
                         currentDistance = updateCurrentDistance(w, currentDistance, sBFS, dBFS);
                     }
                 }
@@ -93,12 +92,12 @@ public class Misc {
                         toStack.push(w);
                         onToStack[w] = true;
                     } else if (onToStack[w] && w == s) {
+                        // if it is onStack you might have to compare distances to the node with the path it came from
                         currentDistance = dBFS.distTo(v) + 1;
                         ancestor = w;
-                    } else if (sBFS.hasPathTo(w) && !onToStack[w]) {
+                    } else if (sBFS.hasPathTo(w)) {
                         currentDistance = updateCurrentDistance(w, currentDistance, sBFS, dBFS);
                     }
-
                 }
             }
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
