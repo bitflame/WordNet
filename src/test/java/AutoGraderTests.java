@@ -4,7 +4,6 @@ import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 
 
-
 import java.util.*;
 
 
@@ -215,6 +214,12 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(1, 5);
         if (ancestor != 0)
             System.out.printf("The ancestor for nodes 1 and 5 should be 0, but it is: %d\n", ancestor);
+        shortestDistance = sap.length(3, 4);
+        if (shortestDistance != 1)
+            System.out.printf("Shortest distance between nodes 3 and 4 should be 1, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(3, 4);
+        if (ancestor != 4)
+            System.out.printf("Ancestor between nodes 3 and 4 for graph2 should be 4, but it is: %d\n", ancestor);
     }
 
     private void testDigraph3() {
@@ -674,8 +679,10 @@ public class AutoGraderTests {
                 "minimum distance is 0 actual value = %d\n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
         sources = new ArrayList<>(Arrays.asList(9, 14, 17));
         destinations = new ArrayList<>(Arrays.asList(12, 20, 21));
+        ancestor = sap.ancestor(sources, destinations);
+        shortestDistance = sap.length(sources, destinations);
         System.out.printf("Test #2 results; Expected Iterables ancestor is 12, or 9; actual value = %d Expected Iterables minimum distance is 2; " +
-                "actual value = %d\n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
+                "actual value = %d\n", ancestor, shortestDistance);
         ancestor = sap.ancestor(13, 21);
         if (ancestor != 10)
             System.out.printf("Ancestor for nodes 13, and 21 in graph 5 should be 10, but it is: %d\n", ancestor);
@@ -694,6 +701,7 @@ public class AutoGraderTests {
                 "actual value = %d\n", sap.ancestor(sources, destinations), sap.length(sources, destinations));
         // also try graph 3 with slightly different cycle and graph 25 without a cycle
         in = new In("digraph25.txt");
+        System.out.printf("Testing Digraph25\n");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
         sources = new ArrayList<>(Arrays.asList(5, 2, 4));
@@ -701,6 +709,7 @@ public class AutoGraderTests {
         System.out.printf("Test #4 - Expecting ancestor of 5, and minimum distance of 0; actual ancestor = %d actual distance is: %d\n",
                 sap.ancestor(sources, destinations), sap.length(sources, destinations));
         // Trying graph 3
+        System.out.printf("Testing Digraph 3.\n");
         in = new In("digraph3.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
@@ -963,11 +972,15 @@ public class AutoGraderTests {
         int ancestor;
 
         public State(int source, int destination, int minDis, int ancestor) {
-
+            this.source = source;
+            this.destination = destination;
+            this.minDis = minDis;
+            this.ancestor = ancestor;
         }
     }
 
     private void iterativeTests() {
+        System.out.printf("Starting iterative tests \n");
         In in = new In("digraph-wordnet.txt");
         Digraph digraph = new Digraph(in);
         SAP sap = new SAP(digraph);
@@ -975,55 +988,71 @@ public class AutoGraderTests {
         List<Integer> destinations = new ArrayList<>();
         //
         HashMap<Integer, State> map = new HashMap<>();
-        in = new In("digraph1.txt");
-        digraph = new Digraph(in);
+        //in = new In("digraph1.txt");
+        //digraph = new Digraph(in);
         State state;
         int source;
         int destination;
         int n = digraph.V();
-        for (int i = 0; i < n; i++) {
-            destination = StdRandom.uniform(0, digraph.V());
+
+        System.out.printf("size of digraph is: %d\n", n);
+        for (int i = 0; i < 10000; i++) {
+            destination = StdRandom.uniform(0, n);
             state = new State(i, destination, sap.length(i, destination), sap.ancestor(i, destination));
             map.put(i, state);
         }
-        for (int i = 0; i < n; i++) {
+        State currentState;
+        int ancestor;
+        int minDistance;
+        for (int i : map.keySet()) {
+            currentState = map.get(i);
+            ancestor = sap.ancestor(i, currentState.destination);
+            minDistance = sap.length(i, currentState.destination);
+            if (currentState.ancestor != ancestor || currentState.minDis != minDistance)
+                throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
+                        "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
+                        " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
+        }
+        System.out.printf("done with test 1.\n");
+        for (int i = 0; i < 15; i++) {
             source = StdRandom.uniform(0, n);
             destination = StdRandom.uniform(0, n);
             sources.add(source);
             destinations.add(destination);
         }
-        State currentState;
-        for (int i : map.keySet()) {
+        System.out.printf("Created sources and destinations for iterables.\n");
+        int counter = 0;
+        while (counter < 1000) {
+            int i = StdRandom.uniform(0, map.size());
             currentState = map.get(i);
-            if (currentState.ancestor != sap.ancestor(i, currentState.destination))
-                System.out.printf("should be source= %d destination = %d ancestor = %d minDistance = %d", currentState.source,
-                        currentState.destination, currentState.ancestor, currentState.minDis);
+            ancestor = sap.ancestor(i, currentState.destination);
+            minDistance = sap.length(i, currentState.destination);
+            if (currentState.ancestor != ancestor || currentState.minDis != minDistance)
+                throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
+                        "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
+                        " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
+            sap.ancestor(sources, destinations);
+            sap.ancestor(sources, destinations);
+            counter++;
         }
-
-        // or you can pick a random value
-        int randomNumber = StdRandom.uniform(0, n);
-        // todo - what happens if a graph does not have 0 value, and you try to get minDistance and or ancestor for it?
     }
-private void testDigraph25(){
-        in = new In("digraph25.txt");
-        digraph = new Digraph(in);
 
-}
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.testDigraph1();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.testMyGraphs();
+//        autoGraderTests.createMultipleObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
         autoGraderTests.troubleShooting();
-        autoGraderTests.testDigraphWordNet();
-        autoGraderTests.repeatedTests();
+//        autoGraderTests.testDigraphWordNet();
+//        autoGraderTests.repeatedTests();
+//        autoGraderTests.iterativeTests();
     }
 }
