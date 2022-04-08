@@ -139,6 +139,14 @@ public class SAP {
                         subsetF = i;
                         subsetD = j;
                     }
+                } else {
+                    currentDistance = testMethod(i, j);
+                    if (currentDistance != -1 && currentDistance < subsetDistance) {
+                        subsetAncestor = ancestor;
+                        subsetDistance = currentDistance;
+                        subsetF = i;
+                        subsetD = j;
+                    }
                 }
             }
         }
@@ -241,6 +249,14 @@ public class SAP {
                     currentDistance = hops - 1;
                     if (currentDistance < ancestorSetDistance) {
                         ancestorSetAncestor = j;
+                        ancestorSetDistance = currentDistance;
+                        subsetF = i;
+                        subsetT = j;
+                    }
+                } else {
+                    currentDistance = testMethod(i, j);
+                    if (currentDistance != -1 && currentDistance < ancestorSetDistance) {
+                        ancestorSetAncestor = ancestor;
                         ancestorSetDistance = currentDistance;
                         subsetF = i;
                         subsetT = j;
