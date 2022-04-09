@@ -51,36 +51,46 @@ public class AutoGraderTests {
         in = new In("digraph-wordnet.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-        shortestDistance = sap.length(64451, 25327);
-        if (shortestDistance != 15)
-            System.out.printf("shortest distance between 64451, and 25327 should be 15, but it is: %d \n", shortestDistance);
-        ancestor = sap.ancestor(64451, 25327);
-        StdOut.println("ancestor for 64451 and 25327 is: " + ancestor);
-        shortestDistance = sap.length(35205, 21385);
-        if (shortestDistance != 17)
-            System.out.printf("shortest distance between 35205, and 21385 should be 17, but it is: %d\n", shortestDistance);
-        ancestor = sap.ancestor(35205, 21385);
-        StdOut.println("ancestor for 35205 and 21385 is: " + ancestor);
-        shortestDistance = sap.length(53712, 61827);
-        if (shortestDistance != 10)
-            System.out.printf("shortest distance between 53712, and 61827 should be 10, but it is: %d\n", shortestDistance);
-        ancestor = sap.ancestor(53712, 61827);
-        StdOut.println("ancestor for 53712 and 61827 is: " + ancestor);
-        shortestDistance = sap.length(45826, 73382);
-        if (shortestDistance != 14)
-            System.out.printf("shortest distance between 45826, and 73382 should be 14, but it is: %d\n ", shortestDistance);
-        ancestor = sap.ancestor(45826, 73382);
-        StdOut.println("ancestor for 45826 and 73382 is: " + ancestor);
-        shortestDistance = sap.length(2657, 55738);
-        if (shortestDistance != 15)
-            System.out.printf("shortest distance between 2657, and 55738 should be 15, but it is: %d\n ", shortestDistance);
-        ancestor = sap.ancestor(2657, 55738);
-        StdOut.println("ancestor for 2657 and 55738 is: " + ancestor);
+//        shortestDistance = sap.length(64451, 25327);
+//        if (shortestDistance != 15)
+//            System.out.printf("shortest distance between 64451, and 25327 should be 15, but it is: %d \n", shortestDistance);
+//        ancestor = sap.ancestor(64451, 25327);
+//        StdOut.println("ancestor for 64451 and 25327 is: " + ancestor);
+//        shortestDistance = sap.length(35205, 21385);
+//        if (shortestDistance != 17)
+//            System.out.printf("shortest distance between 35205, and 21385 should be 17, but it is: %d\n", shortestDistance);
+//        ancestor = sap.ancestor(35205, 21385);
+//        StdOut.println("ancestor for 35205 and 21385 is: " + ancestor);
+//        shortestDistance = sap.length(53712, 61827);
+//        if (shortestDistance != 10)
+//            System.out.printf("shortest distance between 53712, and 61827 should be 10, but it is: %d\n", shortestDistance);
+//        ancestor = sap.ancestor(53712, 61827);
+//        StdOut.println("ancestor for 53712 and 61827 is: " + ancestor);
+//        shortestDistance = sap.length(45826, 73382);
+//        if (shortestDistance != 14)
+//            System.out.printf("shortest distance between 45826, and 73382 should be 14, but it is: %d\n ", shortestDistance);
+//        ancestor = sap.ancestor(45826, 73382);
+//        StdOut.println("ancestor for 45826 and 73382 is: " + ancestor);
+//        shortestDistance = sap.length(2657, 55738);
+//        if (shortestDistance != 15)
+//            System.out.printf("shortest distance between 2657, and 55738 should be 15, but it is: %d\n ", shortestDistance);
+//        ancestor = sap.ancestor(2657, 55738);
+//        StdOut.println("ancestor for 2657 and 55738 is: " + ancestor);
         List<Integer> sources = new ArrayList<>(Arrays.asList(17798, 19186, 32838, 38602, 46105, 48396, 54151, 61313, 65881, 69296, 81702));
         List<Integer> destinations = new ArrayList<>(Arrays.asList(14155, 23556, 63400));
+
         shortestDistance = sap.length(sources, destinations);
         if (shortestDistance != 7)
             System.out.printf("The expected answer for wordnet iterables is 7, but we get: %d\n", shortestDistance);
+        shortestDistance = sap.length(sources, destinations);
+        if (shortestDistance != 7)
+            System.out.printf("The expected answer for wordnet iterables is 7, but we get: %d\n", shortestDistance);
+        ancestor = sap.ancestor(sources, destinations);
+        if (ancestor != 38003)
+            System.out.printf("The expected ancestor for wordnet iterable is 38003, but we get: %d\n", ancestor);
+        ancestor = sap.ancestor(sources, destinations);
+        if (ancestor != 38003)
+            System.out.printf("The expected ancestor for wordnet iterable is 38003, but we get: %d\n", ancestor);
     }
 
     private void testSubgraphs() {
@@ -1039,20 +1049,20 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
-        autoGraderTests.troubleShooting();
+//        autoGraderTests.testDigraph1();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.testMyGraphs();
+//        autoGraderTests.createMultipleObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
-        autoGraderTests.repeatedTests();
-        autoGraderTests.iterativeTests();
+//        autoGraderTests.repeatedTests();
+//        autoGraderTests.iterativeTests();
     }
 }

@@ -102,23 +102,26 @@ public class WordNet {
         System.out.println("using " + args[0] + " and " + args[1] + "files for this round.");
         WordNet wordNet = new WordNet(args[0], args[1]);
         Stopwatch time = new Stopwatch();
+        System.out.println("The distance expected between worm and bird is 5, the result: " + wordNet.distance("worm", "bird"));
         System.out.println("The common ancestor between worm and animal: " + wordNet.sap("worm", "bird"));
+
         double now = time.elapsedTime();
         StdOut.println("worm/bird test using HashMap took: " + now);
-        // System.out.println("The distance expected between worm and bird is 5, the result: " + wordNet.distance("worm", "bird"));
+
+
         System.out.println(wordNet.isNoun("entity"));
-        System.out.printf("Is CRP a wordnet noun? %b\n",wordNet.isNoun("CRP"));
+        System.out.printf("Is CRP a wordnet noun? %b\n", wordNet.isNoun("CRP"));
         StdOut.println("The common ancestor for quadrangle and mountain_devil is:" +
                 wordNet.sap("quadrangle", "mountain_devil"));
-        // StdOut.println("The distance expected between mountain_devil and quadrangle should be 11, the result: " + wordNet.distance("quadrangle", "mountain_devil"));
+        StdOut.println("The distance expected between mountain_devil and quadrangle should be 11, the result: " + wordNet.distance("quadrangle", "mountain_devil"));
         StdOut.println("The common ancestor between individual and edible_fruit should be physical_entity, and it is: " +
                 wordNet.sap("individual", "edible_fruit"));
-        // StdOut.println("The distance expected between the nouns individual and edible_fruit should be 7, and it is: " + wordNet.distance("individual", "edible_fruit"));
-        // StdOut.println("The distance between the nouns white_marlin and mileage should be 23, and it is: " + wordNet.distance("white_marlin", "mileage"));
-        // StdOut.println("The distance between the nouns Black_Plague and black_marline should be 33, and it is:" + wordNet.distance("Black_Plague", "black_marlin"));
-        // StdOut.println("The distance between the nouns American_water_spaniel and histology should be 27 and it is: " + wordNet.distance("American_water_spaniel", "histology"));
-        // StdOut.println("The distance between the nouns Brown_Swiss, and barrel_roll should be 29, and it is: " + wordNet.distance("Brown_Swiss", "barrel_roll"));
-        // StdOut.println("The distance between the nouns group_action and event should be 1, and it is: " + wordNet.distance("group_action", "event"));
-        // StdOut.println("The distance between the nouns act and group_action should be 1, and it is:" + wordNet.distance("act", "group_action"));
+        StdOut.println("The distance expected between the nouns individual and edible_fruit should be 7, and it is: " + wordNet.distance("individual", "edible_fruit"));
+        StdOut.println("The distance between the nouns white_marlin and mileage should be 23, and it is: " + wordNet.distance("white_marlin", "mileage"));
+        StdOut.println("The distance between the nouns Black_Plague and black_marline should be 33, and it is:" + wordNet.distance("Black_Plague", "black_marlin"));
+        StdOut.println("The distance between the nouns American_water_spaniel and histology should be 27 and it is: " + wordNet.distance("American_water_spaniel", "histology"));
+        StdOut.println("The distance between the nouns Brown_Swiss, and barrel_roll should be 29, and it is: " + wordNet.distance("Brown_Swiss", "barrel_roll"));
+        StdOut.println("The distance between the nouns group_action and event should be 1, and it is: " + wordNet.distance("group_action", "event"));
+        StdOut.println("The distance between the nouns act and group_action should be 1, and it is:" + wordNet.distance("act", "group_action"));
     }
 }

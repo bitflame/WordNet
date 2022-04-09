@@ -27,6 +27,8 @@ public class SAP {
         digraphDFCopy = new Digraph(digraph);
         minDistance = -1;
         ancestor = -1;
+        from = -1;
+        to = -1;
         n = digraphDFCopy.V();
         proceed = true;
         setupDefaultDataStructures();
@@ -95,29 +97,22 @@ public class SAP {
         }
         BreadthFirstDirectedPaths fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         BreadthFirstDirectedPaths toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        int subsetF = from;
-        int subsetD = to;
-        int subsetDistance = INFINITY;
-        int subsetAncestor = -1;
-        int currentDistance = 0;
-        int prevAncestor = ancestor;
-        int prevMinDistance = minDistance;
+        int currentDistance = INFINITY;
+
         // System.out.printf("before the run ancestor = %d, minDistance = %d\n", ancestor, minDistance);
         for (int i : v) {
             for (int j : w) {
-
                 if (toBFS.hasPathTo(i) && fromBFS.hasPathTo(j)) {
-
+                    System.out.printf("Both toBFS and fromB");
                     for (int q : toBFS.pathTo(i)) {
                         for (int u : fromBFS.pathTo(j)) {
                             if (q == u) {
                                 currentDistance = toBFS.distTo(q) + fromBFS.distTo(q);
-                                if (currentDistance < subsetDistance && currentDistance!=-1) {
-                                    subsetAncestor = q;// or u
-                                    subsetDistance = currentDistance;
-                                    subsetF = i;
-                                    subsetD = j;
-
+                                if (currentDistance !=INFINITY) {
+                                    ancestor = q;// or u
+                                    minDistance = currentDistance;
+                                    from = i;
+                                    to = j;
                                 }
                             }
                         }
@@ -129,52 +124,37 @@ public class SAP {
                         hops++;
                     }
                     currentDistance = hops - 1;
-                    if (currentDistance < subsetDistance) {
-                        subsetAncestor = i;
-                        subsetDistance = currentDistance;
-                        subsetF = i;
-                        subsetD = j;
+                    if (currentDistance!=INFINITY) {
+                        ancestor = i;
+                        minDistance = currentDistance;
+                        from = i;
+                        to = j;
                     }
                 } else if (fromBFS.hasPathTo(j)) {
-
                     int hops = 0;
                     for (int u : fromBFS.pathTo(j)) {
                         hops++;
                     }
                     currentDistance = hops - 1;
 
-                    if (currentDistance < subsetDistance) {
+                    if (currentDistance != INFINITY) {
 
-                        subsetAncestor = j;
-                        subsetDistance = currentDistance;
-                        subsetF = i;
-                        subsetD = j;
+                        ancestor = j;
+                        minDistance = currentDistance;
+                        from = i;
+                        to = j;
                     }
                 } else {
-                    currentDistance = testMethod(i, j);
-                    if (currentDistance != -1 && currentDistance < subsetDistance) {
-                        subsetAncestor = ancestor;
-                        subsetDistance = currentDistance;
-                        subsetF = i;
-                        subsetD = j;
-                    }
+                    from = i;
+                    to = j;
+                    setupDefaultDataStructures();
+                    testMethod(i, j);
+
                 }
             }
         }
         // System.out.printf("after the run ancestor = %d, minDistance = %d\n", ancestor, minDistance);
-        from = subsetF;
-        to = subsetD;
-        System.out.printf("");
-        if (subsetDistance != INFINITY) {
-            ancestor = subsetAncestor;
-            minDistance = subsetDistance;
-
-            return minDistance;
-        } else {
-            ancestor = prevAncestor;
-            minDistance = prevMinDistance;
-            return -1;
-        }
+        return minDistance;
     }
 
 
@@ -189,9 +169,9 @@ public class SAP {
             ancestor = w;
             minDistance = 0;
             return ancestor;
-        } else if (this.from == v && this.to == w) {
+        } else if (this.from == v && this.to == w && from > 0 && to > 0) {
             return ancestor;
-        } else if (this.from == w && this.to == v) {
+        } else if (this.from == w && this.to == v && from > 0 && to > 0) {
             from = v;
             to = w;
             return ancestor;
@@ -216,13 +196,7 @@ public class SAP {
         }
         BreadthFirstDirectedPaths fromBFS = new BreadthFirstDirectedPaths(digraphDFCopy, v);
         BreadthFirstDirectedPaths toBFS = new BreadthFirstDirectedPaths(digraphDFCopy, w);
-        int subsetF = from;
-        int subsetT = to;
-        int ancestorSetDistance = INFINITY;
-        int ancestorSetAncestor = -1;
-        int currentDistance = 0;
-        int prevAncestor = ancestor;
-        int prevMinDistance = minDistance;
+        int currentDistance = INFINITY;
         for (int i : v) {
             for (int j : w) {
                 // if there is a route for both save the distance, if not, run testMethod
@@ -231,11 +205,11 @@ public class SAP {
                         for (int u : fromBFS.pathTo(j)) {
                             if (q == u) {
                                 currentDistance = toBFS.distTo(q) + fromBFS.distTo(q);
-                                if (currentDistance < ancestorSetDistance && currentDistance!=-1) {
-                                    ancestorSetAncestor = q;// or u
-                                    ancestorSetDistance = currentDistance;
-                                    subsetF = i;
-                                    subsetT = j;
+                                if (currentDistance !=INFINITY) {
+                                    ancestor = q;// or u
+                                    minDistance = currentDistance;
+                                    from = i;
+                                    to = j;
                                 }
                             }
                         }
@@ -246,55 +220,41 @@ public class SAP {
                         hops++;
                     }
                     currentDistance = hops - 1;
-                    if (currentDistance < ancestorSetDistance) {
-                        ancestorSetAncestor = i;
-                        ancestorSetDistance = currentDistance;
-                        subsetF = i;
-                        subsetT = j;
+                    if (currentDistance !=INFINITY) {
+                        ancestor = i;
+                        minDistance = currentDistance;
+                        from = i;
+                        to = j;
                     }
                 } else if (fromBFS.hasPathTo(j)) {
                     int hops = 0;
                     for (int u : fromBFS.pathTo(j)) {
                         hops++;
                     }
-
                     currentDistance = hops - 1;
-                    if (currentDistance < ancestorSetDistance) {
-                        ancestorSetAncestor = j;
-                        ancestorSetDistance = currentDistance;
-                        subsetF = i;
-                        subsetT = j;
+                    if (currentDistance !=INFINITY) {
+                        ancestor = j;
+                        minDistance = currentDistance;
+                        from = i;
+                        to = j;
                     }
                 } else {
-                    currentDistance = testMethod(i, j);
-                    if (currentDistance != -1 && currentDistance < ancestorSetDistance) {
-                        ancestorSetAncestor = ancestor;
-                        ancestorSetDistance = currentDistance;
-                        subsetF = i;
-                        subsetT = j;
-                    }
+                    from = i;
+                    to = j;
+                    setupDefaultDataStructures();
+                    testMethod(i, j);
                 }
+                System.out.printf("");
             }
         }
 
-        from = subsetF;
-        to = subsetT;
-        System.out.printf("");
-        if (ancestorSetDistance != INFINITY) {
-            ancestor = ancestorSetAncestor;
-            minDistance = ancestorSetDistance;
-            return ancestorSetAncestor;
-        } else {
-            ancestor = prevAncestor;
-            minDistance = prevMinDistance;
-            return -1;
-        }
+        return ancestor;
     }
 
 
     private void setupDefaultDataStructures() {
-        fromQueue = new Queue<>();
-        toQueue = new Queue<>();
+        fromQueue = new Queue<Integer>();
+        toQueue = new Queue<Integer>();
         marked = new boolean[n];
         fromStack = new Stack<>();
         toStack = new Stack<>();
@@ -370,13 +330,9 @@ public class SAP {
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
             distanceFromSourceCounter++;
         }
-        if (currentDistance != INFINITY) {
-            minDistance = currentDistance;
-        } else {
-            minDistance = -1;
-            ancestor = -1;
-        }
+
         proceed = true;
+        minDistance = currentDistance;
         return minDistance;
     }
 
