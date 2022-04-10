@@ -77,6 +77,12 @@ public class WordNet {
                 if (s.equals(nounB)) nounBIds.add(i);
             }
         }
+//        for (int i : nounAIds) {
+//            System.out.printf(" i=%d", i);
+//        }
+//        for (int j : nounBIds) {
+//            System.out.printf(" j=%d", j);
+//        }
         return sap.length(nounAIds, nounBIds);
     }
 
@@ -104,11 +110,8 @@ public class WordNet {
         Stopwatch time = new Stopwatch();
         System.out.println("The distance expected between worm and bird is 5, the result: " + wordNet.distance("worm", "bird"));
         System.out.println("The common ancestor between worm and animal: " + wordNet.sap("worm", "bird"));
-
         double now = time.elapsedTime();
         StdOut.println("worm/bird test using HashMap took: " + now);
-
-
         System.out.println(wordNet.isNoun("entity"));
         System.out.printf("Is CRP a wordnet noun? %b\n", wordNet.isNoun("CRP"));
         StdOut.println("The common ancestor for quadrangle and mountain_devil is:" +

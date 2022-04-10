@@ -989,7 +989,7 @@ public class AutoGraderTests {
         }
     }
 
-    private void iterativeTests() {
+    private void iterativeTests() throws AssertionError {
         System.out.printf("Starting iterative tests \n");
         In in = new In("digraph-wordnet.txt");
         Digraph digraph = new Digraph(in);
@@ -1006,7 +1006,7 @@ public class AutoGraderTests {
         int n = digraph.V();
 
         System.out.printf("size of digraph is: %d\n", n);
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 82190; i++) {
             destination = StdRandom.uniform(0, n);
             state = new State(i, destination, sap.length(i, destination), sap.ancestor(i, destination));
             map.put(i, state);
@@ -1032,11 +1032,16 @@ public class AutoGraderTests {
         }
         System.out.printf("Created sources and destinations for iterables.\n");
         int counter = 0;
-        while (counter < 1000) {
+        while (counter < 10000) {
             int i = StdRandom.uniform(0, map.size());
             currentState = map.get(i);
             ancestor = sap.ancestor(i, currentState.destination);
             minDistance = sap.length(i, currentState.destination);
+            shortestDistance = sap.length(1285, 58083);
+            ancestor = sap.ancestor(1285, 58083);
+            if (ancestor != 57333) System.out.printf("ancestor is not 57333. It is: %d\n", ancestor);
+            if (shortestDistance != 12)
+                System.out.printf("shortest distance value is not 12. It is: %d\n", shortestDistance);
             if (currentState.ancestor != ancestor || currentState.minDis != minDistance)
                 throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
                         "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
@@ -1049,20 +1054,20 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-//        autoGraderTests.testDigraph1();
-//        autoGraderTests.testDigraph2();
-//        autoGraderTests.testDigraph3();
-//        autoGraderTests.testDigraph4();
-//        autoGraderTests.testDigraph5();
-//        autoGraderTests.testDigraph6();
-//        autoGraderTests.testDigraph9();
-//        autoGraderTests.testMyGraphs();
-//        autoGraderTests.createMultipleObjects();
-//        autoGraderTests.testIterables();
-//        autoGraderTests.testRandomDigraph();
-//        autoGraderTests.troubleShooting();
+        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph3();
+        autoGraderTests.testDigraph4();
+        autoGraderTests.testDigraph5();
+        autoGraderTests.testDigraph6();
+        autoGraderTests.testDigraph9();
+        autoGraderTests.testMyGraphs();
+        autoGraderTests.createMultipleObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
+        autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
-//        autoGraderTests.repeatedTests();
-//        autoGraderTests.iterativeTests();
+        autoGraderTests.repeatedTests();
+        // autoGraderTests.iterativeTests();
     }
 }
