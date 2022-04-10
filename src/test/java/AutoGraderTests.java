@@ -519,11 +519,15 @@ public class AutoGraderTests {
         sources = new ArrayList<>(Arrays.asList(0, 2, 3, 7, 10));
         destinations = new ArrayList<>(Arrays.asList(1, 7, 12));
         shortestDistance = sap.length(sources, destinations);
+        if (shortestDistance != 0)
+            System.out.printf("Expecting the shortest disntance value of two iterable sets of Graph 3" +
+                    "to be 0, since the number 7 is in both sets. But the actual value we get is: %d\n", shortestDistance);
+        else System.out.printf("Test 10 of two sets of the iterables from Graph3 passed the shortest distance test.\n");
         ancestor = sap.ancestor(sources, destinations);
         if (ancestor != 7)
-            System.out.printf("Expecting ancestor value of 7 for Graph3's Iterables set with at least one pair not connected, " +
+            System.out.printf("Expecting ancestor value of 7 for Graph 3's Iterables set with at least one pair not connected, " +
                     "but the actual value we get = %d\n", ancestor);
-        else System.out.printf("Used Autograder's numbers in graph 3 and it seems to pass.\n");
+        else System.out.printf("Test 10 of two sets of the iterables from Graph3 passed the ancestor test.\n");
 
     }
 
