@@ -160,6 +160,29 @@ public class SAP {
         return currentDistance;
     }
 
+    private int updateCurrentIterDistance(int v, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
+        int fromDist = sBS.distTo(v);
+        int toDist = dBS.distTo(v);
+        int distance = fromDist + toDist;
+        if (distance < currentDistance) {
+            Stack<Integer> tempStack = fromStack;
+            currentDistance = distance;
+            ancestor = v;
+            from = ancestor;
+            while (tempStack.size() > 0 && fromDist != 0) {
+                from = tempStack.pop();
+                fromDist--;
+            }
+            tempStack = toStack;
+            to = ancestor;
+            while (tempStack.size() > 0 && toDist != 0) {
+                to = tempStack.pop();
+                toDist--;
+            }
+        }
+        return currentDistance;
+    }
+
     // todo - only update from and to here
     private int testMethod(Iterable<Integer> s, Iterable<Integer> d) {
         BreadthFirstDirectedPaths iSBFS = new BreadthFirstDirectedPaths(digraphDFCopy, s);
@@ -173,7 +196,6 @@ public class SAP {
             fromStack.push(i);
             onFromStack[i] = true;
         }
-
         for (int j : d) {
             toQueue.enqueue(j);
             marked[j] = true;
@@ -199,20 +221,7 @@ public class SAP {
                         onFromStack[w] = true;
                         marked[w] = true;
                     } else if (iDBFS.hasPathTo(w)) {
-                        int temp = currentDistance;
-
-                        currentDistance = updateCurrentDistance(w, currentDistance, iSBFS, iDBFS);
-                        if (temp != currentDistance) {
-                            int counter = currentDistance;
-                            while (counter != 0 && iDBFS.pathTo(w).iterator().hasNext()) {
-                                to = iDBFS.pathTo(w).iterator().next();
-                                counter--;
-                            }
-                            while (counter != 0 && iSBFS.pathTo(w).iterator().hasNext()) {
-                                from = iSBFS.pathTo(w).iterator().next();
-                                counter--;
-                            }
-                        }
+                        currentDistance = updateCurrentIterDistance(w, currentDistance, iSBFS, iDBFS);
                     }
                 }
             }
@@ -226,21 +235,7 @@ public class SAP {
                         onToStack[w] = true;
                         marked[w] = true;
                     } else if (iSBFS.hasPathTo(w)) {
-                        int temp = currentDistance;
-                        currentDistance = updateCurrentDistance(w, currentDistance, iSBFS, iDBFS);
-                        if (temp != currentDistance) {
-                            int counter = currentDistance;
-                            while (counter != 0 && iSBFS.pathTo(w).iterator().hasNext()) {
-                                //from = iSBFS.pathTo(w).iterator().next();
-                                from = fromStack.pop();
-                                counter--;
-                            }
-                            while (counter != 0 && iDBFS.pathTo(w).iterator().hasNext()) {
-                                //to = iDBFS.pathTo(w).iterator().next();
-                                to = toStack.pop();
-                                counter--;
-                            }
-                        }
+                        currentDistance = updateCurrentIterDistance(w, currentDistance, iSBFS, iDBFS);
                     }
                 }
             }
