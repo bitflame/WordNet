@@ -161,24 +161,24 @@ public class SAP {
         int toDist = dBS.distTo(v);
         int distance = fromDist + toDist;
         if (distance < currentDistance) {
-            //Stack<Integer> tempStack = fromStack;
+            Stack<Integer> tempStack = fromStack;
             currentDistance = distance;
             // todo - Need to update from and to within test method. this way produces the wrong result
             ancestor = v;
             // from = ancestor;
             int fr = ancestor;
-            while (sBS.distTo(fr) > 0) {
+            while (sBS.distTo(fr) > 0 && !tempStack.isEmpty()) {
                 //fr = tempStack.pop();
-                fr = fromStack.peek();
+                fr = tempStack.pop();
             }
-            //tempStack = toStack;
+            tempStack = toStack;
             // to = ancestor;
             int ds = ancestor;
             //while (tempStack.size() > 0 && toDist != 0) {
-            while (dBS.distTo(ds) > 0) {
+            while (dBS.distTo(ds) > 0 && !tempStack.isEmpty()) {
                 // to = tempStack.pop();
-                //ds=tempStack.pop();
-                ds = toStack.peek();
+                ds = tempStack.pop();
+                // ds = toStack.peek();
                 //toDist--;
             }
         }
