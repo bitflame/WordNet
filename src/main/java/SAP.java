@@ -161,25 +161,96 @@ public class SAP {
         int toDist = dBS.distTo(v);
         int distance = fromDist + toDist;
         if (distance < currentDistance) {
-            Stack<Integer> tempStack = fromStack;
+            //Stack<Integer> tempStack = fromStack;
             currentDistance = distance;
             // todo - Need to update from and to within test method. this way produces the wrong result
             ancestor = v;
-            from = ancestor;
-            while (tempStack.size() > 0 && fromDist != 0) {
-                from = tempStack.pop();
-                fromDist--;
+            // from = ancestor;
+            int fr = ancestor;
+            while (sBS.distTo(fr) > 0) {
+                //fr = tempStack.pop();
+                fr = fromStack.peek();
             }
-            tempStack = toStack;
-            to = ancestor;
-            while (tempStack.size() > 0 && toDist != 0) {
-                to = tempStack.pop();
-                toDist--;
+            //tempStack = toStack;
+            // to = ancestor;
+            int ds = ancestor;
+            //while (tempStack.size() > 0 && toDist != 0) {
+            while (dBS.distTo(ds) > 0) {
+                // to = tempStack.pop();
+                //ds=tempStack.pop();
+                ds = toStack.peek();
+                //toDist--;
             }
         }
         return currentDistance;
     }
 
+    // fr - from ds- destination frBFS, dsBFS, currDist
+    private int updateIterativeDistance(int fr, int ds, int currDist, int currAncestor, BreadthFirstDirectedPaths frBFS,
+                                        BreadthFirstDirectedPaths dsBFS) {
+        int distance = dsBFS.distTo(fr) + frBFS.distTo(ds);
+        if (distance < currDist) {
+            currDist = distance;
+            from = fr;
+            to = ds;
+            ancestor = currAncestor;
+        }
+        return currDist;
+    }
+
+    private int lockStepBFSIteratives(Iterable<Integer> s, Iterable<Integer> d) {
+        BreadthFirstDirectedPaths iSBFS;
+        BreadthFirstDirectedPaths iDBFS;
+        try {
+            iSBFS = new BreadthFirstDirectedPaths(digraphDFCopy, s);
+            iDBFS = new BreadthFirstDirectedPaths(digraphDFCopy, d);
+        } catch (IllegalArgumentException e) {
+            ancestor = -1;
+            minDistance = -1;
+            from = -1;
+            to = -1;
+            return minDistance;
+        }
+        int distanceToNode = 1;
+        int currentDistance = INFINITY;
+        setupDefaultDataStructures();
+        for (int i : s) {
+            marked[i] = true;
+            fromQueue.enqueue(i);
+            fromStack.push(i);
+            onFromStack[i] = true;
+        }
+        for (int j : d) {
+            toQueue.enqueue(j);
+            marked[j] = true;
+            toStack.push(j);
+            onToStack[j] = true;
+            if (onFromStack[j]) {
+                currentDistance = updateIterativeDistance(j, j, j, currentDistance, iSBFS, iDBFS); // should return 0
+                from = j;
+                to = j;
+                ancestor = j;
+                minDistance = currentDistance;
+                return minDistance;
+            }
+        }
+        int fr = fromQueue.dequeue();
+        int ds = toQueue.dequeue();
+        if (iSBFS.hasPathTo(ds)) updateIterativeDistance(fr, ds, currentDistance, ds, iSBFS, iDBFS);
+        if (iDBFS.hasPathTo(fr)) updateIterativeDistance(fr, ds, currentDistance, fr, iSBFS, iDBFS);
+        while (!fromQueue.isEmpty() && !toQueue.isEmpty()) {
+            for (int i : digraphDFCopy.adj(fr)) {
+                if (!marked[i]) {
+                    marked[i] = true;
+                    fromQueue.enqueue(i);
+                    fromStack.push(i);
+                    onFromStack[i] = true;
+                }
+            }
+
+        }
+        return -1; // not finished yet
+    }
 
     private int testMethod(Iterable<Integer> s, Iterable<Integer> d) {
         BreadthFirstDirectedPaths iSBFS;
