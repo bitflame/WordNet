@@ -4,7 +4,6 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.In;
 
-import java.util.Iterator;
 
 public class SAP {
     private static final int INFINITY = Integer.MAX_VALUE;
@@ -56,8 +55,6 @@ public class SAP {
         } else if (this.from == v && this.to == w) {
             return minDistance;
         } else if (this.from == w && this.to == v) {
-            from = v;
-            to = w;
             return minDistance;
         } else {
             from = v;
@@ -94,7 +91,6 @@ public class SAP {
             //throw new IllegalArgumentException("Both lists should contain at least one value.");
             ancestor = -1;
             minDistance = -1;
-            return minDistance;
         }
         testMethod(v, w);
         return minDistance;
@@ -167,6 +163,7 @@ public class SAP {
         if (distance < currentDistance) {
             Stack<Integer> tempStack = fromStack;
             currentDistance = distance;
+            // todo - Need to update from and to within test method. this way produces the wrong result
             ancestor = v;
             from = ancestor;
             while (tempStack.size() > 0 && fromDist != 0) {
@@ -183,10 +180,20 @@ public class SAP {
         return currentDistance;
     }
 
-    // todo - only update from and to here
+
     private int testMethod(Iterable<Integer> s, Iterable<Integer> d) {
-        BreadthFirstDirectedPaths iSBFS = new BreadthFirstDirectedPaths(digraphDFCopy, s);
-        BreadthFirstDirectedPaths iDBFS = new BreadthFirstDirectedPaths(digraphDFCopy, d);
+        BreadthFirstDirectedPaths iSBFS;
+        BreadthFirstDirectedPaths iDBFS;
+        try {
+            iSBFS = new BreadthFirstDirectedPaths(digraphDFCopy, s);
+            iDBFS = new BreadthFirstDirectedPaths(digraphDFCopy, d);
+        } catch (IllegalArgumentException e) {
+            ancestor = -1;
+            minDistance = -1;
+            from = -1;
+            to = -1;
+            return minDistance;
+        }
         setupDefaultDataStructures();
         int currentDistance = INFINITY;
         proceed = true;
@@ -202,10 +209,8 @@ public class SAP {
             toStack.push(j);
             onToStack[j] = true;
             if (onFromStack[j]) {
-                from = j;
-                to = j;
-                ancestor = j;
-                minDistance = 0;
+                currentDistance = updateCurrentIterDistance(j, currentDistance, iSBFS, iDBFS);
+                minDistance = currentDistance;
                 return minDistance;
             }
         }
