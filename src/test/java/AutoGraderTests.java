@@ -111,11 +111,11 @@ public class AutoGraderTests {
         digraph = new Digraph(in);
         sap = new SAP(digraph);
         shortestDistance = sap.length(6, 6);
-        if (shortestDistance != 0)
-            System.out.printf("The distance between nodes 6 and 6 should be 0 in digraph1, but it is: %d\n ", shortestDistance);
+        if (shortestDistance != -1)
+            System.out.printf("since there is no node 6 in Graph 1 the distance between nodes 6 and 6 should be -1 , but it is: %d\n ", shortestDistance);
         ancestor = sap.ancestor(6, 6);
-        if (ancestor != 6)
-            System.out.printf("The ancestor for 6, and 6 in graph 1 should be 6, but it is: %d\n", ancestor);
+        if (ancestor != -1)
+            System.out.printf("since there is no node 6 in Graph 1 the ancestor for it should be -1, but it is: %d\n", ancestor);
         shortestDistance = sap.length(3, 3);
         if (shortestDistance != 0)
             System.out.printf("shortest distance between 3, and 3 should be 0, but it is: %d\n", shortestDistance);
@@ -200,16 +200,41 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(1, 6);
         if (ancestor != -1)
             System.out.printf("The value of ancestor between 1 and 6 should be -1 since they are not connected, but it is: %d\n", ancestor);
+
+        /* v = new ArrayList<>(Arrays.asList(7));
+        w = new ArrayList<>(Arrays.asList(8));
+        ancestor = sap.ancestor(v, w);
+        shortestDistance = sap.length(v, w);
+        ancestor = sap.ancestor(w, v);
+        shortestDistance = sap.length(w, v);
+
+        v = new ArrayList<>(Arrays.asList(1));
+        w = new ArrayList<>(Arrays.asList(7, 8));
+
+        ancestor = sap.ancestor(v, w);
+        shortestDistance = sap.length(v, w); */
+
         v = new ArrayList<>(Arrays.asList(3));
         w = new ArrayList<>(Arrays.asList(8, 7, 1));
+
+        ancestor = sap.ancestor(w, v);// todo - this is where from is set to 1 and ancestor to 3 but it should be the other way around
+        shortestDistance = sap.length(w, v);
+
+        v = new ArrayList<>(Arrays.asList(1, 9, 10)); // todo - This might have a similar problem
+        w = new ArrayList<>(Arrays.asList(5));
         ancestor = sap.ancestor(v, w);
-        if (ancestor != 1)
-            System.out.printf("The expected ancestor value for iterables of Graph 3 should be either 3, or 1, but the " +
+        shortestDistance = sap.length(v, w);
+
+
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 5)
+            System.out.printf("The expected ancestor value for iterables of Graph 3 should be either 5, or 1, but the " +
                     "actual value is: %d\n", ancestor);
         shortestDistance = sap.length(v, w);
         if (shortestDistance != 1)
             System.out.printf("The expected shortest distance for iterables of Graph 3 is 1, but the actual value is: %d\n",
                     shortestDistance);
+
 
         shortestDistance = sap.length(8, 3);
         if (shortestDistance != 1)
@@ -232,6 +257,14 @@ public class AutoGraderTests {
         shortestDistance = sap.length(3, 7);
         if (shortestDistance != 1)
             System.out.printf("The value of length between 7 and 3 should be 1, but it is: %d\n", shortestDistance);
+        v = new ArrayList<>(Arrays.asList(8));
+        w = new ArrayList<>(Arrays.asList(3));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != sap.length(v, w))
+            System.out.printf("The shortest distance of Iterables sets should be 1, but it is: %d\n  ", shortestDistance);
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 3)
+            System.out.printf("Ancestor between iterables sets of Graph 1 should be 3, but it is: %d\n", ancestor);
         try {
             shortestDistance = sap.length(-1, 0);
         } catch (IllegalArgumentException illegalArgumentException) {
