@@ -114,7 +114,7 @@ public class AutoGraderTests {
         if (shortestDistance != 0)
             System.out.printf("since there is no node 6 in Graph 1 the distance between nodes 6 and 6 should be -1 , but it is: %d\n ", shortestDistance);
         ancestor = sap.ancestor(6, 6);
-        if (ancestor != 0)
+        if (ancestor != 6)
             System.out.printf("since there is no node 6 in Graph 1 the ancestor for it should be -1, but it is: %d\n", ancestor);
         shortestDistance = sap.length(3, 3);
         if (shortestDistance != 0)

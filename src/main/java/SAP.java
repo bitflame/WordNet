@@ -45,12 +45,6 @@ public class SAP {
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if ((digraphDFCopy.indegree(v) == 0 && digraphDFCopy.outdegree(v) == 0) || (digraphDFCopy.indegree(w) == 0 && digraphDFCopy.outdegree(w) == 0)) {
-            from = v;
-            to = w;
-            ancestor = 0;
-            return 0;
-        }
         if (v == w && v != -1 && w != -1) {
             minDistance = 0;
             ancestor = v;
@@ -111,13 +105,6 @@ public class SAP {
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if ((digraphDFCopy.indegree(v) == 0 && digraphDFCopy.outdegree(v) == 0) || (digraphDFCopy.indegree(w) == 0 && digraphDFCopy.outdegree(w) == 0)) {
-            from=v;
-            to = w;
-            minDistance = 0;
-            ancestor = 0;
-            return -1;
-        }
         if (v == w && v != -1 && w != -1) {
             ancestor = w;
             minDistance = 0;
