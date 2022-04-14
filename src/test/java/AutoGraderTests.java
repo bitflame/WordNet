@@ -1,7 +1,4 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.StdRandom;
+import edu.princeton.cs.algs4.*;
 
 
 import java.util.*;
@@ -1146,22 +1143,115 @@ public class AutoGraderTests {
         }
     }
 
+    private void hypernyms100subgraphTest() {
+        in = new In("hypernyms100-subgraph.txt");
+        Digraph digraphDFCopy = new Digraph(100);
+        int index = 0;
+        while (in.hasNextLine()) {
+            index++;
+            String[] a = in.readLine().split(",");
+            for (int i = 0; i < a.length - 1; i++) {
+                digraphDFCopy.addEdge(Integer.parseInt(a[0]), Integer.parseInt(a[i + 1]));
+            }
+        }// check for cycles
+        DirectedCycle cycleFinder = new DirectedCycle(digraphDFCopy);
+        if (cycleFinder.hasCycle()) {
+            throw new IllegalArgumentException("The input to the constructor does not correspond to a rooted DAG - cycle detected");
+        }
+        if (Math.abs(index - 100) > 1) {
+            throw new IllegalArgumentException("The input to the constructor does not correspond to a rooted DAG - Graph Not rooted");
+        }
+        sap = new SAP(digraphDFCopy);
+        shortestDistance = sap.length(53, 23);
+        if (shortestDistance != 1)
+            System.out.printf("The shortest distance between nodes 53, and 23 should be 1, but we get: %d\n", shortestDistance);
+        else System.out.printf("Test 1 for shortest distance in hypernyms 100 passed.\n");
+
+        System.out.printf("Trying length() in reverse.\n");
+        ancestor = sap.ancestor(23, 53);
+        if (ancestor != 53)
+            System.out.printf("Ancestor of nodes 53 and 23 in hypernyms100subgraph should be 53, (even in reverse) but it is: %d\n", ancestor);
+        else System.out.printf("Test 1 for ancestor (with nodes reversed) in hypernyms 100 passed.\n");
+
+        ancestor = sap.ancestor(53, 23);
+        if (ancestor != 53)
+            System.out.printf("Ancestor of nodes 53 and 23 in hypernyms100subgraph should be 53, but it is: %d\n", ancestor);
+        else System.out.printf("Test 1 for ancestor in hypernyms 100 passed.\n");
+
+        shortestDistance = sap.length(90, 0);
+        if (shortestDistance != 3)
+            System.out.printf("The shortest distance between nodes 0, and 90 should be 3, but we get: %d\n", shortestDistance);
+        else System.out.printf("Test 2 for shortest distance in hypernyms 100 passed.\n");
+        ancestor = sap.ancestor(90, 0);
+        if (ancestor != 26)
+            System.out.printf("Ancestor of nodes 90 and 0 in hypernyms100subgraph should be 26, but it is: %d\n", ancestor);
+        else System.out.printf("Test 2 for ancestor in hypernyms 100 passed.\n");
+
+        shortestDistance = sap.length(53, 76);
+        if (shortestDistance != 2)
+            System.out.printf("The shortest distance between nodes 53, and 76 should be 2, but we get: %d\n", shortestDistance);
+        else System.out.printf("Test 3 for shortest distance in hypernyms 100 passed.\n");
+        ancestor = sap.ancestor(53, 76);
+        if (ancestor != 60)
+            System.out.printf("Ancestor of nodes 53 and 76 in hypernyms100subgraph should be 60 (or 76), but it is: %d\n", ancestor);
+        else System.out.printf("Test 3 for ancestor in hypernyms 100 passed.\n");
+
+        shortestDistance = sap.length(19, 91);
+        if (shortestDistance != 7)
+            System.out.printf("The shortest distance between nodes 19, and 91 should be 7, but we get: %d\n", shortestDistance);
+        else System.out.printf("Test 4 for shortest distance in hypernyms 100 passed.\n");
+        ancestor = sap.ancestor(19, 91);
+        if (ancestor != 60)
+            System.out.printf("Ancestor of nodes 19 and 91 in hypernyms100subgraph should be 60 , but it is: %d\n", ancestor);
+        else System.out.printf("Test 4 for ancestor in hypernyms 100 passed.\n");
+        // testing 16, and 19
+        shortestDistance = sap.length(19, 16);
+        if (shortestDistance != 6)
+            System.out.printf("The shortest distance between nodes 19, and 16 should be 6, but we get: %d\n", shortestDistance);
+        else System.out.printf("Test 5 for shortest distance in hypernyms 100 passed.\n");
+        ancestor = sap.ancestor(19, 16);
+        if (ancestor != 60)
+            System.out.printf("Ancestor of nodes 19 and 16 in hypernyms100subgraph should be 60 , but it is: %d\n", ancestor);
+        else System.out.printf("Test 5 for ancestor in hypernyms 100 passed.\n");
+
+        // testing 16, and 19
+        shortestDistance = sap.length(19, 60);
+        if (shortestDistance != 5)
+            System.out.printf("The shortest distance between nodes 19, and 60 should be 5, but we get: %d\n", shortestDistance);
+        else System.out.printf("Test 6 for shortest distance in hypernyms 100 passed.\n");
+        ancestor = sap.ancestor(19, 60);
+        if (ancestor != 60)
+            System.out.printf("Ancestor of nodes 19 and 60 in hypernyms100subgraph should be 60 , but it is: %d\n", ancestor);
+        else System.out.printf("Test 6 for ancestor in hypernyms 100 passed.\n");
+
+        // testing 19, and 76
+        shortestDistance = sap.length(19, 76);
+        if (shortestDistance != 4)
+            System.out.printf("The shortest distance between nodes 19, and 76 should be 4, but we get: %d\n", shortestDistance);
+        else System.out.printf("Test 7 for shortest distance in hypernyms 100 passed.\n");
+        ancestor = sap.ancestor(19, 76);
+        if (ancestor != 76)
+            System.out.printf("Ancestor of nodes 19 and 76 in hypernyms100subgraph should be 76 , but it is: %d\n", ancestor);
+        else System.out.printf("Test 7 for ancestor in hypernyms 100 passed.\n");
+    }
+
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
-        autoGraderTests.troubleShooting();
-        autoGraderTests.testDigraphWordNet();
-        autoGraderTests.repeatedTests();
-        autoGraderTests.iterativeTests();
+//        autoGraderTests.testDigraph1();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.testMyGraphs();
+//        autoGraderTests.createMultipleObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.troubleShooting();
+//        autoGraderTests.testDigraphWordNet();
+//        autoGraderTests.repeatedTests();
+//        autoGraderTests.iterativeTests();
+        autoGraderTests.hypernyms100subgraphTest();
     }
 }

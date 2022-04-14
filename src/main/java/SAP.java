@@ -1,5 +1,5 @@
 import edu.princeton.cs.algs4.Digraph;
-import  edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
@@ -40,6 +40,7 @@ public class SAP {
     public int length(int v, int w) {
         validateVertex(v);
         validateVertex(w);
+
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
         if ((v < 0) || (v >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
@@ -169,13 +170,13 @@ public class SAP {
             currentDistance = distance;
             ancestor = w;
             int fr = ancestor;
-            while (fromDist>0) {
+            while (fromDist > 0) {
                 fr = sBS.pathTo(ancestor).iterator().next();
                 fromDist--;
             }
             from = fr;
             int ds = ancestor;
-            while (toDist>0) {
+            while (toDist > 0) {
                 ds = dBS.pathTo(ancestor).iterator().next();
                 toDist--;
             }
@@ -208,9 +209,9 @@ public class SAP {
             onFromStack[i] = true;
         }
         for (int j : d) {
-            if (onFromStack[j]){
-                minDistance=0;
-                ancestor=j;
+            if (onFromStack[j]) {
+                minDistance = 0;
+                ancestor = j;
                 return minDistance;
             }
             toQueue.enqueue(j);
@@ -218,7 +219,7 @@ public class SAP {
             toStack.push(j);
             onToStack[j] = true;
         }
-        int v,z;
+        int v, z;
         int distanceFromSourceCounter = 1;
         while (proceed) {
 
@@ -325,7 +326,7 @@ public class SAP {
         proceed = true;
         if (currentDistance != INFINITY) minDistance = currentDistance;
         else {
-            minDistance = -1;
+            minDistance = 1;
             ancestor = -1;
         }
         return minDistance;
