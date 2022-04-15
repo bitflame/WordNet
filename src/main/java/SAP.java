@@ -326,7 +326,7 @@ public class SAP {
         proceed = true;
         if (currentDistance != INFINITY) minDistance = currentDistance;
         else {
-            minDistance = 1;
+            minDistance = -1;
             ancestor = -1;
         }
         return minDistance;

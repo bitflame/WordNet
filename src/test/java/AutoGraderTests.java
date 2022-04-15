@@ -119,6 +119,13 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(3, 3);
         if (ancestor != 3)
             System.out.printf("The value of ancestor between 3 and 3 should be 3, but it is: %d\n", ancestor);
+        ancestor = sap.ancestor(2, 6);
+        if (ancestor != -1) System.out.printf("The ancestor between 2 and 6 in graph 1 should be -1, and the actual" +
+                "value is: %d\n", ancestor);
+        shortestDistance = sap.length(2, 6);
+        if (shortestDistance != -1)
+            System.out.printf("The shortest diestance between nodes 2 and 6 should be -1, but the actual " +
+                    "value is: %d\n", shortestDistance);
         shortestDistance = sap.length(3, 8);
         if (shortestDistance != 1)
             System.out.printf("The value of length between 3 and 8 should be 1, but it is: %d\n", shortestDistance);
@@ -1237,7 +1244,7 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-//        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph1();
 //        autoGraderTests.testDigraph2();
 //        autoGraderTests.testDigraph3();
 //        autoGraderTests.testDigraph4();
