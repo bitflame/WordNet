@@ -16,6 +16,7 @@ public class AutoGraderTests {
     int ancestor;
     List<Integer> v;
     List<Integer> w;
+    Topological topological;
 
     private void testRandomDigraph() {
         in = new edu.princeton.cs.algs4.In("digraph-wordnet.txt");
@@ -106,6 +107,12 @@ public class AutoGraderTests {
         StdOut.println("---------------------------------- Running AutoGrader Tests for Digraph 1 ----------------------------------");
         in = new In("digraph1.txt");
         digraph = new Digraph(in);
+        topological = new Topological(digraph);
+        System.out.printf("Here are Graph1's nodes in topological order: \n");
+        for (int i : topological.order()) {
+            System.out.printf(" %d", i);
+        }
+        System.out.printf("\n");
         sap = new SAP(digraph);
         shortestDistance = sap.length(6, 6);
         if (shortestDistance != 0)
@@ -291,6 +298,12 @@ public class AutoGraderTests {
         in = new In("digraph2.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+        topological = new Topological(digraph);
+        System.out.printf("Here are Graph2's nodes in topological order: \n");
+        for (int i : topological.order()) {
+            System.out.printf(" %d", i);
+        }
+        System.out.printf("\n");
         shortestDistance = sap.length(4, 1);
         if (shortestDistance != 3)
             System.out.printf("Distance between 4, and 1 should be 3, but it is: %d\n", shortestDistance);
@@ -331,6 +344,17 @@ public class AutoGraderTests {
         in = new In("digraph3.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+        topological = new Topological(digraph);
+        System.out.printf("Here are Graph3's nodes in topological order: \n");
+        try {
+            for (int i : topological.order()) {
+                System.out.printf(" %d", i);
+            }
+        } catch (NullPointerException e) {
+            StdOut.println(e.getMessage());
+        }
+
+        System.out.printf("\n");
         ancestor = sap.ancestor(12, 7);
         if (ancestor != 8)
             System.out.printf("Ancestor for 12, and 7 in Graph3 should be 8, but it is: %d \n", ancestor);
@@ -495,6 +519,12 @@ public class AutoGraderTests {
         in = new In("digraph4.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+        topological = new Topological(digraph);
+        System.out.printf("Here are Graph4's nodes in topological order: \n");
+        for (int i : topological.order()) {
+            System.out.printf(" %d", i);
+        }
+        System.out.printf("\n");
         shortestDistance = sap.length(1, 4);
         if (shortestDistance != 3)
             System.out.printf("The distance between 1 and 4 should be 3, but it is: %d\n", shortestDistance);
@@ -518,6 +548,12 @@ public class AutoGraderTests {
         in = new In("digraph5.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+        topological = new Topological(digraph);
+        System.out.printf("Here are Graph5's nodes in topological order: \n");
+        for (int i : topological.order()) {
+            System.out.printf(" %d", i);
+        }
+        System.out.printf("\n");
         shortestDistance = sap.length(17, 21);
         if (shortestDistance != 5)
             System.out.printf("The distance between 17 and 21 should be 5, but it is: %d\n", shortestDistance);
@@ -630,6 +666,12 @@ public class AutoGraderTests {
         in = new In("digraph6.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+        topological = new Topological(digraph);
+        System.out.printf("Here are Graph6's nodes in topological order: \n");
+        for (int i : topological.order()) {
+            System.out.printf(" %d", i);
+        }
+        System.out.printf("\n");
         shortestDistance = sap.length(0, 5);
         if (shortestDistance != 5)
             System.out.printf("The distance between 0 and 5 should be 5, but it is: %d\n", shortestDistance);
@@ -655,6 +697,16 @@ public class AutoGraderTests {
         StdOut.println("----------------------------------Running AutoGrader Tests for Digraph 9 ----------------------------------");
         in = new In("digraph9.txt");
         digraph = new Digraph(in);
+        topological = new Topological(digraph);
+        System.out.printf("Here are Graph9's nodes in topological order: \n");
+        try {
+            for (int i : topological.order()) {
+                System.out.printf(" %d", i);
+            }
+        } catch (NullPointerException e) {
+            StdOut.println(e.getMessage());
+        }
+        System.out.printf("\n");
         sap = new SAP(digraph);
         shortestDistance = sap.length(7, 8);
         if (shortestDistance != -1)
@@ -1245,20 +1297,20 @@ public class AutoGraderTests {
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
         autoGraderTests.testDigraph1();
-//        autoGraderTests.testDigraph2();
-//        autoGraderTests.testDigraph3();
-//        autoGraderTests.testDigraph4();
-//        autoGraderTests.testDigraph5();
-//        autoGraderTests.testDigraph6();
-//        autoGraderTests.testDigraph9();
-//        autoGraderTests.testMyGraphs();
-//        autoGraderTests.createMultipleObjects();
-//        autoGraderTests.testIterables();
-//        autoGraderTests.testRandomDigraph();
-//        autoGraderTests.troubleShooting();
-//        autoGraderTests.testDigraphWordNet();
-//        autoGraderTests.repeatedTests();
-//        autoGraderTests.iterativeTests();
+        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph3();
+        autoGraderTests.testDigraph4();
+        autoGraderTests.testDigraph5();
+        autoGraderTests.testDigraph6();
+        autoGraderTests.testDigraph9();
+        autoGraderTests.testMyGraphs();
+        autoGraderTests.createMultipleObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
+        autoGraderTests.troubleShooting();
+        autoGraderTests.testDigraphWordNet();
+        autoGraderTests.repeatedTests();
+        autoGraderTests.iterativeTests();
         autoGraderTests.hypernyms100subgraphTest();
     }
 }
