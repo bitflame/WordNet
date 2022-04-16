@@ -1,6 +1,9 @@
 import edu.princeton.cs.algs4.*;
 
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -1139,68 +1142,114 @@ public class AutoGraderTests {
         }
     }
 
+    private void updateIterativeLists(int n) {
+        // System.out.printf("Updated iterative lists\n");
+        int source;
+        int destination;
+        v = new ArrayList<>();
+        w = new ArrayList<>();
+        for (int i = 0; i < 15; i++) {
+            source = StdRandom.uniform(0, n);
+            destination = StdRandom.uniform(0, n);
+            v.add(source);
+            w.add(destination);
+        }
+    }
+
     private void iterativeTests() throws AssertionError {
+        try {
+            File myObj = new File("filename.txt");
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
         System.out.printf("Starting iterative tests \n");
         In in = new In("digraph-wordnet.txt");
         Digraph digraph = new Digraph(in);
         SAP sap = new SAP(digraph);
-        List<Integer> sources = new ArrayList<>();
-        List<Integer> destinations = new ArrayList<>();
-        //
         HashMap<Integer, State> map = new HashMap<>();
-        //in = new In("digraph1.txt");
-        //digraph = new Digraph(in);
         State state;
         int source;
         int destination;
         int n = digraph.V();
-
         System.out.printf("size of digraph is: %d\n", n);
         for (int i = 0; i < 82190; i++) {
             destination = StdRandom.uniform(0, n);
             state = new State(i, destination, sap.length(i, destination), sap.ancestor(i, destination));
             map.put(i, state);
         }
+        System.out.printf("Created the hash map\n");
         State currentState;
-        int ancestor;
-        int minDistance;
-        for (int i : map.keySet()) {
-            currentState = map.get(i);
-            ancestor = sap.ancestor(i, currentState.destination);
-            minDistance = sap.length(i, currentState.destination);
-            if (currentState.ancestor != ancestor || currentState.minDis != minDistance)
-                throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
-                        "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
-                        " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
-        }
-        System.out.printf("done with test 1.\n");
-        for (int i = 0; i < 15; i++) {
-            source = StdRandom.uniform(0, n);
-            destination = StdRandom.uniform(0, n);
-            sources.add(source);
-            destinations.add(destination);
-        }
+//        int ancestor;
+//        int minDistance;
+//        for (int i : map.keySet()) {
+//            currentState = map.get(i);
+//            ancestor = sap.ancestor(i, currentState.destination);
+//            minDistance = sap.length(i, currentState.destination);
+//            if (currentState.ancestor != ancestor || currentState.minDis != minDistance)
+//                throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
+//                        "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
+//                        " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
+//        }
+//        System.out.printf("done with test 1.\n");
+        updateIterativeLists(n);
         System.out.printf("Created sources and destinations for iterables.\n");
         int counter = 0;
-        while (counter < 10000) {
-            int i = StdRandom.uniform(0, map.size());
-            currentState = map.get(i);
-            ancestor = sap.ancestor(i, currentState.destination);
-            minDistance = sap.length(i, currentState.destination);
-            shortestDistance = sap.length(1285, 58083);
-            ancestor = sap.ancestor(1285, 58083);
-            if (ancestor != 57333) System.out.printf("ancestor is not 57333. It is: %d\n", ancestor);
-            if (shortestDistance != 12)
-                System.out.printf("shortest distance value is not 12. It is: %d\n", shortestDistance);
-            if (currentState.ancestor != ancestor || currentState.minDis != minDistance)
-                throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
-                        "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
-                        " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
-            sap.ancestor(sources, destinations);
-            sap.ancestor(sources, destinations);
+        while (counter < 100000) {
+            int[] indeces = new int[10];
+            for (int j = 0; j < 10; j++) {
+                int i = StdRandom.uniform(0, map.size());
+                indeces[j] = i;
+                currentState = map.get(i);
+                // calling the iterative version of ancestor
+                ancestor = sap.ancestor(v, w);
+                // calling the integer version of ancestor
+                ancestor = sap.ancestor(i, currentState.destination);
+                // calling the iterative version of length()
+                shortestDistance = sap.length(v, w);
+                // calling the integer version of length()
+                shortestDistance = sap.length(i, currentState.destination);
+                if (currentState.ancestor != ancestor && currentState.minDis != shortestDistance) {
+                    try {
+                        FileWriter myWriter = new FileWriter("filename.txt");
+                        System.out.printf("Found a discrepancy and going to try to write the data to the file.\n");
+                        myWriter.write("The following are the source/destination pairs that were called before the error occurred: ");
+                        for (int k = 0; k < j; k++) {
+                            myWriter.write("from: " + currentState.source + " to: " + currentState.destination + " expected ancestor: " + currentState.ancestor + " expected minimum distance: " + currentState.minDis);
+                        }
+                        myWriter.write("The line below is the pair that was miscalculated: ");
+                        myWriter.write("from: " + i + " to: " + currentState.destination + " expected ancestor: " + currentState.ancestor +
+                                " expected mindistance" + currentState.minDis + " actual ancestor: " + ancestor + " actual minimum distance: " + shortestDistance);
+                        myWriter.write("Here is the list of items in the iterables lists when the error occurred");
+                        for (int m : v) {
+                            for (int s : w) {
+                                myWriter.write("from: " + m + " to:" + s);
+                            }
+                        }
+                        myWriter.close();
+                        System.out.println("Successfully wrote to the file.");
+                    } catch (IOException e) {
+                        System.out.println("An error occurred.");
+                        e.printStackTrace();
+                    }
+                }
+                updateIterativeLists(n);
+            }
             counter++;
         }
+
+//        throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
+//                "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
+//                " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
+//        sap.ancestor(sources, destinations);
+//        sap.ancestor(sources, destinations);
     }
+
 
     private void hypernyms100subgraphTest() {
         in = new In("hypernyms100-subgraph.txt");
@@ -1296,21 +1345,21 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
-        autoGraderTests.troubleShooting();
-        autoGraderTests.testDigraphWordNet();
-        autoGraderTests.repeatedTests();
+//        autoGraderTests.testDigraph1();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.testMyGraphs();
+//        autoGraderTests.createMultipleObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.troubleShooting();
+//        autoGraderTests.testDigraphWordNet();
+//        autoGraderTests.repeatedTests();
         autoGraderTests.iterativeTests();
-        autoGraderTests.hypernyms100subgraphTest();
+        // autoGraderTests.hypernyms100subgraphTest();
     }
 }

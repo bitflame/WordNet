@@ -1,32 +1,25 @@
 import java.lang.module.FindException;
 import java.util.*;
-// in this problem order matters. That is why simply checking an array for previous strings does not work. I need Trie
+
 class Solution {
     public int minimumLengthEncoding(String[] words) {
-        Arrays.sort(words,new Comparator<String>(){
+        Arrays.sort(words, new Comparator<String>() {
 
             @Override
-            public int compare(String o1, String o2) {
-                if (o1.length()> o2.length())return -1;
-                if (o2.length()>o1.length()) return 1;
-                else return 0;
+            public int compare(String s1, String s2) {
+                if (s1.length() > s2.length()) return -1;
+                if (s2.length() > s1.length()) return 1;
+                return 0;
             }
         });
-        int[] letters = new int[26];
-        int currentSum = 0, totalSum = 0;
-        boolean matched = true;
+        Trie trie = new Trie();
+        int sLength, totalSum = 0;
         for (String s : words) {
-            for (int i = s.length() - 1; i >= 0; i--) {
-                currentSum++;
-                char c = s.charAt(i);
-                if (letters[c - 'a'] == 0) {
-                    letters[c - 'a']++;
-                    matched = false;
-                }
+            sLength = s.length() + 1;
+            if (trie.getNodeInReverse(s) == null) {
+                totalSum += sLength;
+                trie.insertInReverse(s);
             }
-            if (!matched) totalSum += currentSum + 1;
-            currentSum = 0;
-            matched = true;
         }
         return totalSum;
     }
@@ -73,6 +66,26 @@ class Solution {
             curr.isWord = true;
         }
 
+        void insertInReverse(String word) {
+            Node curr = root;
+            for (int i = word.length() - 1; i >= 0; i--) {
+                char c = word.charAt(i);
+                if (curr.children[c - 'a'] == null) curr.children[c - 'a'] = new Node(c);
+                curr = curr.children[c - 'a'];
+            }
+            curr.isWord = true;
+        }
+
+        Node getNodeInReverse(String word) {
+            Node curr = root;
+            for (int i = word.length() - 1; i >= 0; i--) {
+                char c = word.charAt(i);
+                if (curr.children[c - 'a'] == null) return null;
+                curr = curr.children[c - 'a'];
+            }
+            return curr;
+        }
+
         boolean search(String word) {
             Node node = getNode(word);
             return node != null && node.isWord;
@@ -81,6 +94,7 @@ class Solution {
         boolean startsWith(String prefix) {
             return getNode(prefix) != null;
         }
+
 
         Node getNode(String word) {
             Node curr = root;
@@ -95,6 +109,8 @@ class Solution {
 
 
     public static void main(String[] args) {
+        // if it matches from the end of both string and trie, do not count the matches. Only start counting if and when the first
+        // mismatch occurs
         Solution solution = new Solution();
         String[] words = {"time", "me", "bell"};
         System.out.printf(" Expected answer is 10, we get: %d\n", solution.minimumLengthEncoding(words));
