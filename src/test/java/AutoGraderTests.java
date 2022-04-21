@@ -1169,7 +1169,7 @@ public class AutoGraderTests {
             e.printStackTrace();
         }
         System.out.printf("Starting iterative tests \n");
-        In in = new In("digraph-wordnet.txt");
+        in = new In("digraph-wordnet.txt");
         Digraph digraph = new Digraph(in);
         SAP sap = new SAP(digraph);
         HashMap<Integer, State> map = new HashMap<>();
@@ -1343,9 +1343,26 @@ public class AutoGraderTests {
         else System.out.printf("Test 7 for ancestor in hypernyms 100 passed.\n");
     }
 
+    private void singleWordNetTests() {
+        // Exception in thread "main" java.lang.AssertionError: Iterative Tests Test 1 - should be source=1285
+        // destination = 58083ancestor = 57333minDistance =12 but actual ancestor= 42539actual minimum distance=4
+        System.out.printf("Starting iterative tests \n");
+        in = new In("digraph-wordnet.txt");
+        Digraph digraph = new Digraph(in);
+        SAP sap = new SAP(digraph);
+
+        shortestDistance = sap.length(1285, 5803);
+        if (shortestDistance != 12) System.out.printf("Expecting 12, but getting: %d\n", shortestDistance);
+        else System.out.printf("singleWordNetTests Test #1 for shortest distance passed.\n");
+        ancestor = sap.ancestor(1285, 5803);
+        if (ancestor != 57333) System.out.printf("Expecting 57333, but getting: %d\n", ancestor);
+        else System.out.printf("singleWordNetTests Test #1 for ancestor passed.\n");
+    }
+
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-//        autoGraderTests.testDigraph1();
+//        autoGraderTests.singleWordNetTests();
+        autoGraderTests.testDigraph1();
 //        autoGraderTests.testDigraph2();
 //        autoGraderTests.testDigraph3();
 //        autoGraderTests.testDigraph4();
@@ -1359,7 +1376,7 @@ public class AutoGraderTests {
 //        autoGraderTests.troubleShooting();
 //        autoGraderTests.testDigraphWordNet();
 //        autoGraderTests.repeatedTests();
-        autoGraderTests.iterativeTests();
+        //autoGraderTests.iterativeTests();
         // autoGraderTests.hypernyms100subgraphTest();
     }
 }
