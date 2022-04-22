@@ -47,7 +47,15 @@ public class SAP {
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (from == v && to == w) return minDistance;
-        /*if (v == w && v != -1 && w != -1) {
+        if (from == w && to == v) return minDistance;
+        if (v==w && v!=-1){
+            minDistance = 0;
+            ancestor = v;
+            from = v;
+            to = w;
+            return minDistance;
+        }
+        /* if (v == w && v != -1 && w != -1) {
             minDistance = 0;
             ancestor = v;
             from = v;
@@ -65,7 +73,7 @@ public class SAP {
             to = w;
             // lockStepBFS(v, w, fromBFS, toBFS);
             testMethod(v, w);
-        }*/
+        } */
         from = v;
         to = w;
         testMethod(v, w);
@@ -114,6 +122,14 @@ public class SAP {
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (from == v && to == w) return ancestor;
+        if (from == w && to == v) return ancestor;
+        if (v==w && v!=-1){
+            minDistance = 0;
+            ancestor = v;
+            from = v;
+            to = w;
+            return ancestor;
+        }
         /* if (v == w && v != -1 && w != -1) {
             from = v;
             to = w;

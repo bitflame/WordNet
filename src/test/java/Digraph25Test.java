@@ -32,7 +32,7 @@ public class Digraph25Test {
         onToStack = new boolean[n];
     }
 
-    private static int updateCurrentDistance(int v, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
+    private static int updateCurrentDistance(int v, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
         int distance = sBS.distTo(v) + dBS.distTo(v);
         if (distance < currentDistance) {
             currentDistance = distance;
@@ -41,7 +41,7 @@ public class Digraph25Test {
         return currentDistance;
     }
 
-    private static int testMethod(int s, int d, BreadthFirstDirectedPaths sBFS, BreadthFirstDirectedPaths dBFS) {
+    private static int testMethod(int s, int d, DeluxeBFS sBFS, DeluxeBFS dBFS) {
         int currentDistance = INFINITY;
         if (s == d) {
             minDistance = 0;
@@ -121,8 +121,8 @@ public class Digraph25Test {
                 "should be 6, but is: " + result);
         List<Integer> sources = new ArrayList<>(Arrays.asList(13, 23, 24));
         List<Integer> destinations = new ArrayList<>(Arrays.asList(6, 16, 17));
-        BreadthFirstDirectedPaths vBFDS = new BreadthFirstDirectedPaths(digraph, sources);
-        BreadthFirstDirectedPaths wBFDS = new BreadthFirstDirectedPaths(digraph, destinations);
+        DeluxeBFS vBFDS = new DeluxeBFS(digraph, sources);
+        DeluxeBFS wBFDS = new DeluxeBFS(digraph, destinations);
         int distance = INFINITY;
         int currentDistance = INFINITY;
         int currentAncestor = -1;

@@ -29,6 +29,7 @@ public class WordNet {
             val = Integer.parseInt(a[0]);
             db.put(val, a[1]);
         }
+//        System.out.printf("Expected number of vertices: 82,192, actual: %d\n", db.size());
     }
 
     private Digraph createGraph(String hypernyms) {
@@ -49,6 +50,10 @@ public class WordNet {
         if (Math.abs(index - db.size()) > 1) {
             throw new IllegalArgumentException("The input to the constructor does not correspond to a rooted DAG - Graph Not rooted");
         }
+//        int i = 0;
+//        for (; i < digraph.E(); i++) {
+//        }
+//        System.out.printf("Expected number of edges: 84505, actual: %d\n", i);
         return digraph;
     }
 
@@ -126,5 +131,6 @@ public class WordNet {
         StdOut.println("The distance between the nouns Brown_Swiss, and barrel_roll should be 29, and it is: " + wordNet.distance("Brown_Swiss", "barrel_roll"));
         StdOut.println("The distance between the nouns group_action and event should be 1, and it is: " + wordNet.distance("group_action", "event"));
         StdOut.println("The distance between the nouns act and group_action should be 1, and it is:" + wordNet.distance("act", "group_action"));
+        // create lists of five, 10, 20, and 100 items and measure time difference
     }
 }

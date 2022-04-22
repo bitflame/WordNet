@@ -46,7 +46,7 @@ public class Misc {
         }
     }
 
-    private int testMethod(int s, int d, BreadthFirstDirectedPaths sBFS, BreadthFirstDirectedPaths dBFS) {
+    private int testMethod(int s, int d, DeluxeBFS sBFS, DeluxeBFS dBFS) {
         int currentDistance = INFINITY;
         if (s == d) {
             minDistance = 0;
@@ -113,7 +113,7 @@ public class Misc {
         return minDistance;
     }
 
-    private int updateCurrentDistance(int v, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
+    private int updateCurrentDistance(int v, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
         int distance = sBS.distTo(v) + dBS.distTo(v);
         if (distance < currentDistance) {
             currentDistance = distance;
@@ -128,15 +128,15 @@ public class Misc {
         Misc misc = new Misc(ids, data);
         In in = new In("digraph3.txt");
         Digraph digraph = new Digraph(in);
-        BreadthFirstDirectedPaths vBFDS;
-        BreadthFirstDirectedPaths wBFDS;
+        DeluxeBFS vBFDS;
+        DeluxeBFS wBFDS;
         System.out.printf("Looking at the autograder test that failed using Graph 3 ...\n");
         in = new In("digraph3.txt");
         digraph = new Digraph(in);
         List<Integer> sources = new ArrayList<>(Arrays.asList(0, 2, 3, 7, 10));
         List<Integer> destinations = new ArrayList<>(Arrays.asList(1, 7, 12));
-        vBFDS = new BreadthFirstDirectedPaths(digraph, sources);
-        wBFDS = new BreadthFirstDirectedPaths(digraph, destinations);
+        vBFDS = new DeluxeBFS(digraph, sources);
+        wBFDS = new DeluxeBFS(digraph, destinations);
         int distance = misc.INFINITY;
         int currentDistance = misc.INFINITY;
         int currentAncestor = -1;
