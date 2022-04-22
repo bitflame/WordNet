@@ -46,7 +46,8 @@ public class SAP {
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (v == w && v != -1 && w != -1) {
+        if (from == v && to == w) return minDistance;
+        /*if (v == w && v != -1 && w != -1) {
             minDistance = 0;
             ancestor = v;
             from = v;
@@ -64,7 +65,10 @@ public class SAP {
             to = w;
             // lockStepBFS(v, w, fromBFS, toBFS);
             testMethod(v, w);
-        }
+        }*/
+        from = v;
+        to = w;
+        testMethod(v, w);
         return minDistance;
     }
 
@@ -109,7 +113,8 @@ public class SAP {
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
-        if (v == w && v != -1 && w != -1) {
+        if (from == v && to == w) return ancestor;
+        /* if (v == w && v != -1 && w != -1) {
             from = v;
             to = w;
             ancestor = w;
@@ -126,7 +131,10 @@ public class SAP {
             to = w;
             // lockStepBFS(v, w, fromBFS, toBFS);
             testMethod(v, w);
-        }
+        }*/
+        from = v;
+        to = w;
+        testMethod(v, w);
         return ancestor;
     }
 
@@ -159,6 +167,9 @@ public class SAP {
     }
 
     private int updateCurrentDistance(int v, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
+        int fromDist = sBS.distTo(v);
+        int toDist = dBS.distTo(v);
+        if (fromDist > currentDistance && toDist > currentDistance) proceed = false;
         int distance = sBS.distTo(v) + dBS.distTo(v);
         if (distance < currentDistance) {
             currentDistance = distance;
@@ -170,6 +181,7 @@ public class SAP {
     private int updateCurrentIterDistance(int v, int w, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
         int fromDist = sBS.distTo(w);
         int toDist = dBS.distTo(w);
+        if (fromDist > currentDistance && toDist > currentDistance) proceed = false;
         int distance = fromDist + toDist;
         if (distance < currentDistance) {
             currentDistance = distance;
@@ -179,6 +191,7 @@ public class SAP {
                 fr = sBS.pathTo(ancestor).iterator().next();
                 fromDist--;
             }
+
             from = fr;
             int ds = ancestor;
             while (toDist > 0) {
@@ -215,6 +228,8 @@ public class SAP {
         }
         for (int j : d) {
             if (onFromStack[j]) {
+                from = j;
+                to = j;
                 minDistance = 0;
                 ancestor = j;
                 return minDistance;
