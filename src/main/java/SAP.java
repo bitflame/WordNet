@@ -52,9 +52,12 @@ public class SAP {
             from = v;
             to = w;
             return minDistance;
+
         } else if (this.from == v && this.to == w) {
             return minDistance;
         } else if (this.from == w && this.to == v) {
+            from = v;
+            to = w;
             return minDistance;
         } else {
             from = v;
@@ -107,6 +110,8 @@ public class SAP {
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (v == w && v != -1 && w != -1) {
+            from = v;
+            to = w;
             ancestor = w;
             minDistance = 0;
             return ancestor;
