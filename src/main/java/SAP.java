@@ -137,13 +137,32 @@ public class SAP {
     private void setupDefaultDataStructures() {
         minDistance = -1;
         ancestor = -1;
-        fromQueue = new Queue<Integer>();
-        toQueue = new Queue<Integer>();
+        fromQueue = new Queue<>();
+        toQueue = new Queue<>();
         marked = new boolean[n];
         fromStack = new Stack<>();
         toStack = new Stack<>();
         onFromStack = new boolean[n];
         onToStack = new boolean[n];
+    }
+
+    private void updateDataStructures() {
+        int i = 0;
+        while (!fromStack.isEmpty()) {
+            i = fromStack.pop();
+            marked[i] = false;
+            onFromStack[i] = false;
+        }
+        fromQueue = new Queue<>();
+        i = 0;
+        while (!toStack.isEmpty()) {
+            i = toStack.pop();
+            marked[i] = false;
+            onToStack[i] = false;
+        }
+        toQueue = new Queue<>();
+        minDistance = -1;
+        ancestor = -1;
     }
 
     private int updateCurrentDistance(int v, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
@@ -187,9 +206,11 @@ public class SAP {
         try {
             fromBFS = fromBFS.updateSources(digraphDFCopy, s);
             toBFS = toBFS.updateSources(digraphDFCopy, d);
+            updateDataStructures();
         } catch (NullPointerException e) {
             fromBFS = new DeluxeBFS(digraphDFCopy, s);
             toBFS = new DeluxeBFS(digraphDFCopy, d);
+            setupDefaultDataStructures();
         } catch (IllegalArgumentException e) {
             ancestor = -1;
             minDistance = -1;
@@ -197,7 +218,6 @@ public class SAP {
             to = -1;
             return minDistance;
         }
-        setupDefaultDataStructures();
         int currentDistance = INFINITY;
         proceed = true;
         for (int i : s) {
@@ -219,7 +239,7 @@ public class SAP {
             toStack.push(j);
             onToStack[j] = true;
         }
-        int v, z;
+        int v;
         int distanceFromSourceCounter = 1;
         while (proceed) {
 
@@ -266,9 +286,11 @@ public class SAP {
         try {
             fromBFS = fromBFS.updateSource(digraphDFCopy, s);
             toBFS = toBFS.updateSource(digraphDFCopy, d);
+            updateDataStructures();
         } catch (NullPointerException e) {
             fromBFS = new DeluxeBFS(digraphDFCopy, s);
             toBFS = new DeluxeBFS(digraphDFCopy, d);
+            setupDefaultDataStructures();
         } catch (IllegalArgumentException e) {
             ancestor = -1;
             minDistance = -1;
@@ -276,7 +298,6 @@ public class SAP {
             to = -1;
             return minDistance;
         }
-        setupDefaultDataStructures();
         int currentDistance = INFINITY;
         proceed = true;
         fromQueue.enqueue(s);
