@@ -2,7 +2,6 @@ import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 
 
 public class SAP {
@@ -21,6 +20,8 @@ public class SAP {
     private final int n;
     private boolean proceed;
     private boolean[] marked;
+    private DeluxeBFS fromBFS;
+    private DeluxeBFS toBFS;
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -48,32 +49,13 @@ public class SAP {
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (from == v && to == w) return minDistance;
         if (from == w && to == v) return minDistance;
-        if (v==w && v!=-1){
+        if (v == w && v != -1) {
             minDistance = 0;
             ancestor = v;
             from = v;
             to = w;
             return minDistance;
         }
-        /* if (v == w && v != -1 && w != -1) {
-            minDistance = 0;
-            ancestor = v;
-            from = v;
-            to = w;
-            return minDistance;
-
-        } else if (this.from == v && this.to == w) {
-            return minDistance;
-        } else if (this.from == w && this.to == v) {
-            from = v;
-            to = w;
-            return minDistance;
-        } else {
-            from = v;
-            to = w;
-            // lockStepBFS(v, w, fromBFS, toBFS);
-            testMethod(v, w);
-        } */
         from = v;
         to = w;
         testMethod(v, w);
@@ -123,31 +105,13 @@ public class SAP {
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (from == v && to == w) return ancestor;
         if (from == w && to == v) return ancestor;
-        if (v==w && v!=-1){
+        if (v == w && v != -1) {
             minDistance = 0;
             ancestor = v;
             from = v;
             to = w;
             return ancestor;
         }
-        /* if (v == w && v != -1 && w != -1) {
-            from = v;
-            to = w;
-            ancestor = w;
-            minDistance = 0;
-            return ancestor;
-        } else if (this.from == v && this.to == w) {
-            return ancestor;
-        } else if (this.from == w && this.to == v) {
-            from = v;
-            to = w;
-            return ancestor;
-        } else {
-            from = v;
-            to = w;
-            // lockStepBFS(v, w, fromBFS, toBFS);
-            testMethod(v, w);
-        }*/
         from = v;
         to = w;
         testMethod(v, w);
@@ -182,7 +146,7 @@ public class SAP {
         onToStack = new boolean[n];
     }
 
-    private int updateCurrentDistance(int v, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
+    private int updateCurrentDistance(int v, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
         int fromDist = sBS.distTo(v);
         int toDist = dBS.distTo(v);
         if (fromDist > currentDistance && toDist > currentDistance) proceed = false;
@@ -194,7 +158,7 @@ public class SAP {
         return currentDistance;
     }
 
-    private int updateCurrentIterDistance(int v, int w, int currentDistance, BreadthFirstDirectedPaths sBS, BreadthFirstDirectedPaths dBS) {
+    private int updateCurrentIterDistance(int v, int w, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
         int fromDist = sBS.distTo(w);
         int toDist = dBS.distTo(w);
         if (fromDist > currentDistance && toDist > currentDistance) proceed = false;
@@ -220,11 +184,12 @@ public class SAP {
     }
 
     private int testMethod(Iterable<Integer> s, Iterable<Integer> d) {
-        BreadthFirstDirectedPaths iSBFS;
-        BreadthFirstDirectedPaths iDBFS;
         try {
-            iSBFS = new BreadthFirstDirectedPaths(digraphDFCopy, s);
-            iDBFS = new BreadthFirstDirectedPaths(digraphDFCopy, d);
+            fromBFS = fromBFS.updateSources(digraphDFCopy, s);
+            toBFS = toBFS.updateSources(digraphDFCopy, d);
+        } catch (NullPointerException e) {
+            fromBFS = new DeluxeBFS(digraphDFCopy, s);
+            toBFS = new DeluxeBFS(digraphDFCopy, d);
         } catch (IllegalArgumentException e) {
             ancestor = -1;
             minDistance = -1;
@@ -232,7 +197,6 @@ public class SAP {
             to = -1;
             return minDistance;
         }
-
         setupDefaultDataStructures();
         int currentDistance = INFINITY;
         proceed = true;
@@ -259,7 +223,7 @@ public class SAP {
         int distanceFromSourceCounter = 1;
         while (proceed) {
 
-            while (!fromQueue.isEmpty() && iSBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
+            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
@@ -267,13 +231,13 @@ public class SAP {
                         fromStack.push(w);
                         onFromStack[w] = true;
                         marked[w] = true;
-                    } else if (iDBFS.hasPathTo(w)) {
-                        currentDistance = updateCurrentIterDistance(v, w, currentDistance, iSBFS, iDBFS);
+                    } else if (toBFS.hasPathTo(w)) {
+                        currentDistance = updateCurrentIterDistance(v, w, currentDistance, fromBFS, toBFS);
                     }
                 }
             }
             if (!proceed) break;
-            while (!toQueue.isEmpty() && iDBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
+            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
@@ -281,8 +245,8 @@ public class SAP {
                         toStack.push(w);
                         onToStack[w] = true;
                         marked[w] = true;
-                    } else if (iSBFS.hasPathTo(w)) {
-                        currentDistance = updateCurrentIterDistance(v, w, currentDistance, iSBFS, iDBFS);
+                    } else if (fromBFS.hasPathTo(w)) {
+                        currentDistance = updateCurrentIterDistance(v, w, currentDistance, fromBFS, toBFS);
                     }
                 }
             }
@@ -299,15 +263,21 @@ public class SAP {
     }
 
     private int testMethod(int s, int d) {
-        BreadthFirstDirectedPaths sBFS = new BreadthFirstDirectedPaths(digraphDFCopy, s);
-        BreadthFirstDirectedPaths dBFS = new BreadthFirstDirectedPaths(digraphDFCopy, d);
-        setupDefaultDataStructures();
-        int currentDistance = INFINITY;
-        if (s == d) {
-            minDistance = 0;
-            ancestor = s;
+        try {
+            fromBFS = fromBFS.updateSource(digraphDFCopy, s);
+            toBFS = toBFS.updateSource(digraphDFCopy, d);
+        } catch (NullPointerException e) {
+            fromBFS = new DeluxeBFS(digraphDFCopy, s);
+            toBFS = new DeluxeBFS(digraphDFCopy, d);
+        } catch (IllegalArgumentException e) {
+            ancestor = -1;
+            minDistance = -1;
+            from = -1;
+            to = -1;
             return minDistance;
         }
+        setupDefaultDataStructures();
+        int currentDistance = INFINITY;
         proceed = true;
         fromQueue.enqueue(s);
         marked[s] = true;
@@ -321,7 +291,7 @@ public class SAP {
         int distanceFromSourceCounter = 1;
         while (proceed) {
             // if both have routes to it and distance is minimum
-            while (!fromQueue.isEmpty() && sBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
+            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
@@ -330,15 +300,15 @@ public class SAP {
                         onFromStack[w] = true;
                         marked[w] = true;
                     } else if (onFromStack[w] && w == d) {
-                        currentDistance = sBFS.distTo(v) + 1;
+                        currentDistance = fromBFS.distTo(v) + 1;
                         ancestor = w;
-                    } else if (dBFS.hasPathTo(w)) {
-                        currentDistance = updateCurrentDistance(w, currentDistance, sBFS, dBFS);
+                    } else if (toBFS.hasPathTo(w)) {
+                        currentDistance = updateCurrentDistance(w, currentDistance, fromBFS, toBFS);
                     }
                 }
             }
             if (!proceed) break;
-            while (!toQueue.isEmpty() && dBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
+            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
@@ -348,10 +318,10 @@ public class SAP {
                         onToStack[w] = true;
                     } else if (onToStack[w] && w == s) {
                         // if it is onStack you might have to compare distances to the node with the path it came from
-                        currentDistance = dBFS.distTo(v) + 1;
+                        currentDistance = toBFS.distTo(v) + 1;
                         ancestor = w;
-                    } else if (sBFS.hasPathTo(w)) {
-                        currentDistance = updateCurrentDistance(w, currentDistance, sBFS, dBFS);
+                    } else if (fromBFS.hasPathTo(w)) {
+                        currentDistance = updateCurrentDistance(w, currentDistance, fromBFS, toBFS);
                     }
                 }
             }

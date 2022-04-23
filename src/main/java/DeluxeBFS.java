@@ -1,5 +1,8 @@
-import edu.princeton.cs.algs4.*;
-
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.StdOut;
 public class DeluxeBFS {
     private static final int INFINITY = Integer.MAX_VALUE;
     private boolean[] marked;  // marked[v] = is there an s->v path?
@@ -23,6 +26,7 @@ public class DeluxeBFS {
         marked = new boolean[G.V()];
         distTo = new int[G.V()];
         edgeTo = new int[G.V()];
+        reversePost = new Stack<>();
         for (int v = 0; v < G.V(); v++)
             distTo[v] = INFINITY;
         validateVertices(sources);
@@ -69,7 +73,7 @@ public class DeluxeBFS {
         }
     }
 
-    public void updateSource(Digraph G, int s) {
+    public DeluxeBFS updateSource(Digraph G, int s) {
         int i;
         while (!reversePost.isEmpty()) {
             i = reversePost.pop();
@@ -78,9 +82,10 @@ public class DeluxeBFS {
             distTo[i] = INFINITY;
         }
         bfs(G, s);
+        return this;
     }
 
-    public void updateSources(Digraph G, Iterable<Integer> sources) {
+    public DeluxeBFS updateSources(Digraph G, Iterable<Integer> sources) {
         int i;
         while (!reversePost.isEmpty()) {
             i = reversePost.pop();
@@ -106,6 +111,7 @@ public class DeluxeBFS {
             }
             reversePost.push(v);
         }
+        return this;
     }
 
     public boolean hasPathTo(int v) {
