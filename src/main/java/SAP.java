@@ -90,6 +90,7 @@ public class SAP {
             to = -1;
             ancestor = -1;
             minDistance = -1;
+            return minDistance;
         }
         testMethod(v, w);
         return minDistance;
@@ -152,15 +153,15 @@ public class SAP {
             i = fromStack.pop();
             marked[i] = false;
             onFromStack[i] = false;
+            if (!fromQueue.isEmpty()) fromQueue.dequeue();
         }
-        fromQueue = new Queue<>();
         i = 0;
         while (!toStack.isEmpty()) {
             i = toStack.pop();
             marked[i] = false;
             onToStack[i] = false;
+            if (!toQueue.isEmpty()) toQueue.dequeue();
         }
-        toQueue = new Queue<>();
         minDistance = -1;
         ancestor = -1;
     }

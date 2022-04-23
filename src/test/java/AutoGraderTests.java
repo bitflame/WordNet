@@ -1472,14 +1472,14 @@ public class AutoGraderTests {
         autoGraderTests.testDigraph5();
         autoGraderTests.testDigraph6();
         autoGraderTests.testDigraph9();
-//        autoGraderTests.testMyGraphs();
-//        autoGraderTests.createMultipleObjects();
-//        autoGraderTests.testIterables();
-//        autoGraderTests.testRandomDigraph();
-//        autoGraderTests.troubleShooting();
-//        autoGraderTests.testDigraphWordNet();
-//        autoGraderTests.repeatedTests();
-//        autoGraderTests.iterativeTests();
-        // autoGraderTests.hypernyms100subgraphTest();
+        autoGraderTests.testMyGraphs();
+        autoGraderTests.createMultipleObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
+        autoGraderTests.troubleShooting();
+        autoGraderTests.testDigraphWordNet();
+        autoGraderTests.repeatedTests();
+        autoGraderTests.iterativeTests();
+        autoGraderTests.hypernyms100subgraphTest();
     }
 }
