@@ -23,6 +23,7 @@ public class SAP {
     private DeluxeBFS fromBFS;
     private DeluxeBFS toBFS;
 
+
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
         if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
