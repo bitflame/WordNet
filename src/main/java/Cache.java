@@ -7,7 +7,7 @@ public class Cache {
         int minimumDistance;
         int ancestor;
         Node next;
-
+        Node first;
         int hash = -1;
 
         public int getHash() {
@@ -39,19 +39,28 @@ public class Cache {
         }
     }
 
-    private Node first;
+    int M = 97; // table size
+    private Node[] table;
 
-    public Node get(Integer hash) {
-        for (Node x = first; x != null; x = x.next)
-            if (hash.equals(x.hash)) return x;
+    public Cache() {
+        table = new Node[M];
+    }
+
+    public Node get(Integer source, Integer destination) {
+        Node node = new Node(source, destination);
+        for (Node x = table[node.hash].first; x != null; x = x.next) {
+            if (x.source == source && x.destination == destination) return x;
+        }
         return null;
     }
 
-    public void put(Integer hash, Node node) {
-        Node x = first;
+    public void put(Integer sourse, Integer destination) {
+        Node node = new Node(sourse, destination);
+        Node x = this.table[node.hash].first;
         while (x != null) x = x.next;
         x = node;
     }
+
 
     public static void main(String[] args) {
         Cache cache = new Cache();
@@ -63,10 +72,12 @@ public class Cache {
             System.out.printf("hash code for: (%d, %d) is: %d\n", source, destination, node.hashCode());
         }
         // hashing the same nodes should give the same hash value
-        for (int i = 0; i < 10; i++) {
-            node = new Cache().new Node(13775, 76841);
-            System.out.printf("%d\n", node.hashCode());
-        }
-
+//        for (int i = 0; i < 10; i++) {
+//            node = new Cache().new Node(13775, 76841);
+//            System.out.printf("%d\n", node.hashCode());
+//        }
+        // test the cache by adding 10 items and retrieving the right ones
+        cache.put(41269, 66612);
+        cache.put(77176, 52050);
     }
 }
