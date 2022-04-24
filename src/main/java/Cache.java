@@ -9,6 +9,13 @@ public class Cache {
         int minimumDistance;
         int ancestor;
 
+
+        int hash = -1;
+
+        public int getHash() {
+            return hash;
+        }
+
         public Node(int src, int dest) {
             source = src;
             destination = dest;
@@ -65,8 +72,9 @@ public class Cache {
         public int hashCode() {
             // M = 97
             int hash = 17;
-            hash = (31 * hash + ((Integer) source).hashCode()) % 97;
-            hash = (31 * hash + ((Integer) destination).hashCode()) % 97;
+            hash = (31 * hash + ((Integer) source).hashCode() & 0x7fffffff) % 97;
+            hash = (31 * hash + ((Integer) destination).hashCode() & 0x7fffffff) % 97;
+            this.hash = hash;
             return hash;
         }
     }
@@ -80,5 +88,11 @@ public class Cache {
             node = new Cache().new Node(source, destination);
             System.out.printf("hash code for: (%d, %d) is: %d\n", source, destination, node.hashCode());
         }
+        // hashing the same nodes should give the same hash value
+        for (int i = 0; i < 10; i++) {
+            node = new Cache().new Node(13775, 76841);
+            System.out.printf("%d\n", node.hashCode());
+        }
+
     }
 }
