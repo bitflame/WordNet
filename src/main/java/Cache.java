@@ -1,14 +1,12 @@
 import edu.princeton.cs.algs4.StdRandom;
 
-import java.util.Objects;
-
 public class Cache {
     private class Node {
         int source;
         int destination;
         int minimumDistance;
         int ancestor;
-
+        Node next;
 
         int hash = -1;
 
@@ -21,44 +19,6 @@ public class Cache {
             destination = dest;
         }
 
-        public Node(int src, int dest, int minDist, int anc) {
-            source = src;
-            destination = dest;
-            minimumDistance = minDist;
-            ancestor = anc;
-        }
-
-        public int getSource() {
-            return source;
-        }
-
-        public void setSource(int source) {
-            this.source = source;
-        }
-
-        public int getDestination() {
-            return destination;
-        }
-
-        public void setDestination(int destination) {
-            this.destination = destination;
-        }
-
-        public int getMinimumDistance() {
-            return minimumDistance;
-        }
-
-        public void setMinimumDistance(int minimumDistance) {
-            this.minimumDistance = minimumDistance;
-        }
-
-        public int getAncestor() {
-            return ancestor;
-        }
-
-        public void setAncestor(int ancestor) {
-            this.ancestor = ancestor;
-        }
 
         @Override
         public boolean equals(Object o) {
@@ -77,6 +37,20 @@ public class Cache {
             this.hash = hash;
             return hash;
         }
+    }
+
+    private Node first;
+
+    public Node get(Integer hash) {
+        for (Node x = first; x != null; x = x.next)
+            if (hash.equals(x.hash)) return x;
+        return null;
+    }
+
+    public void put(Integer hash, Node node) {
+        Node x = first;
+        while (x != null) x = x.next;
+        x = node;
     }
 
     public static void main(String[] args) {
