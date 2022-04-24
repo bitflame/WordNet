@@ -10,12 +10,17 @@ public class Cache {
         int hash = -1;
 
         public int getHash() {
+
             return hash;
         }
 
         public Node(int src, int dest) {
             source = src;
             destination = dest;
+            int hash = 17;
+            hash = (31 * hash + ((Integer) source).hashCode() & 0x7fffffff) % 97;
+            hash = (31 * hash + ((Integer) destination).hashCode() & 0x7fffffff) % 97;
+            this.hash = hash;
         }
 
 
