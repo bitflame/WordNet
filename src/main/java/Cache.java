@@ -69,9 +69,8 @@ public class Cache {
             Node first = new Node(source, destination);
             table[node.hash] = first;
         } else {
-            Node x = this.table[node.hash];
-            while (x != null) x = x.next;
-            x = node;
+            node.next=table[node.hash];
+            table[node.hash]=node;
         }
     }
 
@@ -92,6 +91,7 @@ public class Cache {
 //        }
         // test the cache by adding 10 items and retrieving the right ones
         cache.put(41269, 66612);
+        cache.put(58965, 31069);
         cache.put(77176, 52050);
     }
 }
