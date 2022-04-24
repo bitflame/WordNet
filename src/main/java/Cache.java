@@ -7,7 +7,6 @@ public class Cache {
         int minimumDistance;
         int ancestor;
         Node next;
-        Node first;
         int hash = -1;
 
         public int getHash() {
@@ -41,24 +40,34 @@ public class Cache {
 
     int M = 97; // table size
     private Node[] table;
+    Node first;
 
     public Cache() {
         table = new Node[M];
+        for (int i = 0; i < M; i++) {
+
+            table[i] = first;
+        }
     }
 
     public Node get(Integer source, Integer destination) {
         Node node = new Node(source, destination);
-        for (Node x = table[node.hash].first; x != null; x = x.next) {
+        for (Node x = table[node.hash]; x != null; x = x.next) {
             if (x.source == source && x.destination == destination) return x;
         }
         return null;
     }
 
-    public void put(Integer sourse, Integer destination) {
-        Node node = new Node(sourse, destination);
-        Node x = this.table[node.hash].first;
-        while (x != null) x = x.next;
-        x = node;
+    public void put(Integer source, Integer destination) {
+        Node node = new Node(source, destination);
+        if (table[node.hash] == null) {
+            Node first = new Node(source, destination);
+            table[node.hash] = first;
+        } else {
+            Node x = this.table[node.hash];
+            while (x != null) x = x.next;
+            x = node;
+        }
     }
 
 
