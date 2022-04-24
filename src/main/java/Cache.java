@@ -74,7 +74,7 @@ public class Cache {
     public static void main(String[] args) {
         Cache cache = new Cache();
         Node node;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             int source = StdRandom.uniform(0, 82192);
             int destination = StdRandom.uniform(0, 82192);
             node = new Cache().new Node(source, destination);
