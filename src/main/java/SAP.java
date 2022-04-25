@@ -75,10 +75,14 @@ public class SAP {
 
         private Node get(Integer source, Integer destination) {
             Node node = new Node(source, destination);
-            if (table[node.hashCode()] == null) return null;
-            else {
+            Node revNode = new Node(destination, source);
+            if (table[node.hashCode()] != null) {
                 for (Node x = table[node.hash]; x != null; x = x.next) {
                     if (x.source == source && x.destination == destination) return x;
+                }
+            } else if (table[revNode.hashCode()] != null) {
+                for (Node x = table[revNode.hash]; x != null; x = x.next) {
+                    if (x.source == destination && x.destination == source) return x;
                 }
             }
             return null;
@@ -281,28 +285,25 @@ public class SAP {
             return currentDistance;
         }
         int distance = fromDist + toDist;
-
-
         int fr = w;
         while (fromDist > 0) {
             fr = sBS.pathTo(w).iterator().next();
             fromDist--;
         }
-
-        from = fr;
         int ds = w;
         while (toDist > 0) {
             ds = dBS.pathTo(w).iterator().next();
             toDist--;
         }
-        to = ds;
-        /* distance is the shortest distance of w to one of the nodes on each side, and w is an ancestor since it is
-        * reachable from both sides */
-        node = new Node(from,to,distance,w);
-        /* add the node to the cache */
-        cache.put(node);
+        if (cache.get(fr,ds)==null ){
+            node = new Node(from, to, distance, w);
+            /* add the node to the cache */
+            cache.put(node);
+        }
         if (distance < currentDistance) {
             currentDistance = distance;
+            from = fr;
+            to = ds;
             ancestor = w;
         }
         return currentDistance;
@@ -315,21 +316,22 @@ public class SAP {
             for (int j : d) {
                 try {
                     node = cache.get(i, j);
-                    if (currentDistance < node.minimumDistance) {
+                    if (currentDistance > node.minimumDistance && node.minimumDistance != -1) {
                         currentDistance = node.minimumDistance;
-                        from = node.source;
-                        to = node.destination;
+                        from = i;
+                        to = j;
                         minDistance = node.minimumDistance;
                         ancestor = node.ancestor;
                     }
                 } catch (NullPointerException e) {
                     matchedAll = false;
+                    break;
                 }
             }
         }
         // if all the nodes were in cache, minimum distance should be updated. Just return it. Otherwise currentDistance
         // should have a value we can start with
-        if (matchedAll) return minDistance;
+        if (matchedAll && currentDistance != INFINITY) return minDistance;
         try {
             fromBFS = fromBFS.updateSources(digraphDFCopy, s);
             toBFS = toBFS.updateSources(digraphDFCopy, d);

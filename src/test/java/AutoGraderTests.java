@@ -732,92 +732,96 @@ public class AutoGraderTests {
         sap = new SAP(digraph);
         shortestDistance = sap.length(5, 8);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 5 and 8 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 5 and 8 in Graph 9  should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(5, 8);
         if (ancestor != 8)
-            System.out.printf("Ancestor between 5 and 8 was expected to be 8, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 5 and 8  in Graph 9 was expected to be 8, but it is: %d\n", ancestor);
         shortestDistance = sap.length(5, 4);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 5 and 4 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 5 and 4  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(5, 4);
         if (ancestor != 4)
-            System.out.printf("Ancestor between 5 and 4 was expected to be 4, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 5 and 4  in Graph 9 was expected to be 4, but it is: %d\n", ancestor);
+        shortestDistance = sap.length(8, 5);
+        if (shortestDistance != 1)
+            System.out.printf("The distance between node 8 and 5 in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 1);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 4 and 1 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 4 and 1  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(4, 1);
         if (ancestor != 1)
-            System.out.printf("Ancestor between 4 and 1 was expected to be 8, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 4 and 1  in Graph 9 was expected to be 8, but it is: %d\n", ancestor);
 
         shortestDistance = sap.length(3, 4);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 3 and 4 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 3 and 4  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(3, 4);
         if (ancestor != 4)
-            System.out.printf("Ancestor between 3 and 4 was expected to be 4, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 3 and 4  in Graph 9 was expected to be 4, but it is: %d\n", ancestor);
         shortestDistance = sap.length(3, 2);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 3 and 2 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 3 and 2  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(3, 2);
         if (ancestor != 2)
-            System.out.printf("Ancestor between 3 and 2 was expected to be 2, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 3 and 2  in Graph 9 was expected to be 2, but it is: %d\n", ancestor);
         shortestDistance = sap.length(3, 0);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 3 and 0 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 3 and 0  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(3, 0);
         if (ancestor != 0)
-            System.out.printf("Ancestor between 3 and 0 was expected to be 0, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 3 and 0  in Graph 9 was expected to be 0, but it is: %d\n", ancestor);
         shortestDistance = sap.length(1, 3);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 1 and 3 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 1 and 3  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(1, 3);
         if (ancestor != 3)
-            System.out.printf("Ancestor between 1 and 3 was expected to be 3, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 1 and 3 in Graph 9  was expected to be 3, but it is: %d\n", ancestor);
         shortestDistance = sap.length(0, 6);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 0, and 6 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 0, and 6  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(0, 6);
         if (ancestor != 6)
-            System.out.printf("Ancestor between 0 and 6 was expected to be 6, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 0 and 6  in Graph 9 was expected to be 6, but it is: %d\n", ancestor);
         shortestDistance = sap.length(6, 3);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 6, and 3 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 6, and 3  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(6, 3);
         if (ancestor != 3)
-            System.out.printf("Ancestor between 6 and 3 was expected to be 3, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 6 and 3  in Graph 9 was expected to be 3, but it is: %d\n", ancestor);
         shortestDistance = sap.length(7, 6);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 7, and 6 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 7, and 6  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(7, 6);
         if (ancestor != 6)
-            System.out.printf("Ancestor between 7, and 6 was expected to be 6, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor between 7, and 6  in Graph 9 was expected to be 6, but it is: %d\n", ancestor);
         shortestDistance = sap.length(7, 8);
         if (shortestDistance != -1)
-            System.out.printf("The distance between 7 and 8 should be -1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 7 and 8  in Graph 9 should be -1, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(7, 4);
         if (shortestDistance != 3)
-            System.out.printf("The distance between 7, and 4 should be 3, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 7, and 4  in Graph 9 should be 3, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 0);
         if (shortestDistance != 3)
-            System.out.printf("The distance between 4, and 0 should be 3, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 4, and 0  in Graph 9 should be 3, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(7, 3);
         if (shortestDistance != 2)
-            System.out.printf("The distance between 7, and 3 should be 2, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 7, and 3  in Graph 9 should be 2, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(4, 0);
         if (ancestor != 4)
-            System.out.printf("The ancestor between 4 and 0 should be 4, but it is: %d\n", shortestDistance);
+            System.out.printf("The ancestor between 4 and 0  in Graph 9 should be 4, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 3);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 4, and 3 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 4, and 3  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(0, 3);
         if (shortestDistance != 1)
-            System.out.printf("The distance between 0, and 3 should be 1, but it is: %d\n", shortestDistance);
+            System.out.printf("The distance between 0, and 3  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(0, 3);
         if (ancestor != 0)
-            System.out.printf("The ancestor between 0, and 3 should be 0, but it is: %d\n", ancestor);
+            System.out.printf("The ancestor between 0, and 3  in Graph 9 should be 0, but it is: %d\n", ancestor);
         shortestDistance = sap.length(0, 5);
         if (shortestDistance != 4)
             System.out.printf("The distance between 0 and 5 should be 4, but it is: %d\n", shortestDistance);
+
         v = new ArrayList<>(Arrays.asList(8));
         w = new ArrayList<>(Arrays.asList(7));
         shortestDistance = sap.length(v, w);
