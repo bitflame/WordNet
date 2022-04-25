@@ -14,15 +14,17 @@ public class Cache {
             return hash;
         }
 
+        public Node(int src, int dest, int minDist, int ances) {
+            source = src;
+            destination = dest;
+            minimumDistance = minDist;
+            ancestor = ances;
+        }
+
         public Node(int src, int dest) {
             source = src;
             destination = dest;
-            int hash = 17;
-            hash = (31 * hash + ((Integer) source).hashCode() & 0x7fffffff) % 97;
-            hash = (31 * hash + ((Integer) destination).hashCode() & 0x7fffffff) % 97;
-            this.hash = hash;
         }
-
 
         @Override
         public boolean equals(Object o) {
@@ -57,20 +59,22 @@ public class Cache {
 
     public Node get(Integer source, Integer destination) {
         Node node = new Node(source, destination);
-        for (Node x = table[node.hash]; x != null; x = x.next) {
-            if (x.source == source && x.destination == destination) return x;
+        if (table[node.hashCode()] == null) return null;
+        else {
+            for (Node x = table[node.hash]; x != null; x = x.next) {
+                if (x.source == source && x.destination == destination) return x;
+            }
         }
         return null;
     }
 
-    public void put(Integer source, Integer destination) {
-        Node node = new Node(source, destination);
-        if (table[node.hash] == null) {
-            Node first = new Node(source, destination);
+    public void put(Node node) {
+        if (table[node.hashCode()] == null) {
+            Node first = node;
             table[node.hash] = first;
         } else {
-            node.next=table[node.hash];
-            table[node.hash]=node;
+            node.next = table[node.hash];
+            table[node.hash] = node;
         }
     }
 
@@ -90,8 +94,28 @@ public class Cache {
 //            System.out.printf("%d\n", node.hashCode());
 //        }
         // test the cache by adding 10 items and retrieving the right ones
-        cache.put(41269, 66612);
-        cache.put(58965, 31069);
-        cache.put(77176, 52050);
+        node = new Cache().new Node(41269, 66612,4,45);
+        cache.put(node);
+        node = new Cache().new Node(58965, 31069);
+        cache.put(node);
+        node = new Cache().new Node(77176, 52050);
+        cache.put(node);
+
+        Node n = cache.get(41269, 66612);
+
+        System.out.printf("from cache: source: %d, destination: %d, minDist: %d, ancestor: %d\n ", n.source, n.destination, n.minimumDistance, n.ancestor);
+        try {
+            cache.get(22222, 54168);
+        } catch (NullPointerException e) {
+            // in SAP here is where you call lockStepBFS and calculate minimum distance and ancestor because the nodes are not in the cache
+            System.out.printf("Cache does not have the node with source: %d, and destination: %d\n", 22222, 54168);
+        }
+        try {
+            Node temp = cache.get(41269, 66612);
+            System.out.printf("Here is source: %d, destination: %d, minimum distance: %d, and ancestor: %d", temp.source, temp.destination, temp.minimumDistance, temp.ancestor);
+        } catch (NullPointerException e) {
+            System.out.printf(e.getMessage(), "\n");
+        }
+
     }
 }
