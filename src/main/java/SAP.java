@@ -1,4 +1,7 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.In;
 
 
 public class SAP {
@@ -65,13 +68,9 @@ public class SAP {
 
         int M = 97; // table size
         private Node[] table;
-        Node first;
 
         private Cache() {
             table = new Node[M];
-            for (int i = 0; i < M; i++) {
-                table[i] = first;
-            }
         }
 
         private Node get(Integer source, Integer destination) {
@@ -134,8 +133,6 @@ public class SAP {
         // are the nodes already in cache?
         try {
             node = cache.get(from, to);
-            from = node.source;
-            to = node.destination;
             minDistance = node.minimumDistance;
             ancestor = node.ancestor;
             return minDistance;
@@ -205,8 +202,6 @@ public class SAP {
         // are the nodes already in cache?
         try {
             node = cache.get(from, to);
-            from = node.source;
-            to = node.destination;
             minDistance = node.minimumDistance;
             ancestor = node.ancestor;
             return ancestor;
@@ -281,24 +276,34 @@ public class SAP {
     private int updateCurrentIterDistance(int v, int w, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
         int fromDist = sBS.distTo(w);
         int toDist = dBS.distTo(w);
-        if (fromDist > currentDistance && toDist > currentDistance) proceed = false;
+        if (fromDist > currentDistance && toDist > currentDistance) {
+            proceed = false;
+            return currentDistance;
+        }
         int distance = fromDist + toDist;
+
+
+        int fr = w;
+        while (fromDist > 0) {
+            fr = sBS.pathTo(w).iterator().next();
+            fromDist--;
+        }
+
+        from = fr;
+        int ds = w;
+        while (toDist > 0) {
+            ds = dBS.pathTo(w).iterator().next();
+            toDist--;
+        }
+        to = ds;
+        /* distance is the shortest distance of w to one of the nodes on each side, and w is an ancestor since it is
+        * reachable from both sides */
+        node = new Node(from,to,distance,w);
+        /* add the node to the cache */
+        cache.put(node);
         if (distance < currentDistance) {
             currentDistance = distance;
             ancestor = w;
-            int fr = ancestor;
-            while (fromDist > 0) {
-                fr = sBS.pathTo(ancestor).iterator().next();
-                fromDist--;
-            }
-
-            from = fr;
-            int ds = ancestor;
-            while (toDist > 0) {
-                ds = dBS.pathTo(ancestor).iterator().next();
-                toDist--;
-            }
-            to = ds;
         }
         return currentDistance;
     }

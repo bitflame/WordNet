@@ -736,21 +736,18 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(5, 8);
         if (ancestor != 8)
             System.out.printf("Ancestor between 5 and 8 was expected to be 8, but it is: %d\n", ancestor);
-
         shortestDistance = sap.length(5, 4);
         if (shortestDistance != 1)
             System.out.printf("The distance between 5 and 4 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(5, 4);
         if (ancestor != 4)
             System.out.printf("Ancestor between 5 and 4 was expected to be 4, but it is: %d\n", ancestor);
-
         shortestDistance = sap.length(4, 1);
         if (shortestDistance != 1)
             System.out.printf("The distance between 4 and 1 should be 1, but it is: %d\n", shortestDistance);
         ancestor = sap.ancestor(4, 1);
         if (ancestor != 1)
             System.out.printf("Ancestor between 4 and 1 was expected to be 8, but it is: %d\n", ancestor);
-
 
         shortestDistance = sap.length(3, 4);
         if (shortestDistance != 1)
@@ -782,7 +779,6 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(0, 6);
         if (ancestor != 6)
             System.out.printf("Ancestor between 0 and 6 was expected to be 6, but it is: %d\n", ancestor);
-
         shortestDistance = sap.length(6, 3);
         if (shortestDistance != 1)
             System.out.printf("The distance between 6, and 3 should be 1, but it is: %d\n", shortestDistance);
@@ -858,6 +854,12 @@ public class AutoGraderTests {
         if (shortestDistance != 1)
             System.out.printf("The distance of this instance of iterables in Graph 5 should be 1, but " +
                     "it is: %d\n", shortestDistance);
+        shortestDistance = sap.length(1, 8);
+        System.out.printf("MindDistance between 1, and 8 is: %d\n", shortestDistance);
+        v = new ArrayList<>(Arrays.asList(5, 1));
+        w = new ArrayList<>(Arrays.asList(8, 3));
+        shortestDistance = sap.length(v, w);
+        ancestor = sap.ancestor(v, w);
     }
 
     private void createMultipleObjects() {
@@ -945,10 +947,6 @@ public class AutoGraderTests {
         shortestDistance = sap.length(v, w);
         if (shortestDistance != 3)
             StdOut.println("Expecting the shortest distance for two iterables to be 3, but it is: " + shortestDistance);
-        // ancestor = sap.ancestor(v, w);
-        // if (ancestor != 48461)
-        // StdOut.println("Expecting the ancestor for two iterables to be 48461, but it is: " + ancestor);
-        // make a set that contains the ancestor of the other set's node
     }
 
     private void troubleShooting() {
@@ -1276,7 +1274,7 @@ public class AutoGraderTests {
         }
     }
 
-    private void iterativeTests() throws AssertionError {
+    /* private void iterativeTests() throws AssertionError {
         try {
             File myObj = new File("filename.txt");
             if (myObj.createNewFile()) {
@@ -1305,18 +1303,18 @@ public class AutoGraderTests {
         }
         System.out.printf("Created the hash map\n");
         State currentState;
-//        int ancestor;
-//        int minDistance;
-//        for (int i : map.keySet()) {
-//            currentState = map.get(i);
-//            ancestor = sap.ancestor(i, currentState.destination);
-//            minDistance = sap.length(i, currentState.destination);
-//            if (currentState.ancestor != ancestor || currentState.minDis != minDistance)
-//                throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
-//                        "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
-//                        " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
-//        }
-//        System.out.printf("done with test 1.\n");
+        int ancestor;
+        int minDistance;
+        for (int i : map.keySet()) {
+            currentState = map.get(i);
+            ancestor = sap.ancestor(i, currentState.destination);
+            minDistance = sap.length(i, currentState.destination);
+            if (currentState.ancestor != ancestor || currentState.minDis != minDistance)
+                throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
+                        "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
+                        " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
+        }
+        System.out.printf("done with test 1.\n");
         updateIterativeLists(n);
         System.out.printf("Created sources and destinations for iterables.\n");
         int counter = 0;
@@ -1363,13 +1361,13 @@ public class AutoGraderTests {
             counter++;
         }
 
-//        throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
-//                "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
-//                " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
-//        sap.ancestor(sources, destinations);
-//        sap.ancestor(sources, destinations);
+        throw new AssertionError("Iterative Tests Test 1 - should be source=" + currentState.source + " destination = " + currentState.destination +
+                "ancestor = " + currentState.ancestor + "minDistance =" + currentState.minDis +
+                " but actual ancestor= " + ancestor + "actual minimum distance=" + minDistance);
+        sap.ancestor(sources, destinations);
+        sap.ancestor(sources, destinations);
     }
-
+*/
 
     private void hypernyms100subgraphTest() {
         in = new In("hypernyms100-subgraph.txt");
@@ -1392,7 +1390,7 @@ public class AutoGraderTests {
         sap = new SAP(digraphDFCopy);
         shortestDistance = sap.length(53, 23);
         if (shortestDistance != 1)
-            System.out.printf("The shortest distance between nodes 53, and 23 should be 1, but we get: %d\n", shortestDistance);
+            System.out.printf("The shortest distance between nodes 53, and 23 in hypernymys100-subgraph should be 1, but we get: %d\n", shortestDistance);
         else System.out.printf("Test 1 for shortest distance in hypernyms 100 passed.\n");
 
         System.out.printf("Trying length() in reverse.\n");
@@ -1417,7 +1415,7 @@ public class AutoGraderTests {
 
         shortestDistance = sap.length(53, 76);
         if (shortestDistance != 2)
-            System.out.printf("The shortest distance between nodes 53, and 76 should be 2, but we get: %d\n", shortestDistance);
+            System.out.printf("The shortest distance between nodes 53, and 76 in hypernymys100-subgraph should be 2, but we get: %d\n", shortestDistance);
         else System.out.printf("Test 3 for shortest distance in hypernyms 100 passed.\n");
         ancestor = sap.ancestor(53, 76);
         if (ancestor != 60)
@@ -1426,7 +1424,7 @@ public class AutoGraderTests {
 
         shortestDistance = sap.length(19, 91);
         if (shortestDistance != 7)
-            System.out.printf("The shortest distance between nodes 19, and 91 should be 7, but we get: %d\n", shortestDistance);
+            System.out.printf("The shortest distance between nodes 19, and 91 in hypernymys100-subgraph should be 7, but we get: %d\n", shortestDistance);
         else System.out.printf("Test 4 for shortest distance in hypernyms 100 passed.\n");
         ancestor = sap.ancestor(19, 91);
         if (ancestor != 60)
@@ -1435,7 +1433,7 @@ public class AutoGraderTests {
         // testing 16, and 19
         shortestDistance = sap.length(19, 16);
         if (shortestDistance != 6)
-            System.out.printf("The shortest distance between nodes 19, and 16 should be 6, but we get: %d\n", shortestDistance);
+            System.out.printf("The shortest distance between nodes 19, and 16 in hypernymys100-subgraph should be 6, but we get: %d\n", shortestDistance);
         else System.out.printf("Test 5 for shortest distance in hypernyms 100 passed.\n");
         ancestor = sap.ancestor(19, 16);
         if (ancestor != 60)
@@ -1445,7 +1443,7 @@ public class AutoGraderTests {
         // testing 16, and 19
         shortestDistance = sap.length(19, 60);
         if (shortestDistance != 5)
-            System.out.printf("The shortest distance between nodes 19, and 60 should be 5, but we get: %d\n", shortestDistance);
+            System.out.printf("The shortest distance between nodes 19, and 60 in hypernymys100-subgraph should be 5, but we get: %d\n", shortestDistance);
         else System.out.printf("Test 6 for shortest distance in hypernyms 100 passed.\n");
         ancestor = sap.ancestor(19, 60);
         if (ancestor != 60)
@@ -1455,7 +1453,7 @@ public class AutoGraderTests {
         // testing 19, and 76
         shortestDistance = sap.length(19, 76);
         if (shortestDistance != 4)
-            System.out.printf("The shortest distance between nodes 19, and 76 should be 4, but we get: %d\n", shortestDistance);
+            System.out.printf("The shortest distance between nodes 19, and 76 in hypernymys100-subgraph should be 4, but we get: %d\n", shortestDistance);
         else System.out.printf("Test 7 for shortest distance in hypernyms 100 passed.\n");
         ancestor = sap.ancestor(19, 76);
         if (ancestor != 76)
@@ -1497,7 +1495,7 @@ public class AutoGraderTests {
         autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
         autoGraderTests.repeatedTests();
-        autoGraderTests.iterativeTests();
+        // autoGraderTests.iterativeTests();
         autoGraderTests.hypernyms100subgraphTest();
     }
 }
