@@ -1,8 +1,4 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.DirectedCycle;
-import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.Stopwatch;
+import edu.princeton.cs.algs4.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -106,8 +102,6 @@ public class WordNet {
         if (i == -1) return "";
         else return db.get(i);
     }
-
-    // do unit testing here
     public static void main(String[] args) {
         System.out.println("----------------------Running WordNet Main---------------------");
         System.out.println("using " + args[0] + " and " + args[1] + "files for this round.");

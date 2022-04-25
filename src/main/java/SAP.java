@@ -304,6 +304,27 @@ public class SAP {
     }
 
     private int testMethod(Iterable<Integer> s, Iterable<Integer> d) {
+        int currentDistance = INFINITY;
+        boolean matchedAll = true;
+        for (int i : s) {
+            for (int j : d) {
+                try {
+                    node = cache.get(i, j);
+                    if (currentDistance < node.minimumDistance) {
+                        currentDistance = node.minimumDistance;
+                        from = node.source;
+                        to = node.destination;
+                        minDistance = node.minimumDistance;
+                        ancestor = node.ancestor;
+                    }
+                } catch (NullPointerException e) {
+                    matchedAll = false;
+                }
+            }
+        }
+        // if all the nodes were in cache, minimum distance should be updated. Just return it. Otherwise currentDistance
+        // should have a value we can start with
+        if (matchedAll) return minDistance;
         try {
             fromBFS = fromBFS.updateSources(digraphDFCopy, s);
             toBFS = toBFS.updateSources(digraphDFCopy, d);
@@ -319,7 +340,7 @@ public class SAP {
             to = -1;
             return minDistance;
         }
-        int currentDistance = INFINITY;
+
         proceed = true;
         for (int i : s) {
             fromQueue.enqueue(i);
