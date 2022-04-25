@@ -144,6 +144,23 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(3, 8);
         if (ancestor != 3)
             System.out.printf("The value of ancestor between 3 and 8 should be 3, but it is: %d\n", ancestor);
+        // 2, 6 should be in the cache
+        ancestor = sap.ancestor(2, 6);
+        if (ancestor != -1) System.out.printf("The ancestor between 2 and 6 in graph 1 should be -1, and the actual" +
+                "value is: %d\n", ancestor);
+        shortestDistance = sap.length(2, 6);
+        if (shortestDistance != -1)
+            System.out.printf("The shortest distance between nodes 2 and 6 should be -1, but the actual " +
+                    "value is: %d\n", shortestDistance);
+        // 3, 8 should be in the cache
+        shortestDistance = sap.length(3, 8);
+        if (shortestDistance != 1)
+            System.out.printf("The value of length between 3 and 8 should be 1, but it is: %d\n", shortestDistance);
+        ancestor = sap.ancestor(3, 8);
+        if (ancestor != 3)
+            System.out.printf("The value of ancestor between 3 and 8 should be 3, but it is: %d\n", ancestor);
+
+
         shortestDistance = sap.length(8, 3);
         if (shortestDistance != 1)
             System.out.printf("The value of length between 8 and 3 should be 1, but it is: %d\n", shortestDistance);
@@ -1466,20 +1483,20 @@ public class AutoGraderTests {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
 //        autoGraderTests.singleWordNetTests();
         autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
-        autoGraderTests.troubleShooting();
-        autoGraderTests.testDigraphWordNet();
-        autoGraderTests.repeatedTests();
-        autoGraderTests.iterativeTests();
-        autoGraderTests.hypernyms100subgraphTest();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.testMyGraphs();
+//        autoGraderTests.createMultipleObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.troubleShooting();
+//        autoGraderTests.testDigraphWordNet();
+//        autoGraderTests.repeatedTests();
+//        autoGraderTests.iterativeTests();
+//        autoGraderTests.hypernyms100subgraphTest();
     }
 }

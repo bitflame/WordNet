@@ -1,7 +1,4 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Stack;
-import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.*;
 
 
 public class SAP {
@@ -22,7 +19,82 @@ public class SAP {
     private boolean[] marked;
     private DeluxeBFS fromBFS;
     private DeluxeBFS toBFS;
+    private Cache cache;
+    private Node node;
 
+    private class Node {
+        int source;
+        int destination;
+        int minimumDistance;
+        int ancestor;
+        Node next;
+        int hash = -1;
+
+        private Node(int src, int dest, int minDist, int ances) {
+            source = src;
+            destination = dest;
+            minimumDistance = minDist;
+            ancestor = ances;
+        }
+
+        private Node(int src, int dest) {
+            source = src;
+            destination = dest;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Node node = (Node) o;
+            return source == node.source && destination == node.destination;
+        }
+
+        @Override
+        public int hashCode() {
+            // M = 97
+            int hash = 17;
+            hash = (31 * hash + ((Integer) source).hashCode() & 0x7fffffff) % 97;
+            hash = (31 * hash + ((Integer) destination).hashCode() & 0x7fffffff) % 97;
+            this.hash = hash;
+            return hash;
+        }
+    }
+
+    private class Cache {
+
+        int M = 97; // table size
+        private Node[] table;
+        Node first;
+
+        private Cache() {
+            table = new Node[M];
+            for (int i = 0; i < M; i++) {
+                table[i] = first;
+            }
+        }
+
+        private Node get(Integer source, Integer destination) {
+            Node node = new Node(source, destination);
+            if (table[node.hashCode()] == null) return null;
+            else {
+                for (Node x = table[node.hash]; x != null; x = x.next) {
+                    if (x.source == source && x.destination == destination) return x;
+                }
+            }
+            return null;
+        }
+
+        private void put(Node node) {
+            if (table[node.hashCode()] == null) {
+                Node first = node;
+                table[node.hash] = first;
+            } else {
+                node.next = table[node.hash];
+                table[node.hash] = node;
+            }
+        }
+    }
 
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
@@ -34,6 +106,7 @@ public class SAP {
         to = -1;
         n = digraphDFCopy.V();
         proceed = true;
+        cache = new Cache();
         //setupDefaultDataStructures();
     }
 
@@ -42,7 +115,6 @@ public class SAP {
     public int length(int v, int w) {
         validateVertex(v);
         validateVertex(w);
-
         // System.out.println("length(): Calculating the distance between : " + v + " " + w);
         if ((v < 0) || (v >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
@@ -59,7 +131,20 @@ public class SAP {
         }
         from = v;
         to = w;
-        testMethod(v, w);
+        // are the nodes already in cache?
+        try {
+            node = cache.get(from, to);
+            from = node.source;
+            to = node.destination;
+            minDistance = node.minimumDistance;
+            ancestor = node.ancestor;
+            return minDistance;
+        } catch (NullPointerException e) {
+            // if not in cache add the new values
+            testMethod(v, w);
+            node = new Node(from, to, minDistance, ancestor);
+            cache.put(node);
+        }
         return minDistance;
     }
 
@@ -116,7 +201,21 @@ public class SAP {
         }
         from = v;
         to = w;
-        testMethod(v, w);
+        //testMethod(v, w);
+        // are the nodes already in cache?
+        try {
+            node = cache.get(from, to);
+            from = node.source;
+            to = node.destination;
+            minDistance = node.minimumDistance;
+            ancestor = node.ancestor;
+            return ancestor;
+        } catch (NullPointerException e) {
+            // if not in cache add the new values
+            testMethod(v, w);
+            node = new Node(from, to, minDistance, ancestor);
+            cache.put(node);
+        }
         return ancestor;
     }
 
