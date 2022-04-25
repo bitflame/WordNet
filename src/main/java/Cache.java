@@ -94,7 +94,7 @@ public class Cache {
 //            System.out.printf("%d\n", node.hashCode());
 //        }
         // test the cache by adding 10 items and retrieving the right ones
-        node = new Cache().new Node(41269, 66612,4,45);
+        node = new Cache().new Node(41269, 66612, 4, 45);
         cache.put(node);
         node = new Cache().new Node(58965, 31069);
         cache.put(node);
@@ -105,14 +105,16 @@ public class Cache {
 
         System.out.printf("from cache: source: %d, destination: %d, minDist: %d, ancestor: %d\n ", n.source, n.destination, n.minimumDistance, n.ancestor);
         try {
-            cache.get(22222, 54168);
+            System.out.printf("%d %d %d %d\n", cache.get(22222, 54168).source, cache.get(22222, 54168).destination, cache.get(22222, 54168).minimumDistance,
+                    cache.get(22222, 54168).ancestor);
         } catch (NullPointerException e) {
-            // in SAP here is where you call lockStepBFS and calculate minimum distance and ancestor because the nodes are not in the cache
-            System.out.printf("Cache does not have the node with source: %d, and destination: %d\n", 22222, 54168);
+            System.out.printf("cache does not have this value. \n", e.getMessage());
         }
+
+
         try {
             Node temp = cache.get(41269, 66612);
-            System.out.printf("Here is source: %d, destination: %d, minimum distance: %d, and ancestor: %d", temp.source, temp.destination, temp.minimumDistance, temp.ancestor);
+            System.out.printf("Here is source: %d, destination: %d, minimum distance: %d, and ancestor: %d\n", temp.source, temp.destination, temp.minimumDistance, temp.ancestor);
         } catch (NullPointerException e) {
             System.out.printf(e.getMessage(), "\n");
         }
