@@ -844,7 +844,7 @@ public class AutoGraderTests {
         w = new ArrayList<>(Arrays.asList(7, 5));
         ancestor = sap.ancestor(v, w);
         if (ancestor != 8)
-            System.out.printf("Ancestor for this iterables instance of Graph 9, should be 4, but it is: %d\n", ancestor);
+            System.out.printf("Ancestor for this iterables instance of Graph 9, should be 8, but it is: %d\n", ancestor);
         shortestDistance = sap.length(v, w);
         if (shortestDistance != 1)
             System.out.printf("The shortest distance between the nodes of this iterables instance should be 4, but it is: %d\n", shortestDistance);
@@ -859,7 +859,9 @@ public class AutoGraderTests {
             System.out.printf("The distance of this instance of iterables in Graph 5 should be 1, but " +
                     "it is: %d\n", shortestDistance);
         shortestDistance = sap.length(1, 8);
-        System.out.printf("MindDistance between 1, and 8 is: %d\n", shortestDistance);
+        if (shortestDistance != -1)
+            System.out.printf("MindDistance between 1, and 8 should be -1, but it is: %d\n", shortestDistance);
+
         v = new ArrayList<>(Arrays.asList(5, 1));
         w = new ArrayList<>(Arrays.asList(8, 3));
         shortestDistance = sap.length(v, w);
@@ -870,7 +872,6 @@ public class AutoGraderTests {
         StdOut.println("-----------------------------Running AutoGrader Tests for Creating Two Objects -------------------");
         in = new In("digraph1.txt");
         digraph1 = new Digraph(in);
-
         in = new In("digraph2.txt");
         digraph2 = new Digraph(in);
         sap1 = new SAP(digraph1);
@@ -951,6 +952,7 @@ public class AutoGraderTests {
         shortestDistance = sap.length(v, w);
         if (shortestDistance != 3)
             StdOut.println("Expecting the shortest distance for two iterables to be 3, but it is: " + shortestDistance);
+
     }
 
     private void troubleShooting() {

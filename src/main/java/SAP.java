@@ -261,14 +261,15 @@ public class SAP {
             onToStack[i] = false;
             if (!toQueue.isEmpty()) toQueue.dequeue();
         }
-        minDistance = -1;
-        ancestor = -1;
     }
 
     private int updateCurrentDistance(int v, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
         int fromDist = sBS.distTo(v);
         int toDist = dBS.distTo(v);
-        if (fromDist > currentDistance && toDist > currentDistance) proceed = false;
+        if (fromDist > currentDistance && toDist > currentDistance) {
+            proceed = false;
+            return currentDistance;
+        }
         int distance = sBS.distTo(v) + dBS.distTo(v);
         if (distance < currentDistance) {
             currentDistance = distance;
@@ -296,7 +297,7 @@ public class SAP {
             toDist--;
         }
         if (cache.get(fr,ds)==null ){
-            node = new Node(from, to, distance, w);
+            node = new Node(fr, ds, distance, w);
             /* add the node to the cache */
             cache.put(node);
         }
@@ -316,7 +317,7 @@ public class SAP {
             for (int j : d) {
                 try {
                     node = cache.get(i, j);
-                    if (currentDistance > node.minimumDistance && node.minimumDistance != -1) {
+                    if (currentDistance > node.minimumDistance || currentDistance == -1) {
                         currentDistance = node.minimumDistance;
                         from = i;
                         to = j;
@@ -331,7 +332,8 @@ public class SAP {
         }
         // if all the nodes were in cache, minimum distance should be updated. Just return it. Otherwise currentDistance
         // should have a value we can start with
-        if (matchedAll && currentDistance != INFINITY) return minDistance;
+
+        if (matchedAll ) return minDistance;
         try {
             fromBFS = fromBFS.updateSources(digraphDFCopy, s);
             toBFS = toBFS.updateSources(digraphDFCopy, d);
