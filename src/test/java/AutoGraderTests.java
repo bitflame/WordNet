@@ -65,8 +65,8 @@ public class AutoGraderTests {
             System.out.printf("The first Iterables test of wordnet should have ancestor value of 60600, but the actual value is: %d\n", ancestor);
         else System.out.printf("The ancestor value for the first iterables test in wordnet passed.\n");
         shortestDistance = sap.length(v, w);
-        if (shortestDistance != 12)
-            System.out.printf("The first iterables test of wordnet should have a minimum distance of 12, but the actual value is: %d\n", shortestDistance);
+        if (shortestDistance != 11)
+            System.out.printf("The first iterables test of wordnet should have a minimum distance of 11, but the actual value is: %d\n", shortestDistance);
         else System.out.printf("The shortest distance value for the first iterables test in wordnet passed.\n");
         // (64451, 21385) (64451, 40151) (35205, 25327) (35205, 21385) (35205, 40151) (22477, 25327) (22477, 21385) (22477, 40151)
         shortestDistance = sap.length(64451, 21385);
@@ -407,6 +407,16 @@ public class AutoGraderTests {
             System.out.printf(" %d", i);
         }
         System.out.printf("\n");
+        v = new ArrayList<>(Arrays.asList(4));
+        w = new ArrayList<>(Arrays.asList(1, 0));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 2)
+            System.out.printf("minimum distance between iterables sets in Graph2 should be 2, but the actual value is: %d\n", shortestDistance);
+        else System.out.printf("Test 1's shortest distance value of iterables in Graph 2 passed.\n");
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 0)
+            System.out.printf("The ancestor value for iterables sets in Graph2 should be 0, but the actual value is: %d\n", ancestor);
+        else System.out.printf("Test 1's ancestor value of iterables in Graph 2 passed.\n");
         shortestDistance = sap.length(4, 1);
         if (shortestDistance != 3)
             System.out.printf("Distance between 4, and 1 should be 3, but it is: %d\n", shortestDistance);
@@ -440,6 +450,7 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(4, 3);
         if (ancestor != 4)
             System.out.printf("The ancestor for nodes 4 and 3 in Graph 2 should be 4, but it is : %d\n", ancestor);
+
     }
 
     private void testDigraph3() {
@@ -1297,6 +1308,56 @@ public class AutoGraderTests {
         if (shortestDistance != 1)
             System.out.printf("shortest distance between 4, and 2 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 21 shortest distance passed.\n");
+        System.out.printf(" starting myGraph5 tests - testing cycles \n ");
+        in = new In("myGraph5.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        v = new ArrayList<>(Arrays.asList(0));
+        w = new ArrayList<>(Arrays.asList(1, 2));
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 1)
+            System.out.printf("ancestor value of this iterables sets in myGraph5 should be 1, but the actual value is: %d\n", ancestor);
+        else System.out.printf("Test 4's ancestor result for iterables sets in myGraph 5 passed.\n");
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 1)
+            System.out.printf("Minimum distance of this iterables set for myGraph5 should be 1, but the actual value" +
+                    "is: %d\n", shortestDistance);
+        else System.out.printf("Test 4's shortest distance result for iterables in myGraph5 passed.\n");
+        ancestor = sap.ancestor(0, 1);
+        if (ancestor != 1)
+            System.out.printf("ancestor between 0,and 1 in myGraph5 should be 1, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 1's ancestor result in myGraph 5 ancestor passed.\n");
+        shortestDistance = sap.length(0, 1);
+        if (shortestDistance != 1)
+            System.out.printf("minimum distance between 0,and 1 in myGraph5 should be 1, but it is: %d\n ", shortestDistance);
+        else System.out.printf("Test 1's minimum distance result in myGraph 5 passed.\n");
+        ancestor = sap.ancestor(1, 2);
+        if (ancestor != 2)
+            System.out.printf("ancestor between 1,and 2 in myGraph5 should be 2, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 2's ancestor result in myGraph 5 ancestor passed.\n");
+        shortestDistance = sap.length(1, 2);
+        if (shortestDistance != 1)
+            System.out.printf("minimum distance between 1,and 2 in myGraph5 should be 1, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 2's minimum distance result in myGraph 5 passed.\n");
+        ancestor = sap.ancestor(0, 2);
+        if (ancestor != 2)
+            System.out.printf("ancestor between 0,and 2 in myGraph5 should be 2, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 3's ancestor result in myGraph 5 ancestor passed.\n");
+        shortestDistance = sap.length(0, 2);
+        if (shortestDistance != 1)
+            System.out.printf("minimum distance between 0,and 2 in myGraph5 should be 1, but it is: %d\n ", ancestor);
+        else System.out.printf("Test 3's minimum distance result in myGraph 5 passed.\n");
+        v = new ArrayList<>(Arrays.asList(0));
+        w = new ArrayList<>(Arrays.asList(1, 2));
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 1)
+            System.out.printf("ancestor value of this iterables sets in myGraph5 should be 1, but the actual value is: %d\n", ancestor);
+        else System.out.printf("Test 4's ancestor result for iterables sets in myGraph 5 passed.\n");
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 1)
+            System.out.printf("Minimum distance of this iterables set for myGraph5 should be 1, but the actual value" +
+                    "is: %d\n", shortestDistance);
+        else System.out.printf("Test 4's shortest distance result for iterables in myGraph5 passed.\n");
     }
 
     private void repeatedTests() {
@@ -1571,7 +1632,7 @@ public class AutoGraderTests {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
 //        autoGraderTests.singleWordNetTests();
 //        autoGraderTests.testDigraph1();
-//        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph2();
 //        autoGraderTests.testDigraph3();
 //        autoGraderTests.testDigraph4();
 //        autoGraderTests.testDigraph5();
@@ -1582,7 +1643,7 @@ public class AutoGraderTests {
 //        autoGraderTests.testIterables();
 //        autoGraderTests.testRandomDigraph();
 //        autoGraderTests.troubleShooting();
-        autoGraderTests.testDigraphWordNet();
+//        autoGraderTests.testDigraphWordNet();
 //        autoGraderTests.repeatedTests();
 //        autoGraderTests.hypernyms100subgraphTest();
     }

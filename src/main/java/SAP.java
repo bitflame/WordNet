@@ -179,7 +179,34 @@ public class SAP {
             minDistance = -1;
             return minDistance;
         }
-        testMethod(v, w);
+        // do your checking here before calling testMethod()
+        boolean matchedAll = true;
+        int currentDistance = INFINITY;
+        for (int i : v) {
+            for (int j : w) {
+                try {
+                    node = cache.get(i, j);
+                    if (currentDistance > node.minimumDistance || currentDistance == -1) {
+                        currentDistance = node.minimumDistance;
+                        from = i;
+                        to = j;
+                        minDistance = node.minimumDistance;
+                        ancestor = node.ancestor;
+                    }
+                } catch (NullPointerException e) {
+                    matchedAll = false;
+                }
+            }
+        }
+        if (matchedAll) return minDistance;
+        else {
+            testMethod(v, w);
+            if (cache.get(from, to) == null) {
+                node = new Node(from, to, minDistance, ancestor);  // todo -- this might cause state errors and have to remove
+                cache.put(node);
+            }
+
+        }
         return minDistance;
     }
 
@@ -229,14 +256,39 @@ public class SAP {
             minDistance = -1;
             return minDistance;
         }
-        testMethod(v, w);
+        boolean matchedAll = true;
+        int currentDistance = INFINITY;
+        for (int i : v) {
+            for (int j : w) {
+                try {
+                    node = cache.get(i, j);
+                    if (currentDistance > node.minimumDistance || currentDistance == -1) {
+                        currentDistance = node.minimumDistance;
+                        from = i;
+                        to = j;
+                        minDistance = node.minimumDistance;
+                        ancestor = node.ancestor;
+                    }
+                } catch (NullPointerException e) {
+                    matchedAll = false;
+                }
+            }
+        }
+
+
+        if (matchedAll) return ancestor;
+        else {
+            testMethod(v, w);
+            if (cache.get(from, to) == null) {
+                node = new Node(from, to, minDistance, ancestor); // todo -- this might cause state errors and have to remove
+                cache.put(node);
+            }
+        }
         return ancestor;
     }
 
 
     private void setupDefaultDataStructures() {
-        minDistance = -1;
-        ancestor = -1;
         fromQueue = new Queue<>();
         toQueue = new Queue<>();
         marked = new boolean[n];
@@ -288,51 +340,33 @@ public class SAP {
         int distance = fromDist + toDist;
         int fr = w;
         while (fromDist > 0) {
-            fr = sBS.pathTo(w).iterator().next();
             fromDist--;
+            fr = sBS.pathTo(w).iterator().next();
+
         }
         int ds = w;
         while (toDist > 0) {
-            ds = dBS.pathTo(w).iterator().next();
             toDist--;
+            ds = dBS.pathTo(w).iterator().next();
         }
-        if (cache.get(fr,ds)==null ){
-            node = new Node(fr, ds, distance, w);
-            /* add the node to the cache */
-            cache.put(node);
-        }
+
+//        if (cache.get(fr,ds)==null ){
+//            node = new Node(fr, ds, distance, w);
+//            cache.put(node);
+//        }
         if (distance < currentDistance) {
             currentDistance = distance;
             from = fr;
             to = ds;
             ancestor = w;
+//            node = new Node(fr, ds, distance, w);
+//            cache.put(node);
         }
         return currentDistance;
     }
 
     private int testMethod(Iterable<Integer> s, Iterable<Integer> d) {
         int currentDistance = INFINITY;
-        boolean matchedAll = true;
-        for (int i : s) {
-            for (int j : d) {
-                try {
-                    node = cache.get(i, j);
-                    if (currentDistance > node.minimumDistance || currentDistance == -1) {
-                        currentDistance = node.minimumDistance;
-                        from = i;
-                        to = j;
-                        minDistance = node.minimumDistance;
-                        ancestor = node.ancestor;
-                    }
-                } catch (NullPointerException e) {
-                    matchedAll = false;
-                }
-            }
-        }
-        // if all the nodes were in cache, minimum distance should be updated. Just return it. Otherwise currentDistance
-        // should have a value we can start with
-
-        if (matchedAll ) return minDistance;
         try {
             fromBFS = fromBFS.updateSources(digraphDFCopy, s);
             toBFS = toBFS.updateSources(digraphDFCopy, d);
@@ -341,7 +375,7 @@ public class SAP {
             fromBFS = new DeluxeBFS(digraphDFCopy, s);
             toBFS = new DeluxeBFS(digraphDFCopy, d);
             setupDefaultDataStructures();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) { // ?
             ancestor = -1;
             minDistance = -1;
             from = -1;
@@ -452,6 +486,7 @@ public class SAP {
                         marked[w] = true;
                     } else if (onFromStack[w] && w == d) {
                         currentDistance = fromBFS.distTo(v) + 1;
+                        //currentDistance = fromBFS.distTo(w);
                         ancestor = w;
                     } else if (toBFS.hasPathTo(w)) {
                         currentDistance = updateCurrentDistance(w, currentDistance, fromBFS, toBFS);
@@ -470,6 +505,7 @@ public class SAP {
                     } else if (onToStack[w] && w == s) {
                         // if it is onStack you might have to compare distances to the node with the path it came from
                         currentDistance = toBFS.distTo(v) + 1;
+                        // currentDistance = toBFS.distTo(w);
                         ancestor = w;
                     } else if (fromBFS.hasPathTo(w)) {
                         currentDistance = updateCurrentDistance(w, currentDistance, fromBFS, toBFS);
