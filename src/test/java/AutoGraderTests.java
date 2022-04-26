@@ -745,6 +745,17 @@ public class AutoGraderTests {
         shortestDistance = sap.length(8, 5);
         if (shortestDistance != 1)
             System.out.printf("The distance between node 8 and 5 in Graph 9 should be 1, but it is: %d\n", shortestDistance);
+        // put one reachable node in each list and validate the result will be the ancestor and minimum distance of those nodes
+        // 0,5 expected ancestor is 4, and minimum distance: 4
+        v = new ArrayList<>(Arrays.asList(8, 0));
+        w = new ArrayList<>(Arrays.asList(7, 5));
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 8)
+            System.out.printf("Ancestor for this iterables instance of Graph 9, should be 8, but it is: %d\n", ancestor);
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 1)
+            System.out.printf("The shortest distance between the nodes of this iterables instance should be 4, " +
+                    "but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 1);
         if (shortestDistance != 1)
             System.out.printf("The distance between 4 and 1  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
@@ -838,16 +849,7 @@ public class AutoGraderTests {
         ancestor = sap.ancestor(w, v);
         if (ancestor != -1) System.out.printf("Ancestor between nodes 7 and 8 in Graph 9 should be -1, but the actual" +
                 "value is: %d\n ", ancestor);
-        // put one reachable node in each list and validate the result will be the ancestor and minimum distance of those nodes
-        // 0,5 expected ancestor is 4, and minimum distance: 4
-        v = new ArrayList<>(Arrays.asList(8, 0));
-        w = new ArrayList<>(Arrays.asList(7, 5));
-        ancestor = sap.ancestor(v, w);
-        if (ancestor != 8)
-            System.out.printf("Ancestor for this iterables instance of Graph 9, should be 8, but it is: %d\n", ancestor);
-        shortestDistance = sap.length(v, w);
-        if (shortestDistance != 1)
-            System.out.printf("The shortest distance between the nodes of this iterables instance should be 4, but it is: %d\n", shortestDistance);
+
         // 6, 3 minimum distance = 1, ancesotry = 3
         v = new ArrayList<>(Arrays.asList(5));
         w = new ArrayList<>(Arrays.asList(8));
@@ -1501,7 +1503,6 @@ public class AutoGraderTests {
         autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
         autoGraderTests.repeatedTests();
-        // autoGraderTests.iterativeTests();
         autoGraderTests.hypernyms100subgraphTest();
     }
 }

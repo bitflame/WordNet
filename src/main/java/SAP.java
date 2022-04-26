@@ -326,7 +326,6 @@ public class SAP {
                     }
                 } catch (NullPointerException e) {
                     matchedAll = false;
-                    break;
                 }
             }
         }
