@@ -1346,10 +1346,13 @@ public class AutoGraderTests {
         in = new In("myGraph5.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
+
+
+
         v = new ArrayList<>(Arrays.asList(0));
-        w = new ArrayList<>(Arrays.asList(1, 2));
+        w = new ArrayList<>(Arrays.asList(2,1));
         ancestor = sap.ancestor(v, w);
-        if (ancestor != 2)
+        if (ancestor != 1)
             System.out.printf("ancestor value of this iterables sets in myGraph5 should be 1, but the actual value is: %d\n", ancestor);
         else System.out.printf("Test 4's ancestor result for iterables sets in myGraph 5 passed.\n");
         shortestDistance = sap.length(v, w);
@@ -1664,21 +1667,21 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-//        autoGraderTests.singleWordNetTests();
-//        autoGraderTests.testDigraph1();
-//        autoGraderTests.testDigraph2();
-//        autoGraderTests.testDigraph3();
-//        autoGraderTests.testDigraph4();
-//        autoGraderTests.testDigraph5();
-//        autoGraderTests.testDigraph6();
+        autoGraderTests.singleWordNetTests();
+        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph3();
+        autoGraderTests.testDigraph4();
+        autoGraderTests.testDigraph5();
+        autoGraderTests.testDigraph6();
         autoGraderTests.testDigraph9();
         autoGraderTests.testMyGraphs();
-//        autoGraderTests.createMultipleObjects();
-//        autoGraderTests.testIterables();
-//        autoGraderTests.testRandomDigraph();
-//        autoGraderTests.troubleShooting();
-//        autoGraderTests.testDigraphWordNet();
-//        autoGraderTests.repeatedTests();
-//        autoGraderTests.hypernyms100subgraphTest();
+        autoGraderTests.createMultipleObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
+        autoGraderTests.troubleShooting();
+        autoGraderTests.testDigraphWordNet();
+        autoGraderTests.repeatedTests();
+        autoGraderTests.hypernyms100subgraphTest();
     }
 }

@@ -362,8 +362,6 @@ public class SAP {
             from = fr;
             to = ds;
             ancestor = w;
-            node = new Node(fr, ds, distance, w);
-            cache.put(node);
         }
         return currentDistance;
     }
@@ -378,7 +376,7 @@ public class SAP {
             fromBFS = new DeluxeBFS(digraphDFCopy, s);
             toBFS = new DeluxeBFS(digraphDFCopy, d);
             setupDefaultDataStructures();
-        } catch (IllegalArgumentException e) { // ?
+        } catch (IllegalArgumentException e) {
             ancestor = -1;
             minDistance = -1;
             from = -1;
@@ -440,8 +438,9 @@ public class SAP {
             distanceFromSourceCounter++;
         }
         proceed = true;
-        if (currentDistance != INFINITY) minDistance = currentDistance;
-        else {
+        if (currentDistance != INFINITY) {
+            minDistance = currentDistance;
+        } else {
             minDistance = -1;
             ancestor = -1;
         }
@@ -488,7 +487,6 @@ public class SAP {
                         marked[w] = true;
                     } else if (onFromStack[w] && w == d) {
                         currentDistance = fromBFS.distTo(v) + 1;
-                        //currentDistance = fromBFS.distTo(w);
                         ancestor = w;
                     } else if (toBFS.hasPathTo(w)) {
                         currentDistance = updateCurrentDistance(w, currentDistance, fromBFS, toBFS);
