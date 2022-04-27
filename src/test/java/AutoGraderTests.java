@@ -407,8 +407,8 @@ public class AutoGraderTests {
             System.out.printf(" %d", i);
         }
         System.out.printf("\n");
-        v = new ArrayList<>(Arrays.asList(4));
-        w = new ArrayList<>(Arrays.asList(1, 0));
+        v = new ArrayList<>(Arrays.asList(0));
+        w = new ArrayList<>(Arrays.asList(4));
         shortestDistance = sap.length(v, w);
         if (shortestDistance != 2)
             System.out.printf("minimum distance between iterables sets in Graph2 should be 2, but the actual value is: %d\n", shortestDistance);
@@ -417,6 +417,34 @@ public class AutoGraderTests {
         if (ancestor != 0)
             System.out.printf("The ancestor value for iterables sets in Graph2 should be 0, but the actual value is: %d\n", ancestor);
         else System.out.printf("Test 1's ancestor value of iterables in Graph 2 passed.\n");
+        // test the reverse
+        shortestDistance = sap.length(w, v);
+        if (shortestDistance != 2)
+            System.out.printf("minimum distance between iterables sets in Graph2 should be 2, but the actual value is: %d\n", shortestDistance);
+        else System.out.printf("Test 2's shortest distance value of iterables in Graph 2 passed.\n");
+        ancestor = sap.ancestor(w, v);
+        if (ancestor != 0)
+            System.out.printf("The ancestor value for iterables sets in Graph2 should be 0, but the actual value is: %d\n", ancestor);
+        else System.out.printf("Test 2's ancestor value of iterables in Graph 2 passed.\n");
+        v = new ArrayList<>(Arrays.asList(4));
+        w = new ArrayList<>(Arrays.asList(1));
+        // test the reverse also
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 3)
+            System.out.printf("minimum distance between iterables sets in Graph2 should be 3, but the actual value is: %d\n", shortestDistance);
+        else System.out.printf("Test 3's shortest distance value of iterables in Graph 2 passed.\n");
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 0)
+            System.out.printf("The ancestor value for iterables sets in Graph2 should be 0, but the actual value is: %d\n", ancestor);
+        else System.out.printf("Test 3's ancestor value of iterables in Graph 2 passed.\n");
+        shortestDistance = sap.length(w, v);
+        if (shortestDistance != 3)
+            System.out.printf("minimum distance between iterables sets in Graph2 should be 3, but the actual value is: %d\n", shortestDistance);
+        else System.out.printf("Test 4's shortest distance value of iterables in Graph 2 passed.\n");
+        ancestor = sap.ancestor(w, v);
+        if (ancestor != 0)
+            System.out.printf("The ancestor value for iterables sets in Graph2 should be 0, but the actual value is: %d\n", ancestor);
+        else System.out.printf("Test 4's ancestor value of iterables in Graph 2 passed.\n");
         shortestDistance = sap.length(4, 1);
         if (shortestDistance != 3)
             System.out.printf("Distance between 4, and 1 should be 3, but it is: %d\n", shortestDistance);
@@ -822,9 +850,24 @@ public class AutoGraderTests {
         }
         System.out.printf("\n");
         sap = new SAP(digraph);
+        v = new ArrayList<>(Arrays.asList(8, 0));
+        w = new ArrayList<>(Arrays.asList(7, 5));
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 8)
+            System.out.printf("Ancestor for this iterables instance of Graph 9, should be 8, but it is: %d\n", ancestor);
+        else System.out.printf("Test 1's ancestor value for this iterables instance in Graph 9 passed.\n");
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 1)
+            System.out.printf("The shortest distance between the nodes of this iterables instance should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 1's minimum distance value for this iterables instance in Graph 9 passed.\n");
+        ancestor = sap.ancestor(w, v);
+        if (ancestor != 8)
+            System.out.printf("Ancestor for this iterables instance of Graph 9, should be 8, but it is: %d\n", ancestor);
+        else System.out.printf("Test 2's ancestor value for iterables instance in Graph 9  passed.\n");
         shortestDistance = sap.length(5, 8);
         if (shortestDistance != 1)
             System.out.printf("The distance between 5 and 8 in Graph 9  should be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 2's Shortest distance test of nodes 5, and 8 in Graph 9 passed.\n");
         ancestor = sap.ancestor(5, 8);
         if (ancestor != 8)
             System.out.printf("Ancestor between 5 and 8  in Graph 9 was expected to be 8, but it is: %d\n", ancestor);
@@ -837,17 +880,7 @@ public class AutoGraderTests {
         shortestDistance = sap.length(8, 5);
         if (shortestDistance != 1)
             System.out.printf("The distance between node 8 and 5 in Graph 9 should be 1, but it is: %d\n", shortestDistance);
-        // put one reachable node in each list and validate the result will be the ancestor and minimum distance of those nodes
-        // 0,5 expected ancestor is 4, and minimum distance: 4
-        v = new ArrayList<>(Arrays.asList(8, 0));
-        w = new ArrayList<>(Arrays.asList(7, 5));
-        ancestor = sap.ancestor(v, w);
-        if (ancestor != 8)
-            System.out.printf("Ancestor for this iterables instance of Graph 9, should be 8, but it is: %d\n", ancestor);
-        shortestDistance = sap.length(v, w);
-        if (shortestDistance != 1)
-            System.out.printf("The shortest distance between the nodes of this iterables instance should be 4, " +
-                    "but it is: %d\n", shortestDistance);
+
         shortestDistance = sap.length(4, 1);
         if (shortestDistance != 1)
             System.out.printf("The distance between 4 and 1  in Graph 9 should be 1, but it is: %d\n", shortestDistance);
@@ -1308,14 +1341,15 @@ public class AutoGraderTests {
         if (shortestDistance != 1)
             System.out.printf("shortest distance between 4, and 2 in myGraph4 should be 1, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 21 shortest distance passed.\n");
-        System.out.printf(" starting myGraph5 tests - testing cycles \n ");
+
+        System.out.printf(" ***********starting myGraph5 tests - testing cycles************************************** \n ");
         in = new In("myGraph5.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
         v = new ArrayList<>(Arrays.asList(0));
         w = new ArrayList<>(Arrays.asList(1, 2));
         ancestor = sap.ancestor(v, w);
-        if (ancestor != 1)
+        if (ancestor != 2)
             System.out.printf("ancestor value of this iterables sets in myGraph5 should be 1, but the actual value is: %d\n", ancestor);
         else System.out.printf("Test 4's ancestor result for iterables sets in myGraph 5 passed.\n");
         shortestDistance = sap.length(v, w);
@@ -1632,13 +1666,13 @@ public class AutoGraderTests {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
 //        autoGraderTests.singleWordNetTests();
 //        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph2();
 //        autoGraderTests.testDigraph3();
 //        autoGraderTests.testDigraph4();
 //        autoGraderTests.testDigraph5();
 //        autoGraderTests.testDigraph6();
-//        autoGraderTests.testDigraph9();
-//        autoGraderTests.testMyGraphs();
+        autoGraderTests.testDigraph9();
+        autoGraderTests.testMyGraphs();
 //        autoGraderTests.createMultipleObjects();
 //        autoGraderTests.testIterables();
 //        autoGraderTests.testRandomDigraph();

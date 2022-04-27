@@ -201,11 +201,6 @@ public class SAP {
         if (matchedAll) return minDistance;
         else {
             testMethod(v, w);
-            if (cache.get(from, to) == null) {
-                node = new Node(from, to, minDistance, ancestor);  // todo -- this might cause state errors and have to remove
-                cache.put(node);
-            }
-
         }
         return minDistance;
     }
@@ -274,15 +269,9 @@ public class SAP {
                 }
             }
         }
-
-
         if (matchedAll) return ancestor;
         else {
             testMethod(v, w);
-            if (cache.get(from, to) == null) {
-                node = new Node(from, to, minDistance, ancestor); // todo -- this might cause state errors and have to remove
-                cache.put(node);
-            }
         }
         return ancestor;
     }
@@ -333,22 +322,36 @@ public class SAP {
     private int updateCurrentIterDistance(int v, int w, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
         int fromDist = sBS.distTo(w);
         int toDist = dBS.distTo(w);
+//        if (fromDist > currentDistance && toDist > currentDistance || fromDist == 0 || toDist == 0) {
+//            proceed = false;
+//            return currentDistance;
+//        }
         if (fromDist > currentDistance && toDist > currentDistance) {
             proceed = false;
             return currentDistance;
         }
         int distance = fromDist + toDist;
         int fr = w;
-        while (fromDist > 0) {
-            fromDist--;
-            fr = sBS.pathTo(w).iterator().next();
+        if (sBS.hasPathTo(v)) fr = v;
 
+        while (sBS.distTo(fr) != 0 && sBS.hasPathTo(fr)) {
+            fr = sBS.pathTo(fr).iterator().next();
         }
+
+//        while (fromDist > 0) {
+//            fromDist--;
+//            fr = sBS.pathTo(w).iterator().next();
+//
+//        }
         int ds = w;
-        while (toDist > 0) {
-            toDist--;
-            ds = dBS.pathTo(w).iterator().next();
+        while (dBS.distTo(ds) != 0 && dBS.hasPathTo(ds)) {
+            ds = dBS.pathTo(ds).iterator().next();
         }
+
+//        while (toDist > 0) {
+//            toDist--;
+//            ds = dBS.pathTo(w).iterator().next();
+//        }
 
 //        if (cache.get(fr,ds)==null ){
 //            node = new Node(fr, ds, distance, w);
@@ -359,8 +362,8 @@ public class SAP {
             from = fr;
             to = ds;
             ancestor = w;
-//            node = new Node(fr, ds, distance, w);
-//            cache.put(node);
+            node = new Node(fr, ds, distance, w);
+            cache.put(node);
         }
         return currentDistance;
     }
@@ -406,7 +409,6 @@ public class SAP {
         int v;
         int distanceFromSourceCounter = 1;
         while (proceed) {
-
             while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
@@ -515,7 +517,6 @@ public class SAP {
             if (fromQueue.isEmpty() && toQueue.isEmpty()) break;
             distanceFromSourceCounter++;
         }
-
         proceed = true;
         if (currentDistance != INFINITY) minDistance = currentDistance;
         else {
