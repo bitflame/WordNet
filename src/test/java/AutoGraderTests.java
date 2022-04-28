@@ -48,27 +48,78 @@ public class AutoGraderTests {
     }
 
     private void testDigraphWordNet() {
-        StdOut.println("-------------------------- Running AutoGrader Tests for DigraphWordNet --------------------------");
+        StdOut.println("----------------------- Running AutoGrader Tests for DigraphWordNet int testDigraphWordNet()--------------------------");
+        in = new In("myGraph5.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        System.out.printf("minimum distance: %d, ancestor: %d\n", sap.length(4, 1), sap.ancestor(4, 1));
+        v = new ArrayList<>(Arrays.asList(4));
+        w = new ArrayList<>(Arrays.asList(1, 2, 3, 0));
+        System.out.printf("myGraph5 iterative  shortest distance: %d, ancestor: %d\n", sap.length(v, w), sap.ancestor(v, w));
+        System.out.printf("minimum distance: %d, ancestor: %d\n", sap.length(4, 1), sap.ancestor(4, 1));
+
         in = new In("digraph-wordnet.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
-        shortestDistance = sap.length(64451, 25327);
+
+        v = new ArrayList<>(Arrays.asList(64451, 35205, 22477, 14493));
+        w = new ArrayList<>(Arrays.asList(25327, 21385, 40151, 32530));
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 32530)
+            System.out.printf("The first Iterables test of wordnet should have ancestor value of 32530, but the actual value is: %d\n", ancestor);
+        else System.out.printf("The ancestor value for the first iterables test in wordnet passed.\n");
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 1)
+            System.out.printf("The first iterables test of wordnet should have a minimum distance of 1, but the actual value is: %d\n", shortestDistance);
+        else System.out.printf("The shortest distance value for the first iterables test in wordnet passed.\n");
+
+        v = new ArrayList<>(Arrays.asList(3464, 8331, 23405, 23889, 72520));
+        w = new ArrayList<>(Arrays.asList(9675, 44260, 65806, 80452));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 8)
+            System.out.printf("The second iterables test of wordnet should have a minimum distance of 8, but the actual value is: %d\n", shortestDistance);
+        else System.out.printf("The shortest distance value for the second iterables test in wordnet passed.\n");
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 77444)
+            System.out.printf("The second Iterables test of wordnet should have ancestor value of 77444, but the actual value is: %d\n", ancestor);
+        else System.out.printf("The ancestor value for the second iterables test in wordnet passed.\n");
+
+ /*
+        System.out.printf("(3464, 9675) shortest distance: %d ancestor: %d\n", sap.length(3464, 9675), sap.ancestor(3464, 9675));
+        System.out.printf("(3464, 44260) shortest distance: %d ancestor: %d\n", sap.length(3464, 44260), sap.ancestor(3464, 44260));
+        System.out.printf("(3464, 65806) shortest distance: %d ancestor: %d\n", sap.length(3464, 65806), sap.ancestor(3464, 65806));
+        System.out.printf("(3464, 80452) shortest distance: %d ancestor: %d\n", sap.length(3464, 80452), sap.ancestor(3464, 80452));
+
+        System.out.printf("(8331, 9675) shortest distance: %d ancestor: %d\n", sap.length(8331, 9675), sap.ancestor(8331, 9675));
+        System.out.printf("(8331, 44260) shortest distance: %d ancestor: %d\n", sap.length(8331, 44260), sap.ancestor(8331, 44260));
+        System.out.printf("(8331, 65806) shortest distance: %d ancestor: %d\n", sap.length(8331, 65806), sap.ancestor(8331, 65806));
+        System.out.printf("(8331, 80452) shortest distance: %d ancestor: %d\n", sap.length(8331, 80452), sap.ancestor(8331, 80452));
+
+        System.out.printf("(23405, 9675) shortest distance: %d ancestor: %d\n", sap.length(23405, 9675), sap.ancestor(23405, 9675));
+        System.out.printf("(23405, 44260) shortest distance: %d ancestor: %d\n", sap.length(23405, 44260), sap.ancestor(23405, 44260));
+        System.out.printf("(23405, 65806) shortest distance: %d ancestor: %d\n", sap.length(23405, 65806), sap.ancestor(23405, 65806));
+        System.out.printf("(23405, 80452) shortest distance: %d ancestor: %d\n", sap.length(23405, 80452), sap.ancestor(23405, 80452));
+
+        System.out.printf("(23889, 9675) shortest distance: %d ancestor: %d\n", sap.length(23889, 9675), sap.ancestor(23889, 9675));
+        System.out.printf("(23889, 44260) shortest distance: %d ancestor: %d\n", sap.length(23889, 44260), sap.ancestor(23889, 44260));
+        System.out.printf("(23889, 65806) shortest distance: %d ancestor: %d\n", sap.length(23889, 65806), sap.ancestor(23889, 65806));
+        System.out.printf("(23889, 80452) shortest distance: %d ancestor: %d\n", sap.length(23889, 80452), sap.ancestor(23889, 80452));
+
+        System.out.printf("(72520, 9675) shortest distance: %d ancestor: %d\n", sap.length(72520, 9675), sap.ancestor(72520, 9675));
+        System.out.printf("(72520, 44260) shortest distance: %d ancestor: %d\n", sap.length(72520, 44260), sap.ancestor(72520, 44260));
+        System.out.printf("(72520, 65806) shortest distance: %d ancestor: %d\n", sap.length(72520, 65806), sap.ancestor(72520, 65806));
+        System.out.printf("(72520, 80452) shortest distance: %d ancestor: %d\n", sap.length(72520, 80452), sap.ancestor(72520, 80452));
+
+        System.out.printf("(14493, 25327) shortest distance: %d ancestor: %d\n", sap.length(14493, 25327), sap.ancestor(14493, 25327));
+        System.out.printf("(14493, 21385) shortest distance: %d ancestor: %d\n", sap.length(14493, 21385), sap.ancestor(14493, 21385));
+        System.out.printf("(14493, 40151) shortest distance: %d ancestor: %d\n", sap.length(14493, 40151), sap.ancestor(14493, 40151));
+        System.out.printf("(64451, 25327) shortest distance: %d ancestor: %d\n", sap.length(64451, 25327), sap.ancestor(64451, 25327));
+       shortestDistance = sap.length(64451, 25327);
         if (shortestDistance != 15)
             System.out.printf("shortest distance between 64451, and 25327 in wordnet should be 15, but it is: %d \n", shortestDistance);
         ancestor = sap.ancestor(64451, 25327);
+        System.out.printf("Ancestor between 64451 and 25327 is: %d\n", ancestor);
 
-
-        v = new ArrayList<>(Arrays.asList(64451, 35205, 22477));
-        w = new ArrayList<>(Arrays.asList(25327, 21385, 40151));
-        ancestor = sap.ancestor(v, w);
-        if (ancestor != 60600)
-            System.out.printf("The first Iterables test of wordnet should have ancestor value of 60600, but the actual value is: %d\n", ancestor);
-        else System.out.printf("The ancestor value for the first iterables test in wordnet passed.\n");
-        shortestDistance = sap.length(v, w);
-        if (shortestDistance != 11)
-            System.out.printf("The first iterables test of wordnet should have a minimum distance of 11, but the actual value is: %d\n", shortestDistance);
-        else System.out.printf("The shortest distance value for the first iterables test in wordnet passed.\n");
-        // (64451, 21385) (64451, 40151) (35205, 25327) (35205, 21385) (35205, 40151) (22477, 25327) (22477, 21385) (22477, 40151)
         shortestDistance = sap.length(64451, 21385);
         System.out.printf("Shortest distance between 64451, and 21385 is: %d\n", shortestDistance);
         ancestor = sap.ancestor(64451, 21385);
@@ -129,26 +180,6 @@ public class AutoGraderTests {
         shortestDistance = sap.length(2657, 55738);
         if (shortestDistance != 15)
             System.out.printf("shortest distance between 2657, and 55738 in wordnet should be 15, but it is: %d\n ", shortestDistance);
-        /*- v = { 22477 }
-    - w = { 40151 }
-    - student   length   = 12
-    - distance from v to 38003 = 6
-    - distance from w to 38003 = 8
-    - student   ancestor = 38003
-    - reference length   = 12
-    - reference ancestor = 60600
-
-    - failed on trial 16 of 100
-    - v = { 14493, 21460 }
-    - w = { 4356 }
-    - student   length   = 11
-    - distance from v to 81004 = 5
-    - distance from w to 81004 = 8
-    - student   ancestor = 81004
-    - reference length   = 11
-    - reference ancestor = 21745
-
-*/
         shortestDistance = sap.length(22477, 40151);
         if (shortestDistance != 12)
             System.out.printf("The minimum distance between 22477, and 40151 should be 12, but it is: %d\n", shortestDistance);
@@ -172,7 +203,7 @@ public class AutoGraderTests {
             System.out.printf("The expected ancestor for wordnet iterable is 38003, but we get: %d\n", ancestor);
         ancestor = sap.ancestor(sources, destinations);
         if (ancestor != 38003)
-            System.out.printf("The expected ancestor for wordnet iterable is 38003, but we get: %d\n", ancestor);
+            System.out.printf("The expected ancestor for wordnet iterable is 38003, but we get: %d\n", ancestor); */
 
     }
 
@@ -1182,8 +1213,6 @@ public class AutoGraderTests {
         if (ancestor != 1)
             System.out.printf("The ancestor between 1, 0 with 0 pointing towards 1 should be 1, but it is: %d\n ", ancestor);
         else System.out.printf("Test 2 ancestor passed. \n");
-
-
         System.out.printf("\n");
         System.out.printf("My Graph2 Tests\n");
         in = new In("myGraph2.txt");
@@ -1348,9 +1377,8 @@ public class AutoGraderTests {
         sap = new SAP(digraph);
 
 
-
         v = new ArrayList<>(Arrays.asList(0));
-        w = new ArrayList<>(Arrays.asList(2,1));
+        w = new ArrayList<>(Arrays.asList(2, 1));
         ancestor = sap.ancestor(v, w);
         if (ancestor != 1)
             System.out.printf("ancestor value of this iterables sets in myGraph5 should be 1, but the actual value is: %d\n", ancestor);
@@ -1651,7 +1679,7 @@ public class AutoGraderTests {
     private void singleWordNetTests() {
         // Exception in thread "main" java.lang.AssertionError: Iterative Tests Test 1 - should be source=1285
         // destination = 58083ancestor = 57333minDistance =12 but actual ancestor= 42539actual minimum distance=4
-        System.out.printf("Starting iterative tests \n");
+        System.out.printf("************Starting iterative tests in singleWordNetTests() method********** \n");
         in = new In("digraph-wordnet.txt");
         Digraph digraph = new Digraph(in);
         SAP sap = new SAP(digraph);
@@ -1667,21 +1695,21 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        autoGraderTests.singleWordNetTests();
-        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
-        autoGraderTests.troubleShooting();
+//        autoGraderTests.singleWordNetTests();
+//        autoGraderTests.testDigraph1();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.testMyGraphs();
+//        autoGraderTests.createMultipleObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
-        autoGraderTests.repeatedTests();
-        autoGraderTests.hypernyms100subgraphTest();
+//        autoGraderTests.repeatedTests();
+//        autoGraderTests.hypernyms100subgraphTest();
     }
 }

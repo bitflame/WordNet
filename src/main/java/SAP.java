@@ -353,15 +353,16 @@ public class SAP {
 //            ds = dBS.pathTo(w).iterator().next();
 //        }
 
-//        if (cache.get(fr,ds)==null ){
-//            node = new Node(fr, ds, distance, w);
-//            cache.put(node);
-//        }
         if (distance < currentDistance) {
             currentDistance = distance;
             from = fr;
             to = ds;
             ancestor = w;
+            node = new Node(fr, ds, distance, w);
+            if (cache.get(fr, ds) == null || node.minimumDistance > distance) {
+                // either add code for deleting an old node or updating the minimum distance
+                cache.put(node);
+            }
         }
         return currentDistance;
     }
