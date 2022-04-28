@@ -91,10 +91,10 @@ public class SAP {
         private void updateNode(Node node) {
             int hash = node.hashCode();
             for (Node x = table[hash]; x != null; x = x.next) {
-               if ((x.source == node.source && x.destination == node.destination) || (x.destination == node.source && x.source == node.destination)) {
-                   node.next = x.next;
-                   x = node;
-               }
+                if ((x.source == node.source && x.destination == node.destination) || (x.destination == node.source && x.source == node.destination)) {
+                    node.next = table[hash].next;
+                    table[hash] = node;
+                }
             }
         }
 
@@ -368,13 +368,7 @@ public class SAP {
             from = fr;
             to = ds;
             ancestor = w;
-            node = new Node(fr, ds, distance, w);
 
-            if (cache.get(fr, ds) == null) {
-                cache.put(node);
-            } else if (cache.get(fr, ds).minimumDistance > distance) {
-                cache.updateNode(node);
-            }
         }
         return currentDistance;
     }
@@ -403,6 +397,21 @@ public class SAP {
             marked[i] = true;
             fromStack.push(i);
             onFromStack[i] = true;
+            if (toBFS.hasPathTo(i)){
+                int temp = i;
+                ancestor = temp;
+                to = temp;
+                currentDistance = toBFS.distTo(temp);
+                minDistance = toBFS.distTo(temp);
+                while (toBFS.distTo(temp) != 0) temp = toBFS.pathTo(temp).iterator().next();
+                from = temp;
+                node = new Node(from, to, currentDistance, ancestor);
+                if (cache.get(from, to) == null) {
+                    cache.put(node);
+                } else if (cache.get(from, to).minimumDistance > currentDistance) {
+                    cache.updateNode(node);
+                }
+            }
         }
         for (int j : d) {
             if (onFromStack[j]) {
@@ -411,6 +420,20 @@ public class SAP {
                 minDistance = 0;
                 ancestor = j;
                 return minDistance;
+            } else if (fromBFS.hasPathTo(j)){
+                int temp = j;
+                ancestor = temp;
+                to = temp;
+                currentDistance = fromBFS.distTo(temp);
+                minDistance = fromBFS.distTo(temp);
+                while (fromBFS.distTo(temp)!=0) temp = fromBFS.pathTo(temp).iterator().next();
+                from = temp;
+                node = new Node(from, to, currentDistance, ancestor);
+                if (cache.get(from, to) == null) {
+                    cache.put(node);
+                } else if (cache.get(from, to).minimumDistance > currentDistance) {
+                    cache.updateNode(node);
+                }
             }
             toQueue.enqueue(j);
             marked[j] = true;
@@ -422,6 +445,14 @@ public class SAP {
         while (proceed) {
             while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
+                if (onToStack[v]) {  // Just added 1
+                    ancestor = v;
+                    to = v;
+                    minDistance = toBFS.distTo(v);
+                    currentDistance = toBFS.distTo(v);
+                    while (toBFS.distTo(v) != 0) v = toBFS.pathTo(v).iterator().next();
+                    from = v;
+                }
                 for (int w : digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
                         fromQueue.enqueue(w);
@@ -436,6 +467,14 @@ public class SAP {
             if (!proceed) break;
             while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
+                if (onFromStack[v]) {// Just added 2
+                    ancestor = v;
+                    minDistance = fromBFS.distTo(v);
+                    currentDistance = fromBFS.distTo(v);
+                    to = v;
+                    while (fromBFS.distTo(v) != 0) v = fromBFS.pathTo(v).iterator().next();
+                    from = v;
+                }
                 for (int w : digraphDFCopy.adj(v)) {
                     if (!marked[w]) {
                         toQueue.enqueue(w);
@@ -456,6 +495,13 @@ public class SAP {
         } else {
             minDistance = -1;
             ancestor = -1;
+        }
+        node = new Node(from, to, minDistance, ancestor);
+
+        if (cache.get(from, to) == null) {
+            cache.put(node);
+        } else if (cache.get(from, to).minimumDistance > minDistance) {
+            cache.updateNode(node);
         }
         return minDistance;
     }
@@ -486,6 +532,50 @@ public class SAP {
         toStack.push(d);
         onToStack[d] = true;
         marked[d] = true;
+
+     /*   int temp = j;
+        ancestor = temp;
+        to = temp;
+        currentDistance = fromBFS.distTo(temp);
+        minDistance = fromBFS.distTo(temp);
+        while (fromBFS.distTo(temp)!=0) temp = fromBFS.pathTo(temp).iterator().next();
+        from = temp;
+        node = new Node(from, to, currentDistance, ancestor);
+        if (cache.get(from, to) == null) {
+            cache.put(node);
+        } else if (cache.get(from, to).minimumDistance > currentDistance) {
+            cache.updateNode(node);
+        }*/
+
+        if (fromBFS.hasPathTo(d)){
+            int temp = d;
+            ancestor = temp;
+            to = temp;
+            currentDistance = fromBFS.distTo(temp);
+            minDistance =currentDistance;
+            while (fromBFS.distTo(temp)!=0) temp=fromBFS.pathTo(temp).iterator().next();
+            from = temp;
+            node = new Node(from, to, currentDistance, ancestor);
+            if (cache.get(from, to) == null) {
+                cache.put(node);
+            } else if (cache.get(from, to).minimumDistance > currentDistance) {
+                cache.updateNode(node);
+            }
+        } else if (toBFS.hasPathTo(s)){
+            int temp = s;
+            ancestor = s;
+            to = temp;
+            currentDistance= toBFS.distTo(temp);
+            minDistance = currentDistance;
+            while (toBFS.distTo(temp)!=0) temp=toBFS.pathTo(temp).iterator().next();
+            from=temp;
+            node = new Node(from, to, currentDistance, ancestor);
+            if (cache.get(from, to) == null) {
+                cache.put(node);
+            } else if (cache.get(from, to).minimumDistance > currentDistance) {
+                cache.updateNode(node);
+            }
+        }
         int v;
         int distanceFromSourceCounter = 1;
         while (proceed) {
