@@ -88,6 +88,16 @@ public class SAP {
             return null;
         }
 
+        private void updateNode(Node node) {
+            int hash = node.hashCode();
+            for (Node x = table[hash]; x != null; x = x.next) {
+               if ((x.source == node.source && x.destination == node.destination) || (x.destination == node.source && x.source == node.destination)) {
+                   node.next = x.next;
+                   x = node;
+               }
+            }
+        }
+
         private void put(Node node) {
             if (table[node.hashCode()] == null) {
                 Node first = node;
@@ -359,9 +369,11 @@ public class SAP {
             to = ds;
             ancestor = w;
             node = new Node(fr, ds, distance, w);
-            if (cache.get(fr, ds) == null || node.minimumDistance > distance) {
-                // either add code for deleting an old node or updating the minimum distance
+
+            if (cache.get(fr, ds) == null) {
                 cache.put(node);
+            } else if (cache.get(fr, ds).minimumDistance > distance) {
+                cache.updateNode(node);
             }
         }
         return currentDistance;
