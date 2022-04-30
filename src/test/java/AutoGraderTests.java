@@ -824,14 +824,14 @@ public class AutoGraderTests {
         destinations = new ArrayList<>(Arrays.asList(1, 7, 12));
         shortestDistance = sap.length(sources, destinations);
         if (shortestDistance != 0)
-            System.out.printf("Expecting the shortest disntance value of two iterable sets of Graph 3" +
+            System.out.printf("Expecting the shortest distance value of two iterable sets of Graph 5" +
                     "to be 0, since the number 7 is in both sets. But the actual value we get is: %d\n", shortestDistance);
-        else System.out.printf("Test 10 of two sets of the iterables from Graph3 passed the shortest distance test.\n");
+        else System.out.printf("Test 10 of two sets of the iterables from Graph5 passed the shortest distance test.\n");
         ancestor = sap.ancestor(sources, destinations);
         if (ancestor != 7)
-            System.out.printf("Expecting ancestor value of 7 for Graph 3's Iterables set with at least one pair not connected, " +
+            System.out.printf("Expecting ancestor value of 7 for Graph 5's Iterables set with at least one pair not connected, " +
                     "but the actual value we get = %d\n", ancestor);
-        else System.out.printf("Test 10 of two sets of the iterables from Graph3 passed the ancestor test.\n");
+        else System.out.printf("Test 10 of two sets of the iterables from Graph5 passed the ancestor test.\n");
 
     }
 
@@ -1424,6 +1424,43 @@ public class AutoGraderTests {
             System.out.printf("Minimum distance of this iterables set for myGraph5 should be 1, but the actual value" +
                     "is: %d\n", shortestDistance);
         else System.out.printf("Test 4's shortest distance result for iterables in myGraph5 passed.\n");
+        System.out.printf("-----------------------------------------myGraph6 Tests------------------------\n");
+        in = new In("myGraph6.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        shortestDistance = sap.length(0, 1);
+        if (shortestDistance != 1) System.out.printf("The shortest distance value in myGraph6 between 0 and 1 should " +
+                "be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 1 of myGraph6 passed.\n");
+        ancestor = sap.ancestor(0, 1);
+        if (ancestor != 1) System.out.printf("The ancestor value in myGrph6 should be 1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 1 of myGraph6 passed.\n");
+        shortestDistance = sap.length(1,0);
+        if (shortestDistance != 1) System.out.printf("The shortest distance value in myGraph6 between 1 and 0 should " +
+                "be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 2 of myGraph6 passed.\n");
+        ancestor = sap.ancestor(1,0);
+        if (ancestor != 0) System.out.printf("The ancestor value in myGrph6 should be 0, but it is: %d\n", ancestor);
+        else System.out.printf("Test 2 of myGraph6 passed.\n");
+        System.out.printf("-----------------------------------------myGraph7 Tests------------------------\n");
+        in = new In("myGraph7.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        shortestDistance = sap.length(0, 1);
+        if (shortestDistance != 1) System.out.printf("The shortest distance value in myGraph7 between 0 and 1 should " +
+                "be 2, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 1 of myGraph7 passed.\n");
+        ancestor = sap.ancestor(0, 1);
+        if (ancestor != 1) System.out.printf("The ancestor value in myGrph7 should be 1, but it is: %d\n", ancestor);
+        else System.out.printf("Test 1 of myGraph7 passed.\n");
+
+        shortestDistance = sap.length(1, 0);
+        if (shortestDistance != 1) System.out.printf("The shortest distance value in myGraph7 between 1 and 0 should " +
+                "be 1, but it is: %d\n", shortestDistance);
+        else System.out.printf("Test 2 of myGraph7 passed.\n");
+        ancestor = sap.ancestor(1, 0);
+        if (ancestor != 0) System.out.printf("The ancestor value in myGrph7 should be 0, but it is: %d\n", ancestor);
+        else System.out.printf("Test 2 of myGraph7 passed.\n");
     }
 
     private void repeatedTests() {
