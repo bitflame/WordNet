@@ -348,10 +348,11 @@ public class AutoGraderTests {
 
         v = new ArrayList<>(Arrays.asList(7));
         w = new ArrayList<>(Arrays.asList(8));
-        ancestor = sap.ancestor(v, w);
-        shortestDistance = sap.length(v, w);
         ancestor = sap.ancestor(w, v);
         shortestDistance = sap.length(w, v);
+        ancestor = sap.ancestor(v, w);
+        shortestDistance = sap.length(v, w);
+
 
         v = new ArrayList<>(Arrays.asList(1));
         w = new ArrayList<>(Arrays.asList(7, 8));
