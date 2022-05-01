@@ -312,17 +312,24 @@ public class SAP {
         }
     }
 
-    private int updateCurrentDistance(int v, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
-        int fromDist = sBS.distTo(v);
-        int toDist = dBS.distTo(v);
-        if (fromDist > currentDistance && toDist > currentDistance) {
+    private int updateCurrentDistance(int v, int w, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
+        int fromDist = sBS.distTo(w);
+        int toDist = dBS.distTo(w);
+        int distance = fromDist + toDist;
+//        for (int s = v; s !=from && s!=to; s=digraphDFCopy.reverse().adj(w).iterator().next()){
+//
+//        }
+
+        //if (w!=from) distance++;
+        //if (w!=to) distance++;
+        if (sBS.distTo(w) > currentDistance && dBS.distTo(w) > currentDistance) {
             proceed = false;
             return currentDistance;
         }
-        int distance = sBS.distTo(v) + dBS.distTo(v);
+        // int distance = sBS.distTo(v) + dBS.distTo(v);
         if (distance < currentDistance) {
             currentDistance = distance;
-            ancestor = v;
+            ancestor = w;
         }
         return currentDistance;
     }
@@ -520,7 +527,7 @@ public class SAP {
                         currentDistance = fromBFS.distTo(v) + 1;
                         ancestor = w;
                     } else if (toBFS.hasPathTo(w)) {
-                        currentDistance = updateCurrentDistance(w, currentDistance, fromBFS, toBFS);
+                        currentDistance = updateCurrentDistance(v, w, currentDistance, fromBFS, toBFS);
                     }
                 }
             }
@@ -541,7 +548,7 @@ public class SAP {
                         // currentDistance = toBFS.distTo(w);
                         ancestor = w;
                     } else if (fromBFS.hasPathTo(w)) {
-                        currentDistance = updateCurrentDistance(w, currentDistance, fromBFS, toBFS);
+                        currentDistance = updateCurrentDistance(v, w, currentDistance, fromBFS, toBFS);
                     }
                 }
             }
