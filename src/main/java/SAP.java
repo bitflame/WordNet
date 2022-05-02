@@ -316,6 +316,7 @@ public class SAP {
         int fromDist = sBS.distTo(w);
         int toDist = dBS.distTo(w);
         int distance = fromDist + toDist;
+        if (v==w) distance++; // to address self loops
 //        for (int s = v; s !=from && s!=to; s=digraphDFCopy.reverse().adj(w).iterator().next()){
 //
 //        }
@@ -346,6 +347,7 @@ public class SAP {
             return currentDistance;
         }
         int distance = fromDist + toDist;
+        if (v == w) distance++; // trying to address self loops
         int fr = w;
         if (sBS.hasPathTo(v)) fr = v;
 
@@ -421,7 +423,7 @@ public class SAP {
                     (topological.order() == null) || topological.rank(fromQueue.peek()) < topological.rank(toQueue.peek())))) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
-                    if (w == v) continue;
+                    // if (w == v) continue;
                     if (!marked[w]) {
                         fromQueue.enqueue(w);
                         fromStack.push(w);
@@ -437,7 +439,7 @@ public class SAP {
                     (topological.order() == null) || (topological.rank(toQueue.peek()) < topological.rank(fromQueue.peek()))))) {
                 v = toQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
-                    if (w == v) continue;
+                    // if (w == v) continue;
                     if (!marked[w]) {
                         toQueue.enqueue(w);
                         toStack.push(w);
@@ -517,7 +519,7 @@ public class SAP {
                     ((toQueue.isEmpty() || (topological.order() == null) || topological.rank(fromQueue.peek()) < topological.rank(toQueue.peek())))) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
-                    if (w == v) continue;
+                    // if (w == v) continue;
                     if (!marked[w]) {
                         fromQueue.enqueue(w);
                         fromStack.push(w);
@@ -536,7 +538,7 @@ public class SAP {
                     (topological.order() == null) || topological.rank(toQueue.peek()) < topological.rank(fromQueue.peek())))) {
                 v = toQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
-                    if (w == v) continue;
+                    // if (w == v) continue;
                     if (!marked[w]) {
                         toQueue.enqueue(w);
                         marked[w] = true;

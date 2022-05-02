@@ -550,11 +550,11 @@ public class AutoGraderTests {
         shortestDistance = sap.length(10, 7);
         if (shortestDistance != 3)
             System.out.printf("Test 2 Shortest Distance between 10 and 7 in Graph 3 should be 3, but it is: %d\n", shortestDistance);
-        else System.out.printf("Test 2's shortest distance in Graph 3 passed. ");
+        else System.out.printf("Test 2's shortest distance in Graph 3 passed.\n");
         ancestor = sap.ancestor(10, 7);
         if (ancestor != 10)
             System.out.printf("Test 2 - The value of ancestor between 10 and 7 in Graph 3 should be 10, but it is: %d\n", ancestor);
-        else System.out.printf("Test 2's ancestor value in Graph3 passed.");
+        else System.out.printf("Test 2's ancestor value in Graph3 passed.\n");
 
 
         shortestDistance = sap.length(7, 13);
@@ -879,12 +879,12 @@ public class AutoGraderTests {
         if (shortestDistance != 0)
             System.out.printf("The distance between the same node is should be 0, but it is: %d\n", shortestDistance);
         shortestDistance = sap.length(4, 6);
-        if (shortestDistance != 3) System.out.printf("Shortest distance between nodes 4, and 6 is Graph6 should 3.");
-        else System.out.printf("Test 6 Shortest distance passed.");
+        if (shortestDistance != 3) System.out.printf("Shortest distance between nodes 4, and 6 is Graph6 should 3.\n");
+        else System.out.printf("Test 6 Shortest distance passed.\n");
         ancestor = sap.ancestor(4, 6);
         if (ancestor != 4)
             System.out.printf("Test 6: The value of ancestor in Graph6 between nodes 4, and 6 should be 4, but it is: %d\n", ancestor);
-        else System.out.printf("Test 6 of Graph6 passed.");
+        else System.out.printf("Test 6 of Graph6 passed.\n");
     }
 
     private void testDigraph9() {
@@ -1799,21 +1799,21 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-//        autoGraderTests.singleWordNetTests();
-//        autoGraderTests.testDigraph1();
-//        autoGraderTests.testDigraph2();
-//        autoGraderTests.testDigraph3();
-//        autoGraderTests.testDigraph4();
-//        autoGraderTests.testDigraph5();
-//        autoGraderTests.testDigraph6();
-//        autoGraderTests.testDigraph9();
+        autoGraderTests.singleWordNetTests();
+        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph3();
+        autoGraderTests.testDigraph4();
+        autoGraderTests.testDigraph5();
+        autoGraderTests.testDigraph6();
+        autoGraderTests.testDigraph9();
         autoGraderTests.testMyGraphs();
-//        autoGraderTests.createMultipleObjects();
-//        autoGraderTests.testIterables();
-//        autoGraderTests.testRandomDigraph();
-//        autoGraderTests.troubleShooting();
-//        autoGraderTests.testDigraphWordNet();
-//        autoGraderTests.repeatedTests();
-//        autoGraderTests.hypernyms100subgraphTest();
+        autoGraderTests.createMultipleObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
+        autoGraderTests.troubleShooting();
+        autoGraderTests.testDigraphWordNet();
+        autoGraderTests.repeatedTests();
+        autoGraderTests.hypernyms100subgraphTest();
     }
 }
