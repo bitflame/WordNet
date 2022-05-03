@@ -184,13 +184,13 @@ public class DeluxeBFS {
         }
         Iterable<Integer> sources = new ArrayList<>(Arrays.asList(3));
         bfs = new DeluxeBFS(G, sources);
-        for(int source: sources){
-            for(int v = 0; v < G.V(); v++){
-                if (bfs.hasPathTo(v)){
+        for (int source : sources) {
+            for (int v = 0; v < G.V(); v++) {
+                if (bfs.hasPathTo(v)) {
                     StdOut.printf("%d to %d (%d):  ", source, v, bfs.distTo(v));
-                    for(int x: bfs.pathTo(v)){
-                        if (x==source) StdOut.print(x);
-                        else StdOut.print("->"+x);
+                    for (int x : bfs.pathTo(v)) {
+                        if (x == source) StdOut.print(x);
+                        else StdOut.print("->" + x);
                     }
                     StdOut.println();
                 } else {
@@ -198,7 +198,22 @@ public class DeluxeBFS {
                 }
             }
         }
-
+        sources = new ArrayList<>(Arrays.asList(3, 1));
+        bfs = new DeluxeBFS(G, sources);
+        for (int source : sources) {
+            for (int v = 0; v < G.V(); v++) {
+                if (bfs.hasPathTo(v)) {
+                    StdOut.printf("%d to %d (%d):  ", source, v, bfs.distTo(v));
+                    for (int x : bfs.pathTo(v)) {
+                        if (x == source) StdOut.print(x);
+                        else StdOut.print("->" + x);
+                    }
+                    StdOut.println();
+                } else {
+                    StdOut.printf("%d to %d (-): not connected\n", source, v);
+                }
+            }
+        }
     }
 
 }

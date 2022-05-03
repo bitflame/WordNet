@@ -106,10 +106,12 @@ public class WordNet {
         if (i == -1) return "";
         else return db.get(i);
     }
+
     public static void main(String[] args) {
         System.out.println("----------------------Running WordNet Main---------------------");
         System.out.println("using " + args[0] + " and " + args[1] + "files for this round.");
         WordNet wordNet = new WordNet(args[0], args[1]);
+        //System.out.printf("%d\n",wordNet.distance("C-reactive_protein","fibrin"));
         Stopwatch time = new Stopwatch();
         System.out.println("The distance expected between worm and bird is 5, the result: " + wordNet.distance("worm", "bird"));
         System.out.println("The common ancestor between worm and animal: " + wordNet.sap("worm", "bird"));
@@ -130,6 +132,5 @@ public class WordNet {
         StdOut.println("The distance between the nouns Brown_Swiss, and barrel_roll should be 29, and it is: " + wordNet.distance("Brown_Swiss", "barrel_roll"));
         StdOut.println("The distance between the nouns group_action and event should be 1, and it is: " + wordNet.distance("group_action", "event"));
         StdOut.println("The distance between the nouns act and group_action should be 1, and it is:" + wordNet.distance("act", "group_action"));
-        // create lists of five, 10, 20, and 100 items and measure time difference
     }
 }

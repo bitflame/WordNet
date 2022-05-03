@@ -1,7 +1,6 @@
 import edu.princeton.cs.algs4.Digraph;
 import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.Topological;
 import edu.princeton.cs.algs4.In;
 
 
@@ -206,7 +205,8 @@ public class SAP {
         }
         if (matchedAll) return minDistance;
         else {
-            testMethod(v, w);
+            // testMethod(v, w);
+            minDistance = lists(v, w);
         }
         return minDistance;
     }
@@ -276,7 +276,8 @@ public class SAP {
         }
         if (matchedAll) return ancestor;
         else {
-            testMethod(v, w);
+            // testMethod(v, w);
+            minDistance = lists(v, w);
         }
         return ancestor;
     }
@@ -343,14 +344,13 @@ public class SAP {
 //            proceed = false;
 //            return currentDistance;
 //        }
-        if (fromDist > currentDistance && toDist > currentDistance) {
-            proceed = false;
-            return currentDistance;
-        }
+//        if (fromDist > currentDistance && toDist > currentDistance) {
+//            proceed = false;
+//            return currentDistance;
+//        }
         int distance = fromDist + toDist;
-        if (v == w) distance++; // trying to address self loops
         int fr = w;
-        if (sBS.hasPathTo(v)) fr = v;
+        //if (sBS.hasPathTo(v)) fr = v;
 
         while (sBS.distTo(fr) != 0 && sBS.hasPathTo(fr)) {
             fr = sBS.pathTo(fr).iterator().next();
@@ -378,6 +378,54 @@ public class SAP {
             ancestor = w;
         }
         return currentDistance;
+    }
+
+    private int lists(Iterable<Integer> s, Iterable<Integer> d) {
+        int currentDistance = INFINITY;
+        int distance = 0;
+        try {
+            fromBFS = fromBFS.updateSources(digraphDFCopy, s);
+            toBFS = toBFS.updateSources(digraphDFCopy, d);
+            updateDataStructures();
+        } catch (NullPointerException e) {
+            fromBFS = new DeluxeBFS(digraphDFCopy, s);
+            toBFS = new DeluxeBFS(digraphDFCopy, d);
+            setupDefaultDataStructures();
+        } catch (IllegalArgumentException e) {
+            ancestor = -1;
+            minDistance = -1;
+            from = -1;
+            to = -1;
+            return minDistance;
+        }
+        for (int i = 0; i < digraphDFCopy.V(); i++) {
+            if (fromBFS.hasPathTo(i) && toBFS.hasPathTo(i)) {
+                distance = fromBFS.distTo(i) + toBFS.distTo(i);
+                if (distance < currentDistance) {
+                    ancestor = i;
+                    currentDistance = distance;
+                }
+            }
+        }
+        if (currentDistance == INFINITY) {
+            minDistance = -1;
+            ancestor = -1;
+            from = -1;
+            to = -1;
+        } else {
+            int temp = ancestor;
+            while (fromBFS.distTo(temp) != 0) {
+                temp = fromBFS.pathTo(temp).iterator().next();
+            }
+            from = temp;
+            temp = ancestor;
+            while (toBFS.distTo(temp) != 0) {
+                temp = toBFS.pathTo(temp).iterator().next();
+            }
+            to = temp;
+            minDistance = currentDistance;
+        }
+        return minDistance;
     }
 
     private int testMethod(Iterable<Integer> s, Iterable<Integer> d) {
@@ -420,7 +468,7 @@ public class SAP {
         int v;
         int distanceFromSourceCounter = 1;
         while (proceed) {
-            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter ) {
+            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     // if (w == v) continue;
@@ -435,7 +483,7 @@ public class SAP {
                 }
             }
             if (!proceed) break;
-            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter ) {
+            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     // if (w == v) continue;
@@ -532,7 +580,7 @@ public class SAP {
                 }
             }
             if (!proceed) break;
-            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter ) {
+            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter) {
                 v = toQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     // if (w == v) continue;

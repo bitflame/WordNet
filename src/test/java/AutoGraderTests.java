@@ -798,7 +798,7 @@ public class AutoGraderTests {
         else System.out.printf("Test 7 of Graph5 ancestor passed.\n");
         shortestDistance = sap.length(7, 8);
         if (shortestDistance != 1)
-            System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ",shortestDistance);
+            System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ", shortestDistance);
         else System.out.printf("Test 8 of Graph5 shortest distance passed.\n");
         ancestor = sap.ancestor(7, 8);
         if (ancestor != 8)
@@ -1822,6 +1822,16 @@ public class AutoGraderTests {
         if (ancestor != 5)
             System.out.printf("Test 2 of tinyDG Graph ancestor between 4, and 5 should be 5, but it is: %d\n", ancestor);
         else System.out.printf("Test 2 of tinyDG Graph for ancestor passed.");
+        v = new ArrayList<>(Arrays.asList(1, 7, 10));
+        w = new ArrayList<>(Arrays.asList(4));
+        shortestDistance = sap.length(v, w);
+        if (shortestDistance != 2)
+            System.out.printf("Test 3 shortest distance value in tinyDG Graph from a set of values to node 4 should be 2, but it is: %d\n ", shortestDistance);
+        else System.out.printf("Test 3 shortest distance value passed.\n");
+        ancestor = sap.ancestor(v, w);
+        if (ancestor != 4)
+            System.out.printf("Test 3 ancestor value in tinyDG Graph from a set of values to node 4 should be 4, but it is: %d\n", ancestor);
+        else System.out.printf("Test 3 ancestor value passed.\n");
     }
 
     public static void main(String[] args) {
