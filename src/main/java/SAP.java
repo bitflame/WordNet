@@ -205,8 +205,8 @@ public class SAP {
         }
         if (matchedAll) return minDistance;
         else {
-            // testMethod(v, w);
-            minDistance = lists(v, w);
+            minDistance = testMethod(v, w);
+            // minDistance = lists(v, w);
         }
         return minDistance;
     }
@@ -276,8 +276,8 @@ public class SAP {
         }
         if (matchedAll) return ancestor;
         else {
-            // testMethod(v, w);
-            minDistance = lists(v, w);
+            minDistance = testMethod(v, w);
+            // minDistance = lists(v, w);
         }
         return ancestor;
     }
@@ -314,22 +314,10 @@ public class SAP {
         int fromDist = sBS.distTo(w);
         int toDist = dBS.distTo(w);
         distance = fromDist + toDist;
-        if (v == w) distance++; // to address self loops
-//        for (int s = v; s !=from && s!=to; s=digraphDFCopy.reverse().adj(w).iterator().next()){
-//
-//        }
-
-        //if (w!=from) distance++;
-        //if (w!=to) distance++;
         if (sBS.distTo(w) > currentDistance && dBS.distTo(w) > currentDistance) {
             proceed = false;
             return currentDistance;
         }
-//        if (sBS.hasPathTo(v)) {
-//            fr = v;
-//            distance++;
-//        }
-        // int distance = sBS.distTo(v) + dBS.distTo(v);
         if (distance < currentDistance) {
             currentDistance = distance;
             ancestor = w;
@@ -337,40 +325,22 @@ public class SAP {
         return currentDistance;
     }
 
-    private int updateCurrentIterDistance(int v, int w, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
+    private int updateCurrentIterDistance(int w, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
         int fromDist = sBS.distTo(w);
         int toDist = dBS.distTo(w);
-//        if (fromDist > currentDistance && toDist > currentDistance || fromDist == 0 || toDist == 0) {
-//            proceed = false;
-//            return currentDistance;
-//        }
-//        if (fromDist > currentDistance && toDist > currentDistance) {
-//            proceed = false;
-//            return currentDistance;
-//        }
         int distance = fromDist + toDist;
         int fr = w;
-        //if (sBS.hasPathTo(v)) fr = v;
-
-        while (sBS.distTo(fr) != 0 && sBS.hasPathTo(fr)) {
-            fr = sBS.pathTo(fr).iterator().next();
+        if (sBS.hasPathTo(fr)) {
+            while (sBS.distTo(fr) != 0) {
+                fr = sBS.pathTo(fr).iterator().next();
+            }
         }
-
-//        while (fromDist > 0) {
-//            fromDist--;
-//            fr = sBS.pathTo(w).iterator().next();
-//
-//        }
         int ds = w;
-        while (dBS.distTo(ds) != 0 && dBS.hasPathTo(ds)) {
-            ds = dBS.pathTo(ds).iterator().next();
+        if (dBS.hasPathTo(ds)) {
+            while (dBS.distTo(ds) != 0) {
+                ds = dBS.pathTo(ds).iterator().next();
+            }
         }
-
-//        while (toDist > 0) {
-//            toDist--;
-//            ds = dBS.pathTo(w).iterator().next();
-//        }
-
         if (distance < currentDistance) {
             currentDistance = distance;
             from = fr;
@@ -478,7 +448,7 @@ public class SAP {
                         onFromStack[w] = true;
                         marked[w] = true;
                     } else if (toBFS.hasPathTo(w)) {
-                        currentDistance = updateCurrentIterDistance(v, w, currentDistance, fromBFS, toBFS);
+                        currentDistance = updateCurrentIterDistance(w, currentDistance, fromBFS, toBFS);
                     }
                 }
             }
@@ -493,7 +463,7 @@ public class SAP {
                         onToStack[w] = true;
                         marked[w] = true;
                     } else if (fromBFS.hasPathTo(w)) {
-                        currentDistance = updateCurrentIterDistance(v, w, currentDistance, fromBFS, toBFS);
+                        currentDistance = updateCurrentIterDistance(w, currentDistance, fromBFS, toBFS);
                     }
                 }
             }
@@ -503,12 +473,6 @@ public class SAP {
         proceed = true;
         if (currentDistance != INFINITY) {
             minDistance = currentDistance;
-            node = new Node(from, to, minDistance, ancestor);
-            if (cache.get(from, to) == null) {
-                cache.put(node);
-            } else if (cache.get(from, to).minimumDistance > minDistance) {
-                cache.updateNode(node);
-            }
         } else {
             minDistance = -1;
             ancestor = -1;
