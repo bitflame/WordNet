@@ -3,6 +3,10 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class DeluxeBFS {
     private static final int INFINITY = Integer.MAX_VALUE;
     private boolean[] marked;  // marked[v] = is there an s->v path?
@@ -165,7 +169,6 @@ public class DeluxeBFS {
         Digraph G = new Digraph(in);
         // StdOut.println(G);
         int s = Integer.parseInt(args[1]);
-        s = 4;
         DeluxeBFS bfs = new DeluxeBFS(G, s);
         for (int v = 0; v < G.V(); v++) {
             if (bfs.hasPathTo(v)) {
@@ -179,23 +182,23 @@ public class DeluxeBFS {
                 StdOut.printf("%d to %d (-):  not connected\n", s, v);
             }
         }
-        Digraph digraph = new Digraph(new In("tinyDG.txt"));
-        if (digraph.equals(G)) {
-            System.out.printf("running the updated method.\n");
-            bfs.updateSource(G, s);
-        } else System.out.printf("The graphs were not equal, and did not run the update method.\n");
-        bfs.updateSource(G, 3);
-        for (int v = 0; v < G.V(); v++) {
-            if (bfs.hasPathTo(v)) {
-                StdOut.printf("%d to %d (%d):  ", s, v, bfs.distTo(v));
-                for (int x : bfs.pathTo(v)) {
-                    if (x == s) StdOut.print(x);
-                    else StdOut.print("->" + x);
+        Iterable<Integer> sources = new ArrayList<>(Arrays.asList(3));
+        bfs = new DeluxeBFS(G, sources);
+        for(int source: sources){
+            for(int v = 0; v < G.V(); v++){
+                if (bfs.hasPathTo(v)){
+                    StdOut.printf("%d to %d (%d):  ", source, v, bfs.distTo(v));
+                    for(int x: bfs.pathTo(v)){
+                        if (x==source) StdOut.print(x);
+                        else StdOut.print("->"+x);
+                    }
+                    StdOut.println();
+                } else {
+                    StdOut.printf("%d to %d (-): not connected\n", source, v);
                 }
-                StdOut.println();
-            } else {
-                StdOut.printf("%d to %d (-):  not connected\n", s, v);
             }
         }
+
     }
+
 }

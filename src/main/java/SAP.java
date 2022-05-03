@@ -25,7 +25,6 @@ public class SAP {
     private DeluxeBFS toBFS;
     private Cache cache;
     private Node node;
-    private Topological topological;
 
     private class Node {
         int source;
@@ -117,7 +116,6 @@ public class SAP {
         n = digraphDFCopy.V();
         proceed = true;
         cache = new Cache();
-        topological = new Topological(digraph);
     }
 
 
@@ -131,7 +129,6 @@ public class SAP {
         if ((w < 0) || (w >= n))
             throw new IllegalArgumentException("The node ids should be within acceptable range.\n");
         if (from == v && to == w) return minDistance;
-        if (from == w && to == v) return minDistance;
         if (v == w && v != -1) {
             minDistance = 0;
             ancestor = v;
@@ -284,7 +281,6 @@ public class SAP {
         return ancestor;
     }
 
-
     private void setupDefaultDataStructures() {
         fromQueue = new Queue<>();
         toQueue = new Queue<>();
@@ -313,10 +309,11 @@ public class SAP {
     }
 
     private int updateCurrentDistance(int v, int w, int currentDistance, DeluxeBFS sBS, DeluxeBFS dBS) {
+        int distance = 0;
         int fromDist = sBS.distTo(w);
         int toDist = dBS.distTo(w);
-        int distance = fromDist + toDist;
-        if (v==w) distance++; // to address self loops
+        distance = fromDist + toDist;
+        if (v == w) distance++; // to address self loops
 //        for (int s = v; s !=from && s!=to; s=digraphDFCopy.reverse().adj(w).iterator().next()){
 //
 //        }
@@ -327,6 +324,10 @@ public class SAP {
             proceed = false;
             return currentDistance;
         }
+//        if (sBS.hasPathTo(v)) {
+//            fr = v;
+//            distance++;
+//        }
         // int distance = sBS.distTo(v) + dBS.distTo(v);
         if (distance < currentDistance) {
             currentDistance = distance;
@@ -419,8 +420,7 @@ public class SAP {
         int v;
         int distanceFromSourceCounter = 1;
         while (proceed) {
-            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter && ((toQueue.isEmpty() ||
-                    (topological.order() == null) || topological.rank(fromQueue.peek()) < topological.rank(toQueue.peek())))) {
+            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter ) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     // if (w == v) continue;
@@ -435,8 +435,7 @@ public class SAP {
                 }
             }
             if (!proceed) break;
-            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter && ((fromQueue.isEmpty() ||
-                    (topological.order() == null) || (topological.rank(toQueue.peek()) < topological.rank(fromQueue.peek()))))) {
+            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter ) {
                 v = toQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     // if (w == v) continue;
@@ -515,8 +514,7 @@ public class SAP {
         int distanceFromSourceCounter = 1;
         while (proceed) {
             // if both have routes to it and distance is minimum
-            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter &&
-                    ((toQueue.isEmpty() || (topological.order() == null) || topological.rank(fromQueue.peek()) < topological.rank(toQueue.peek())))) {
+            while (!fromQueue.isEmpty() && fromBFS.distTo(fromQueue.peek()) < distanceFromSourceCounter) {
                 v = fromQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     // if (w == v) continue;
@@ -534,8 +532,7 @@ public class SAP {
                 }
             }
             if (!proceed) break;
-            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter && ((fromQueue.isEmpty() ||
-                    (topological.order() == null) || topological.rank(toQueue.peek()) < topological.rank(fromQueue.peek())))) {
+            while (!toQueue.isEmpty() && toBFS.distTo(toQueue.peek()) < distanceFromSourceCounter ) {
                 v = toQueue.dequeue();
                 for (int w : digraphDFCopy.adj(v)) {
                     // if (w == v) continue;
@@ -544,11 +541,6 @@ public class SAP {
                         marked[w] = true;
                         toStack.push(w);
                         onToStack[w] = true;
-                    } else if (onToStack[w] && w == s) {
-                        // if it is onStack you might have to compare distances to the node with the path it came from
-                        currentDistance = toBFS.distTo(v) + 1;
-                        // currentDistance = toBFS.distTo(w);
-                        ancestor = w;
                     } else if (fromBFS.hasPathTo(w)) {
                         currentDistance = updateCurrentDistance(v, w, currentDistance, fromBFS, toBFS);
                     }

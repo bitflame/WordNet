@@ -1,9 +1,5 @@
 import edu.princeton.cs.algs4.*;
 
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 
@@ -272,7 +268,6 @@ public class AutoGraderTests {
         if (ancestor != 3)
             System.out.printf("The value of ancestor between 3 and 8 should be 3, but it is: %d\n", ancestor);
 
-
         shortestDistance = sap.length(8, 3);
         if (shortestDistance != 1)
             System.out.printf("The value of length between 8 and 3 should be 1, but it is: %d\n", shortestDistance);
@@ -426,6 +421,10 @@ public class AutoGraderTests {
         } catch (IllegalArgumentException illegalArgumentException) {
             System.out.printf("Error message for non-exitant value: %s\n", illegalArgumentException.getMessage());
         }
+        v = new ArrayList<>(Arrays.asList(0));
+        w = new ArrayList<>(Arrays.asList(3, 1));
+        shortestDistance = sap.length(v, w);
+        ancestor = sap.ancestor(v, w);
     }
 
     private void testDigraph2() {
@@ -799,7 +798,7 @@ public class AutoGraderTests {
         else System.out.printf("Test 7 of Graph5 ancestor passed.\n");
         shortestDistance = sap.length(7, 8);
         if (shortestDistance != 1)
-            System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ");
+            System.out.printf("The distance between nodes 7 and 8 should be 1, but it is: %d\n ",shortestDistance);
         else System.out.printf("Test 8 of Graph5 shortest distance passed.\n");
         ancestor = sap.ancestor(7, 8);
         if (ancestor != 8)
@@ -1524,7 +1523,8 @@ public class AutoGraderTests {
             System.out.printf("The ancestor value in myGraph8 Test 1 should be 1, but it is: %d\n", ancestor);
         else System.out.printf("Test 2 ancestor value in myGraph9 passed.\n");
         shortestDistance = sap.length(2, 1);
-        if (shortestDistance!=2) System.out.printf("The shortest distance between the nodes 2, and 1 should be 2, but it is: %d\n", shortestDistance);
+        if (shortestDistance != 2)
+            System.out.printf("The shortest distance between the nodes 2, and 1 should be 2, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 2 the minimum distance in myGraph9 passed.\n");
 
     }
@@ -1689,6 +1689,7 @@ public class AutoGraderTests {
 */
 
     private void hypernyms100subgraphTest() {
+        System.out.printf("---------------------hypernyms100subgraphTest() Tests-------------------------------\n");
         in = new In("hypernyms100-subgraph.txt");
         Digraph digraphDFCopy = new Digraph(100);
         int index = 0;
@@ -1783,6 +1784,7 @@ public class AutoGraderTests {
     private void singleWordNetTests() {
         // Exception in thread "main" java.lang.AssertionError: Iterative Tests Test 1 - should be source=1285
         // destination = 58083ancestor = 57333minDistance =12 but actual ancestor= 42539actual minimum distance=4
+        System.out.printf("---------------------singleWordNetTests() Tests-------------------------------\n");
         System.out.printf("************Starting iterative tests in singleWordNetTests() method********** \n");
         in = new In("digraph-wordnet.txt");
         Digraph digraph = new Digraph(in);
@@ -1796,6 +1798,31 @@ public class AutoGraderTests {
         else System.out.printf("singleWordNetTests Test #1 for ancestor passed.\n");
     }
 
+    private void tinyDGTests() {
+        System.out.printf("-----------------------------------------TinyDG Tests------------------------------------\n");
+        in = new In("tinyDG.txt");
+        digraph = new Digraph(in);
+        sap = new SAP(digraph);
+        shortestDistance = sap.length(5, 4);
+        if (shortestDistance != 1)
+            System.out.printf("Test 1 of tinyDG Graph minimum distance between 5, and 4 should be 1, but" +
+                    "the actual value is: %d\n", shortestDistance);
+        else System.out.printf("Test 1 of tinyDG Graph for minimum distance  passed.\n");
+        ancestor = sap.ancestor(5, 4);
+        if (ancestor != 4)
+            System.out.printf("Test 1 of tinyDG Graph ancestor between 5, and 4 should be 4, but it is: %d\n", ancestor);
+        else System.out.printf("Test 1 of tinyDG Graph for ancestor passed.\n");
+
+        shortestDistance = sap.length(4, 5);
+        if (shortestDistance != 2)
+            System.out.printf("Test 2 of tinyDG Graph minimum distance between 4, and 5 should be 2, " +
+                    "but the actual value is: %d\n", shortestDistance);
+        else System.out.printf("Test 2 of tinyDG Graph minimum distance passed.\n");
+        ancestor = sap.ancestor(4, 5);
+        if (ancestor != 5)
+            System.out.printf("Test 2 of tinyDG Graph ancestor between 4, and 5 should be 5, but it is: %d\n", ancestor);
+        else System.out.printf("Test 2 of tinyDG Graph for ancestor passed.");
+    }
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
@@ -1815,5 +1842,6 @@ public class AutoGraderTests {
         autoGraderTests.testDigraphWordNet();
         autoGraderTests.repeatedTests();
         autoGraderTests.hypernyms100subgraphTest();
+        autoGraderTests.tinyDGTests();
     }
 }
