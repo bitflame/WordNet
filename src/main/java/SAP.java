@@ -21,7 +21,7 @@ public class SAP {
     private DeluxeBFS toBFS;
     private Cache cache;
     private Node node;
-    private Topological topological;
+    private DepthFirstOrder depthFirstOrder;
 
     private class Node {
         int source;
@@ -113,7 +113,7 @@ public class SAP {
         n = digraphDFCopy.V();
         proceed = true;
         cache = new Cache();
-        topological = new Topological(digraph);
+        depthFirstOrder = new DepthFirstOrder(digraphDFCopy);
     }
 
 

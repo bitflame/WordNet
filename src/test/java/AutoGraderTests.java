@@ -45,14 +45,14 @@ public class AutoGraderTests {
 
     private void testDigraphWordNet() {
         StdOut.println("----------------------- Running AutoGrader Tests for DigraphWordNet int testDigraphWordNet()--------------------------");
-        in = new In("myGraph5.txt");
+        /*in = new In("myGraph5.txt");
         digraph = new Digraph(in);
         sap = new SAP(digraph);
         System.out.printf("minimum distance: %d, ancestor: %d\n", sap.length(4, 1), sap.ancestor(4, 1));
         v = new ArrayList<>(Arrays.asList(4));
         w = new ArrayList<>(Arrays.asList(1, 2, 3, 0));
         System.out.printf("myGraph5 iterative  shortest distance: %d, ancestor: %d\n", sap.length(v, w), sap.ancestor(v, w));
-        System.out.printf("minimum distance: %d, ancestor: %d\n", sap.length(4, 1), sap.ancestor(4, 1));
+        System.out.printf("minimum distance: %d, ancestor: %d\n", sap.length(4, 1), sap.ancestor(4, 1));*/
 
         in = new In("digraph-wordnet.txt");
         digraph = new Digraph(in);
@@ -1836,22 +1836,22 @@ public class AutoGraderTests {
 
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
-        autoGraderTests.singleWordNetTests();
-        autoGraderTests.testDigraph1();
-        autoGraderTests.testDigraph2();
-        autoGraderTests.testDigraph3();
-        autoGraderTests.testDigraph4();
-        autoGraderTests.testDigraph5();
-        autoGraderTests.testDigraph6();
-        autoGraderTests.testDigraph9();
-        autoGraderTests.testMyGraphs();
-        autoGraderTests.createMultipleObjects();
-        autoGraderTests.testIterables();
-        autoGraderTests.testRandomDigraph();
-        autoGraderTests.troubleShooting();
         autoGraderTests.testDigraphWordNet();
-        autoGraderTests.repeatedTests();
-        autoGraderTests.hypernyms100subgraphTest();
-        autoGraderTests.tinyDGTests();
+//        autoGraderTests.singleWordNetTests();
+//        autoGraderTests.testDigraph1();
+//        autoGraderTests.testDigraph2();
+//        autoGraderTests.testDigraph3();
+//        autoGraderTests.testDigraph4();
+//        autoGraderTests.testDigraph5();
+//        autoGraderTests.testDigraph6();
+//        autoGraderTests.testDigraph9();
+//        autoGraderTests.testMyGraphs();
+//        autoGraderTests.createMultipleObjects();
+//        autoGraderTests.testIterables();
+//        autoGraderTests.testRandomDigraph();
+//        autoGraderTests.troubleShooting();
+//        autoGraderTests.repeatedTests();
+//        autoGraderTests.hypernyms100subgraphTest();
+//        autoGraderTests.tinyDGTests();
     }
 }
