@@ -1,7 +1,4 @@
-import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.Stack;
-import edu.princeton.cs.algs4.Queue;
-import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.*;
 
 
 public class SAP {
@@ -24,6 +21,7 @@ public class SAP {
     private DeluxeBFS toBFS;
     private Cache cache;
     private Node node;
+    private Topological topological;
 
     private class Node {
         int source;
@@ -115,6 +113,7 @@ public class SAP {
         n = digraphDFCopy.V();
         proceed = true;
         cache = new Cache();
+        topological = new Topological(digraph);
     }
 
 
@@ -508,20 +507,6 @@ public class SAP {
         toStack.push(d);
         onToStack[d] = true;
         marked[d] = true;
-
-     /*   int temp = j;
-        ancestor = temp;
-        to = temp;
-        currentDistance = fromBFS.distTo(temp);
-        minDistance = fromBFS.distTo(temp);
-        while (fromBFS.distTo(temp)!=0) temp = fromBFS.pathTo(temp).iterator().next();
-        from = temp;
-        node = new Node(from, to, currentDistance, ancestor);
-        if (cache.get(from, to) == null) {
-            cache.put(node);
-        } else if (cache.get(from, to).minimumDistance > currentDistance) {
-            cache.updateNode(node);
-        } */
         int v;
         int distanceFromSourceCounter = 1;
         while (proceed) {
