@@ -80,6 +80,22 @@ public class AutoGraderTests {
             System.out.printf("The second Iterables test of wordnet should have ancestor value of 77444, but the actual value is: %d\n", ancestor);
         else System.out.printf("The ancestor value for the second iterables test in wordnet passed.\n");
 
+        // reset the object as a precaution
+        sap = new SAP(digraph);
+        // add data for the first source
+        sap.length(3464,9675);
+        sap.length(3464,44260);
+        sap.length(3464,65806);
+        sap.length(3464,80452);
+        shortestDistance = sap.optimizedLength(v,w);
+        // check to make sure the new fromList is being used and teh first item is not in the list
+        if (shortestDistance != 8)
+            System.out.printf("The Test of optimizedLength() in wordnet should have a minimum distance of 8, but the actual value is: %d\n", shortestDistance);
+        else System.out.printf("The shortest distance value for the second iterables using optimizedLenght test in wordnet passed.\n");
+        /*ancestor = sap.ancestor(v, w);
+        if (ancestor != 77444)
+            System.out.printf("The test of optimaizedAncestor in wordnet should have ancestor value of 77444, but the actual value is: %d\n", ancestor);
+        else System.out.printf("The ancestor value for the second iterables using optimizedAncestor() test in wordnet passed.\n");*/
  /*
         System.out.printf("(3464, 9675) shortest distance: %d ancestor: %d\n", sap.length(3464, 9675), sap.ancestor(3464, 9675));
         System.out.printf("(3464, 44260) shortest distance: %d ancestor: %d\n", sap.length(3464, 44260), sap.ancestor(3464, 44260));

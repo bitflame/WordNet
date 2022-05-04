@@ -1,5 +1,7 @@
 import edu.princeton.cs.algs4.*;
 
+import java.util.ArrayList;
+
 
 public class SAP {
     private static final int INFINITY = Integer.MAX_VALUE;
@@ -186,6 +188,8 @@ public class SAP {
         // do your checking here before calling testMethod()
         boolean matchedAll = true;
         int currentDistance = INFINITY;
+        ArrayList<Integer> fromList = new ArrayList<>();
+        ArrayList<Integer> toList = new ArrayList<>();
         for (int i : v) {
             for (int j : w) {
                 try {
@@ -201,7 +205,8 @@ public class SAP {
                     matchedAll = false;
                 }
             }
-            // todo -if matchall is true remove the current i from the list
+            // todo - if matchAll is false, add i to a new list and reset it for the next round. actually use one
+            //  boolean for each list and remove that node if the cache has it and all the nodes in the other list
         }
         if (matchedAll) return minDistance;
         else {
@@ -211,6 +216,52 @@ public class SAP {
         return minDistance;
     }
 
+    public int optimizedLength(Iterable<Integer> v, Iterable<Integer> w) {
+        validateVertices(v);
+        validateVertices(w);
+        if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
+            //throw new IllegalArgumentException("Both lists should contain at least one value.");
+            from = -1;
+            to = -1;
+            ancestor = -1;
+            minDistance = -1;
+            return minDistance;
+        }
+        // do your checking here before calling testMethod()
+        boolean matchedAllSources = true, matchAllDestinations=true;
+        int currentDistance = INFINITY;
+        ArrayList<Integer> fromList = new ArrayList<>();
+        ArrayList<Integer> toList = new ArrayList<>();
+        for (int i : v) {
+            for (int j : w) {
+                try {
+                    node = cache.get(i, j);
+                    if (currentDistance > node.minimumDistance || currentDistance == -1 && node.minimumDistance != -1) {
+                        currentDistance = node.minimumDistance;
+                        from = i;
+                        to = j;
+                        minDistance = node.minimumDistance;
+                        ancestor = node.ancestor;
+                    }
+                } catch (NullPointerException e) {
+                    matchedAllSources = false;
+                    matchAllDestinations=false;
+                }
+            }
+            if (!matchAllDestinations) {
+                fromList.add(i);
+                matchAllDestinations=true;
+            }
+
+        }
+        if (matchedAllSources && matchAllDestinations) return minDistance;
+        else {
+            v = fromList;
+            minDistance = testMethod(v, w);
+            // minDistance = lists(v, w);
+        }
+        return minDistance;
+    }
 
     // a common ancestor of v and w that participates in the shortest ancestral path; -1 if no such path
     public int ancestor(int v, int w) {
