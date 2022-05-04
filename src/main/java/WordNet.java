@@ -64,12 +64,15 @@ public class WordNet {
 
     // is the word a WordNet noun?
     public boolean isNoun(String word) {
-        for (int i : db.keySet()) {
+        /*for (int i : db.keySet()) {
             for (String s : db.get(i).split(" ")) {
                 if (s.equals(word)) return true;
             }
         }
-        return false;
+
+        return false;*/
+        if (db.get(word) == null) return false;
+        else return true;
     }
 
     // distance between nounA and nounB (defined below )
