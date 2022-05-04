@@ -1,4 +1,7 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.Queue;
 
 import java.util.ArrayList;
 
@@ -23,7 +26,7 @@ public class SAP {
     private DeluxeBFS toBFS;
     private Cache cache;
     private Node node;
-    private DepthFirstOrder depthFirstOrder;
+
 
     private class Node {
         int source;
@@ -104,6 +107,7 @@ public class SAP {
         }
     }
 
+    private int globalCurrentDistance;
     // constructor takes a digraph ( not necessarily a DAG )
     public SAP(Digraph digraph) {
         if (digraph == null) throw new IllegalArgumentException("Digraph value can not be null");
@@ -115,7 +119,7 @@ public class SAP {
         n = digraphDFCopy.V();
         proceed = true;
         cache = new Cache();
-        depthFirstOrder = new DepthFirstOrder(digraphDFCopy);
+        globalCurrentDistance = INFINITY;
     }
 
 
@@ -178,15 +182,12 @@ public class SAP {
         validateVertices(v);
         validateVertices(w);
         if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
-            //throw new IllegalArgumentException("Both lists should contain at least one value.");
             from = -1;
             to = -1;
             ancestor = -1;
             minDistance = -1;
             return minDistance;
         }
-        // do your checking here before calling testMethod()
-        boolean matchedAll = true;
         int currentDistance = INFINITY;
         ArrayList<Integer> fromList = new ArrayList<>();
         ArrayList<Integer> toList = new ArrayList<>();
@@ -202,33 +203,30 @@ public class SAP {
                         ancestor = node.ancestor;
                     }
                 } catch (NullPointerException e) {
-                    matchedAll = false;
+                    if (!fromList.contains(i)) fromList.add(i);
+                    if (!toList.contains(j)) toList.add(j);
                 }
             }
-            // todo - if matchAll is false, add i to a new list and reset it for the next round. actually use one
-            //  boolean for each list and remove that node if the cache has it and all the nodes in the other list
         }
-        if (matchedAll) return minDistance;
-        else {
+        if (!fromList.isEmpty() || !toList.isEmpty()) {
+            v = fromList;
+            w = toList;
+            globalCurrentDistance = currentDistance;
             minDistance = testMethod(v, w);
-            // minDistance = lists(v, w);
         }
         return minDistance;
     }
 
-    public int optimizedLength(Iterable<Integer> v, Iterable<Integer> w) {
+    private int optimizedAncestor(Iterable<Integer> v, Iterable<Integer> w) {
         validateVertices(v);
         validateVertices(w);
         if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
-            //throw new IllegalArgumentException("Both lists should contain at least one value.");
             from = -1;
             to = -1;
             ancestor = -1;
             minDistance = -1;
             return minDistance;
         }
-        // do your checking here before calling testMethod()
-        boolean matchedAllSources = true, matchAllDestinations=true;
         int currentDistance = INFINITY;
         ArrayList<Integer> fromList = new ArrayList<>();
         ArrayList<Integer> toList = new ArrayList<>();
@@ -244,21 +242,55 @@ public class SAP {
                         ancestor = node.ancestor;
                     }
                 } catch (NullPointerException e) {
-                    matchedAllSources = false;
-                    matchAllDestinations=false;
+                    if (!fromList.contains(i)) fromList.add(i);
+                    if (!toList.contains(j)) toList.add(j);
                 }
             }
-            if (!matchAllDestinations) {
-                fromList.add(i);
-                matchAllDestinations=true;
-            }
-
         }
-        if (matchedAllSources && matchAllDestinations) return minDistance;
-        else {
+        if (!fromList.isEmpty() || !toList.isEmpty()) {
             v = fromList;
+            w = toList;
+            globalCurrentDistance = currentDistance;
             minDistance = testMethod(v, w);
-            // minDistance = lists(v, w);
+        }
+        return ancestor;
+    }
+
+    private int optimizedLength(Iterable<Integer> v, Iterable<Integer> w) {
+        validateVertices(v);
+        validateVertices(w);
+        if (!v.iterator().hasNext() || !w.iterator().hasNext()) {
+            from = -1;
+            to = -1;
+            ancestor = -1;
+            minDistance = -1;
+            return minDistance;
+        }
+        int currentDistance = INFINITY;
+        ArrayList<Integer> fromList = new ArrayList<>();
+        ArrayList<Integer> toList = new ArrayList<>();
+        for (int i : v) {
+            for (int j : w) {
+                try {
+                    node = cache.get(i, j);
+                    if (currentDistance > node.minimumDistance || currentDistance == -1 && node.minimumDistance != -1) {
+                        currentDistance = node.minimumDistance;
+                        from = i;
+                        to = j;
+                        minDistance = node.minimumDistance;
+                        ancestor = node.ancestor;
+                    }
+                } catch (NullPointerException e) {
+                    if (!fromList.contains(i)) fromList.add(i);
+                    if (!toList.contains(j)) toList.add(j);
+                }
+            }
+        }
+        if (!fromList.isEmpty() || !toList.isEmpty()) {
+            v = fromList;
+            w = toList;
+            globalCurrentDistance = currentDistance;
+            minDistance = testMethod(v, w);
         }
         return minDistance;
     }
@@ -305,30 +337,31 @@ public class SAP {
             minDistance = -1;
             return minDistance;
         }
-        boolean matchedAll = true;
         int currentDistance = INFINITY;
+        ArrayList<Integer> fromList = new ArrayList<>();
+        ArrayList<Integer> toList = new ArrayList<>();
         for (int i : v) {
             for (int j : w) {
                 try {
                     node = cache.get(i, j);
-                    int temp = node.minimumDistance;
-                    int temp2 = node.ancestor;
-                    if (currentDistance > temp || (currentDistance == -1 && temp != currentDistance)) {
-                        currentDistance = temp;
+                    if (currentDistance > node.minimumDistance || currentDistance == -1 && node.minimumDistance != -1) {
+                        currentDistance = node.minimumDistance;
                         from = i;
                         to = j;
-                        minDistance = temp;
-                        ancestor = temp2;
+                        minDistance = node.minimumDistance;
+                        ancestor = node.ancestor;
                     }
                 } catch (NullPointerException e) {
-                    matchedAll = false;
+                    if (!fromList.contains(i)) fromList.add(i);
+                    if (!toList.contains(j)) toList.add(j);
                 }
             }
         }
-        if (matchedAll) return ancestor;
-        else {
+        if (!fromList.isEmpty() || !toList.isEmpty()) {
+            v = fromList;
+            w = toList;
+            globalCurrentDistance = currentDistance;
             minDistance = testMethod(v, w);
-            // minDistance = lists(v, w);
         }
         return ancestor;
     }
@@ -450,7 +483,7 @@ public class SAP {
     }
 
     private int testMethod(Iterable<Integer> s, Iterable<Integer> d) {
-        int currentDistance = INFINITY;
+        int currentDistance = globalCurrentDistance;
         try {
             fromBFS = fromBFS.updateSources(digraphDFCopy, s);
             toBFS = toBFS.updateSources(digraphDFCopy, d);
@@ -530,6 +563,7 @@ public class SAP {
             from = -1;
             to = -1;
         }
+        globalCurrentDistance = INFINITY;
         return minDistance;
     }
 

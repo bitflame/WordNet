@@ -79,24 +79,46 @@ public class AutoGraderTests {
         if (ancestor != 77444)
             System.out.printf("The second Iterables test of wordnet should have ancestor value of 77444, but the actual value is: %d\n", ancestor);
         else System.out.printf("The ancestor value for the second iterables test in wordnet passed.\n");
+/*
 
-        // reset the object as a precaution
-        sap = new SAP(digraph);
-        // add data for the first source
-        sap.length(3464,9675);
-        sap.length(3464,44260);
-        sap.length(3464,65806);
-        sap.length(3464,80452);
-        shortestDistance = sap.optimizedLength(v,w);
-        // check to make sure the new fromList is being used and teh first item is not in the list
+        shortestDistance = sap.optimizedLength(v, w);
+
         if (shortestDistance != 8)
-            System.out.printf("The Test of optimizedLength() in wordnet should have a minimum distance of 8, but the actual value is: %d\n", shortestDistance);
-        else System.out.printf("The shortest distance value for the second iterables using optimizedLenght test in wordnet passed.\n");
-        /*ancestor = sap.ancestor(v, w);
+            System.out.printf("The Test of optimizedLength() with first value in cache in wordnet should have a minimum distance of 8, but the actual value is: %d\n", shortestDistance);
+        else
+            System.out.printf("The shortest distance value for the second iterables using optimizedLength with first value in cache test in wordnet passed.\n");
+        sap = new SAP(digraph);
+        sap.length(3464, 9675);
+        sap.length(3464, 44260);
+        sap.length(3464, 65806);
+        sap.length(3464, 80452);
+        ancestor = sap.optimizedAncestor(v, w);
         if (ancestor != 77444)
-            System.out.printf("The test of optimaizedAncestor in wordnet should have ancestor value of 77444, but the actual value is: %d\n", ancestor);
-        else System.out.printf("The ancestor value for the second iterables using optimizedAncestor() test in wordnet passed.\n");*/
- /*
+            System.out.printf("The test of optimizedAncestor with first value in cache in wordnet should have ancestor value of 77444, but the actual value is: %d\n", ancestor);
+        else
+            System.out.printf("The ancestor value for the first iterables using optimizedAncestor() with 2nd value in cache test in wordnet passed.\n");
+
+        sap = new SAP(digraph);
+        sap.length(8331, 9675);
+        sap.length(8331, 44260);
+        sap.length(8331, 65806);
+        sap.length(8331, 80452);
+        shortestDistance = sap.optimizedLength(v, w);
+        if (shortestDistance != 8)
+            System.out.printf("The Test of optimizedLength() with 2nd value in cache in wordnet should have a minimum distance of 8, but the actual value is: %d\n", shortestDistance);
+        else
+            System.out.printf("The shortest distance value for the second iterables using optimizedLength with 2nd value in cache test in wordnet passed.\n");
+        sap = new SAP(digraph);
+        sap.length(8331, 9675);
+        sap.length(8331, 44260);
+        sap.length(8331, 65806);
+        sap.length(8331, 80452);
+        ancestor = sap.optimizedAncestor(v, w);
+        if (ancestor != 77444)
+            System.out.printf("The test of optimizedAncestor with second value in cache in wordnet should have ancestor value of 77444, but the actual value is: %d\n", ancestor);
+        else
+            System.out.printf("The ancestor value for the first iterables using optimizedAncestor() with 2nd value in cache test in wordnet passed.\n");
+
         System.out.printf("(3464, 9675) shortest distance: %d ancestor: %d\n", sap.length(3464, 9675), sap.ancestor(3464, 9675));
         System.out.printf("(3464, 44260) shortest distance: %d ancestor: %d\n", sap.length(3464, 44260), sap.ancestor(3464, 44260));
         System.out.printf("(3464, 65806) shortest distance: %d ancestor: %d\n", sap.length(3464, 65806), sap.ancestor(3464, 65806));
@@ -1503,7 +1525,7 @@ public class AutoGraderTests {
         digraph = new Digraph(in);
         sap = new SAP(digraph);
         shortestDistance = sap.length(0, 2);
-        if (shortestDistance != 2)
+        if (shortestDistance != 1)
             System.out.printf("The shortest distance value in myGraph8 Test 1 between 0 and 2 should " +
                     "be 2, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 1 of myGraph8 passed.\n");
@@ -1512,7 +1534,7 @@ public class AutoGraderTests {
             System.out.printf("The ancestor value in myGraph8 Test 1 should be 2, but it is: %d\n", ancestor);
         else System.out.printf("The ancestor Test 1 of myGraph8 passed.\n");
         shortestDistance = sap.length(2, 0);
-        if (shortestDistance != 2)
+        if (shortestDistance != 1)
             System.out.printf("The shortest distance value in myGraph8 Test 2 between 2 and 0 should " +
                     "be 2, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 2 of myGraph8 passed.\n");
@@ -1527,7 +1549,7 @@ public class AutoGraderTests {
         v = new ArrayList<>(Arrays.asList(0, 1));
         w = new ArrayList<>(Arrays.asList(2));
         shortestDistance = sap.length(v, w);
-        if (shortestDistance != 0)
+        if (shortestDistance != 1)
             System.out.printf("The shortest distance value in myGraph9 Test 1 should be 1, but it is: %d\n", shortestDistance);
         else System.out.printf("Test 1 of myGraph9 passed.\n");
         ancestor = sap.ancestor(v, w);
@@ -1853,21 +1875,21 @@ public class AutoGraderTests {
     public static void main(String[] args) {
         AutoGraderTests autoGraderTests = new AutoGraderTests();
         autoGraderTests.testDigraphWordNet();
-//        autoGraderTests.singleWordNetTests();
-//        autoGraderTests.testDigraph1();
-//        autoGraderTests.testDigraph2();
-//        autoGraderTests.testDigraph3();
-//        autoGraderTests.testDigraph4();
-//        autoGraderTests.testDigraph5();
-//        autoGraderTests.testDigraph6();
-//        autoGraderTests.testDigraph9();
-//        autoGraderTests.testMyGraphs();
-//        autoGraderTests.createMultipleObjects();
-//        autoGraderTests.testIterables();
-//        autoGraderTests.testRandomDigraph();
-//        autoGraderTests.troubleShooting();
-//        autoGraderTests.repeatedTests();
-//        autoGraderTests.hypernyms100subgraphTest();
-//        autoGraderTests.tinyDGTests();
+        autoGraderTests.singleWordNetTests();
+        autoGraderTests.testDigraph1();
+        autoGraderTests.testDigraph2();
+        autoGraderTests.testDigraph3();
+        autoGraderTests.testDigraph4();
+        autoGraderTests.testDigraph5();
+        autoGraderTests.testDigraph6();
+        autoGraderTests.testDigraph9();
+        autoGraderTests.testMyGraphs();
+        autoGraderTests.createMultipleObjects();
+        autoGraderTests.testIterables();
+        autoGraderTests.testRandomDigraph();
+        autoGraderTests.troubleShooting();
+        autoGraderTests.repeatedTests();
+        autoGraderTests.hypernyms100subgraphTest();
+        autoGraderTests.tinyDGTests();
     }
 }
