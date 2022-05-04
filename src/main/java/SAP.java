@@ -201,6 +201,7 @@ public class SAP {
                     matchedAll = false;
                 }
             }
+            // todo -if matchall is true remove the current i from the list
         }
         if (matchedAll) return minDistance;
         else {
